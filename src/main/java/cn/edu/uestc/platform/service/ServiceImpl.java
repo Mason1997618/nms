@@ -1,6 +1,8 @@
 package cn.edu.uestc.platform.service;
 
 import cn.edu.uestc.platform.dao.ProjectDaoImpl;
+import cn.edu.uestc.platform.dao.ScenarioDao;
+import cn.edu.uestc.platform.dao.ScenarioDaoImpl;
 import cn.edu.uestc.platform.dao.UserDao;
 import cn.edu.uestc.platform.dao.UserDaoImpl;
 import cn.edu.uestc.platform.pojo.Project;
@@ -59,7 +61,15 @@ public class ServiceImpl implements IService {
 	
 	public boolean createScenario(Scenario scenario){
 		//在插入数据之前 要先判断一下场景名是否已存在
-		return false;
+		ScenarioDao scenarioDao = new ScenarioDaoImpl();
+		if(scenarioDao.haveScenarioName(scenario)==false){
+			scenarioDao.insertScenario(scenario);
+			System.out.println("新建场景成功！");
+			return true;
+		}else{
+			System.out.println("场景名已经存在！");
+			return false;
+		}
 	}
 
 }
