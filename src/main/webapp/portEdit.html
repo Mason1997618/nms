@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>网口编辑器</title>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/index1.css"/>
+</head>
+<header>
+    <div class="row clearfix">
+        <div class="col-md-offset-1 col-md-11 column">
+            <div class="page-header">
+                <h1>
+                    网口编辑器 <small>详细属性查看&编辑</small>
+                </h1>
+            </div>
+        </div>
+    </div>
+</header>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-6 column">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">网口名称</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  placeholder="链路1" id="portName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">网口编号</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  placeholder="0~65535" id="portID" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">网口类型</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">有线一对多</option>
+                            <option value="1">有线一对一</option>
+                            <option value="2">无线一对多</option>
+                            <option value="3">无线一对一</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">网口种类</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">天线类型</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">天线发射增益</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">天线接收增益</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">发射功率</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">调制方式</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">编码方式</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="0">XXX</option>
+                            <option value="1">XXX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">频谱带宽</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="100">100Mbps</option>
+                            <option value="1000">1000Mbps</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">最大发送速率</label>
+                    <div class="col-sm-10">
+                        <select class="form-control">
+                            <option value="100">100Mbps</option>
+                            <option value="1000">1000Mbps</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary btn-block">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 column">
+            <a href="#" class="list-group-item active">
+                <span class="badge">3</span>
+                关联链路
+            </a>
+            <a href="#" class="list-group-item">链路1</a>
+            <a href="#" class="list-group-item">链路2</a>
+            <a href="#" class="list-group-item">链路3</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/jquery-ui-1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
+
+</body>
+</html>

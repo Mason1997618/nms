@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>网络仿真平台</title>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+<!--头部区域-->
+<header>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="javascript:;">网络仿真测试平台</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="javascript:;">拓扑展示</a></li>
+                <li><a href="javascript:;">实验仿真</a></li>
+                <li><a href="javascript:;">3D模拟</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<!--内容区域-->
+<div class="container-fluid" id="main">
+    <div id="content">
+        <div>
+                GEO卫星：<input type="text" id="geoNode"/> 外网网段(192.168.5.0/24)：<input type="text" id="geoIP"/> <button class="btn btn-default" id="addGeoNode">添加GEO卫星节点</button><br>
+                LEO卫星：<input type="text" id="leoNode"/> 外网网段(192.168.5.0/24)：<input type="text" id="leoIP"/> <button class="btn btn-default" id="addLeoNode">添加LEO卫星节点</button><br>
+                地面终端：<input type="text" id="earthNode"/> 外网网段(192.168.5.0/24)：<input type="text" id="earthIP"/> <button class="btn btn-default" id="addEarthNode">添加地面终端节点</button><br>
+                (一对一链路)From：节点名称：<input type="text" id="fromNode"/> 节点IP：<input type="text" id="fromNodeIP"/> ---->To：节点名称：<input type="text" id="toNode"/> 节点IP:<input type="text" id="toNodeIP"/>   <button class="btn btn-default" id="addLink">添加链路</button>
+        </div>
+        <div id="message">
+            <span id="selectEle"></span> 被选中了 &nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-default" id="remove">删除选中元素</button>
+        </div>
+        <canvas id="canvas"></canvas>
+    </div>
+</div>
+<script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="lib/jtopo/jtopo-0.4.8-min.js"></script>
+<script type="text/javascript" src="js/dynamic.js"></script>
+<script type="text/javascript" src="js/dynamicCreate.js"></script>
+</body>
+</html>

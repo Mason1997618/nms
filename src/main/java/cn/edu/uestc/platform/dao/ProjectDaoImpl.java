@@ -1,0 +1,87 @@
+package cn.edu.uestc.platform.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import cn.edu.uestc.platform.pojo.Project;
+import cn.edu.uestc.platform.utils.DBUtiles;
+
+public class ProjectDaoImpl implements ProjectDao {
+
+	/*
+	 * 判断项目名称是否存在 存在返回true 存在返回true 不存在返回false
+	 */
+	@Override
+	public boolean haveProjectName(Project project) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conn = DBUtiles.getConnection();
+			String sql = "select p.p_id from project as p where p.user_id=? AND p.projectName=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, project.getUser_id());
+			ps.setString(2, project.getProjectName());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return false;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/*
+	 * 根据项目名称返回项目对象,不存在该项目就返回空对象
+	 * 注：查对象的时候需要project中有user_id才行
+	 */
+	@Override
+	public Project findByProjectName(Project project) {
+		// TODO Auto-generated method stub
+		try {
+
+			Connection conn = DBUtiles.getConnection();
+			String sql = " select *from project as p where p.user_id = ? and  p.projectName=? ";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, project.getUser_id());
+			ps.setString(2, project.getProjectName());
+			ResultSet rs = ps.executeQuery();
+
+			// 根据名字返回 对象，如果查到了就全部写回对象
+			if (rs.next() != false) {
+				project.setP_id(rs.getInt(1));
+				project.setProjectName(rs.getString(2));
+				project.setProjectStatus(rs.getInt(3));
+				project.setUser_id(rs.getInt(4));
+				return project;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// 未查到返回空对象
+		return new Project();
+	}
+
+	/*
+	 * 插入项目
+	 */
+	public boolean insertProject(Project project) {
+		String sql = "insert into project(projectName,user_id)values(?,?)";
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, project.getProjectName());
+			ps.setInt(2, project.getUser_id());
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return true;
+	}
+
+}

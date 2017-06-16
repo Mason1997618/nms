@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>网络仿真平台</title>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/index1.css"/>
+</head>
+<body>
+<!--头部区域-->
+<header>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">场景编辑器</a>
+            </div>
+            <div>
+                <p class="navbar-text navbar-left">工程1</p>
+                <p class="navbar-text navbar-left">场景2</p>
+                <!--向右对齐-->
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="register.html"  target="_blank"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+                    <li><a href="login.html"  target="_blank"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<!--内容区域-->
+<div class="container-fluid" id="main">
+    <div class="col-md-2 slide right" id="slider">
+        <div class="smallbox">
+            <a href="javascript:;" data-toggle="collapse" data-target="#weixing" class="title"><h4>卫星网络</h4></a>
+            <div id="weixing" class="collapse in">
+                <div class="fenlei">
+                    <img src="img/gaogui00.png" id="weixing1">
+                    &nbsp;&nbsp;&nbsp;&nbsp;高轨卫星
+                </div>
+                <div class="fenlei">
+                    <img src="img/zhonggui00.png" id="weixing2">
+                    &nbsp;&nbsp;&nbsp;&nbsp;中轨卫星
+                </div>
+                <div class="fenlei">
+                    <img src="img/digui00.png" id="weixing3">
+                    &nbsp;&nbsp;&nbsp;&nbsp;低轨卫星
+                </div>
+                <div class="fenlei">
+                    <img src="img/leida00.png" id="weixing4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;移动终端
+                </div>
+            </div>
+        </div>
+        <div class="smallbox">
+            <a href="javascript:;" data-toggle="collapse" data-target="#guding" class="title"><h4>固定网络</h4></a>
+            <div  id="guding" class="collapse">
+                <div class="fenlei">
+                    <img src="img/switchOptical.png" >
+                    &nbsp;&nbsp;&nbsp;&nbsp;交换机
+                </div>
+                <div class="fenlei">
+                    <img src="img/5200.png">
+                    &nbsp;&nbsp;&nbsp;&nbsp;防火墙
+                </div>
+                <div class="fenlei">
+                    <img src="img/router.png" >
+                    &nbsp;&nbsp;&nbsp;&nbsp;路由器
+                </div>
+            </div>
+        </div>
+        <div class="smallbox">
+            <a href="javascript:;" data-toggle="collapse" data-target="#zizuwang" class="title"><h4>自组织网络</h4></a>
+            <div id="zizuwang" class="collapse">
+                <div class="fenlei">
+                    <img src="img/gaogui00.png" id="">
+                    &nbsp;&nbsp;&nbsp;&nbsp;简单节点
+                </div>
+                <div class="fenlei">
+                    <img src="img/zhonggui00.png" id="">
+                    &nbsp;&nbsp;&nbsp;&nbsp;复杂节点
+                </div>
+                <div class="fenlei">
+                    <img src="img/digui00.png" id="">
+                    &nbsp;&nbsp;&nbsp;&nbsp;低轨卫星
+                </div>
+                <div class="fenlei">
+                    <img src="img/leida00.png" id="">
+                    &nbsp;&nbsp;&nbsp;&nbsp;移动终端
+                </div>
+            </div>
+        </div>
+        <div class="smallbox">
+            <a href="javascript:;" data-toggle="collapse" data-target="#link" class="title"><h4>选择链路</h4></a>
+            <div id="link" class="collapse">
+                <div class="fenlei" id="addlink01">
+                    <img src="img/link02.png">
+                    &nbsp;&nbsp;&nbsp;<span id="link01">有线点到点</span>
+                </div>
+                <div class="fenlei" id="addlink02">
+                    <img src="img/link02.png">
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="link02">有线广播</span>
+                </div>
+                <div class="fenlei" id="addlink03">
+                    <img src="img/link02.png">
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="link03">无线点到点</span>
+                </div>
+                <div class="fenlei">
+                    <img src="img/link02.png">
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span>无线广播</span>
+                </div>
+                <div class="fenlei" id="addlink04">
+                    <img src="img/link03.png">
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="link04">停止添加链路</span>
+                </div>
+            </div>
+        </div>
+        <div class="smallbox">
+            <a href="javascript:;" data-toggle="collapse" data-target="#more" class="title"><h4>导入轨道文件</h4></a>
+            <div id="more" class="collapse in">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <input type="file" id="inputfile" class="btn btn-default btn-block">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10" id="content">
+        <div id="message">
+            <span id="selectEle"></span> 被选中了 &nbsp;&nbsp;&nbsp;<button class="btn btn-default" id="remove">删除</button> <button class="btn btn-default" id="openInnerEdit">编辑内部场景</button>
+        </div>
+        <canvas id="canvas"></canvas>
+    </div>
+    <!-- 节点模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">请输入卫星参数</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">卫星名称</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control"  placeholder="请输入卫星名称" id="weixingName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">管理ip地址</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" placeholder="192.168.5.0/24" id="outIP">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">节点类型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="zone">
+                                    <option value="vm">虚拟机VM（复杂节点）</option>
+                                    <option value="docker">容器Docker（简单节点）</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">节点镜像</label>
+                            <div class="col-sm-10">
+                                <select class="form-control">
+                                    <option value="tiny">Tiny</option>
+                                    <option value="small">Small</option>
+                                    <option value="big">Big</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">节点模板</label>
+                            <div class="col-sm-10">
+                                <select class="form-control">
+                                    <option value="tiny">Router</option>
+                                    <option value="small">Switch</option>
+                                    <option value="big">Zph/new:11.04</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">节点硬件架构</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="hardwareArchitecture">
+                                    <option value="0">Intel x86 32bit</option>
+                                    <option value="1">Intel x86 64bit</option>
+                                    <option value="2">ARM</option>
+                                    <option value="3">MIPS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="addNode">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <!-- 链路模态框（Modal） -->
+    <div class="modal fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="linkModalLabel">请输入链路参数</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">链路名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control"  placeholder="链路1" id="linkName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">from节点</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control"  placeholder="请输入ip地址" id="fromNodeIP">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">to节点</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" placeholder="请输入ip地址" id="toNodeIP">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">信道噪音</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder="数字(仅无线有效)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">信道干扰</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder="数字(仅无线有效)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">信道模型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control">
+                                    <option value="0">XXX</option>
+                                    <option value="1">XXX</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">链路长度</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder="XXX米">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="addLink">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/jquery-ui-1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="lib/jtopo/jtopo-0.4.8-min.js"></script>
+<script type="text/javascript" src="js/index3.js"></script>
+</body>
+</html>
