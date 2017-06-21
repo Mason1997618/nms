@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.edu.uestc.platform.pojo.Project;
+import cn.edu.uestc.platform.pojo.User;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
 public class ProjectDaoImpl implements ProjectDao {
@@ -34,8 +37,7 @@ public class ProjectDaoImpl implements ProjectDao {
 	}
 
 	/*
-	 * 根据项目名称返回项目对象,不存在该项目就返回空对象
-	 * 注：查对象的时候需要project中有user_id才行
+	 * 根据项目名称返回项目对象,不存在该项目就返回空对象 注：查对象的时候需要project中有user_id才行
 	 */
 	@Override
 	public Project findByProjectName(Project project) {
@@ -82,6 +84,31 @@ public class ProjectDaoImpl implements ProjectDao {
 		}
 
 		return true;
+	}
+
+	public List<Project> findAllProjectByUserId(User user) {
+		String sql = "select * from project as p where p.user_id=?";
+		Connection conn;
+		List<Project> projects = new ArrayList<>();
+		
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, user.getU_id());
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				Project project = new Project();
+				project.setP_id(rs.getInt(1));
+				project.setProjectName(rs.getString(2));
+				project.setProjectStatus(rs.getInt(3));
+				project.setUser_id(rs.getInt(4));
+				projects.add(project);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return projects;
 	}
 
 }

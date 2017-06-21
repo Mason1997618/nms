@@ -1,9 +1,3 @@
-/**
- * jquery.sort.js
- * 商品发布-选择分类
- * author: 锐不可挡
- * date: 2016-07-07
-**/
 /*定义三级分类数据*/
 //一级分类
 var province = ["卫星网络项目", "自组织网络项目", "固定网络项目", "混合网络项目", "其他"];
@@ -50,6 +44,28 @@ var district = [
     ]
 
 ];
+
+//预读
+$(document).ready(function(){
+    $.ajax({
+        url: '/NetworkSimulation/selectProjectList',
+        data: {
+            
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            alert(data)
+        },
+        error: function () {
+
+        }
+    });
+
+    intProvince();
+});
+
 var expressP, expressC, expressD, expressArea, areaCont;
 var arrow = " <font>&gt;</font> ";
 
@@ -61,7 +77,6 @@ function intProvince() {
 	}
 	$("#sort1").html(areaCont);
 }
-intProvince();
 
 /*选择一级目录*/
 function selectP(p) {
@@ -76,7 +91,8 @@ function selectP(p) {
 	$("#selectedSort").html(expressP);
 	$("#releaseBtn").removeAttr("disabled");
 	document.getElementById("releaseBtn").onclick =  function () {
-        location.href="projectEdit.html";
+        //location.href="projectEdit.html";
+        window.open("projectEdit.html?projectName=" + expressP);
     };
 }
 
@@ -92,7 +108,8 @@ function selectC(p,c) {
 	expressC = expressP + arrow + city[p][c];
 	$("#selectedSort").html(expressC);
     document.getElementById("releaseBtn").onclick =  function () {
-        location.href="index3.html";
+        //location.href="index3.html";
+        window.open("index3.html?scenarioName=" + expressC);
     };
 }
 
@@ -103,15 +120,17 @@ function selectD(p,c,d) {
 	$("#selectedSort").html(expressD);
     document.getElementById("releaseBtn").onclick =  function () {
         if((district[p][c][d]+"").indexOf("节点")>=0){
-            location.href="nodeEdit.html";
+            //location.href="nodeEdit.html";
+			window.open("nodeEdit.html?nodeName=" + expressD);
         }
         if((district[p][c][d]+"").indexOf("链路")>=0){
-            location.href="linkEdit.html";
+            //location.href="linkEdit.html";
+			window.open("linkEdit.html?linkName=" + expressD);
         }
     };
 }
 
-/*点击下一步*/
+/*编辑工程*/
 $("#releaseBtn").click(function() {
 	var releaseS = $(this).prop("disabled");
 	if (releaseS == false) {//未被禁用
@@ -119,7 +138,50 @@ $("#releaseBtn").click(function() {
 	}
 });
 
-$("#addProject").click(function () {
-	//alert("111");
+//新建工程
+$("#add").click(function () {
     $("#myModal").modal();
+});
+
+//新建工程提交
+$("#addProject").click(function () {
+    $.ajax({
+        url: 'user/addProject',
+        data: {
+            projectName : $("#projectName").val()
+        },
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            alert(msg);
+            //刷新页面
+            // window.location.reload();
+        },
+        error: function () {
+
+        }
+    });
+});
+
+//删除工程
+$("#delete").click(function () {
+	alert(expressP);
+    $.ajax({
+        url: 'user/delete',
+        data: {
+            projectName : expressP
+        },
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            alert(msg);
+            //刷新页面
+            window.location.reload();
+        },
+        error: function () {
+
+        }
+    });
 });

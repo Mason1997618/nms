@@ -1,14 +1,19 @@
 package cn.edu.uestc.platform.action;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.User;
 import cn.edu.uestc.platform.service.ServiceImpl;
+import cn.edu.uestc.platform.utils.JSoneUtils;
+import net.sf.json.JSONArray;
 
 @Controller
 public class ActionController {
@@ -66,7 +71,8 @@ public class ActionController {
 	 * 新建工程
 	 * 
 	 */
-	@RequestMapping("/creatProject.action")
+	@ResponseBody
+	@RequestMapping("/creatProject")
 	public String createProject(Model model,Project project,HttpSession session){
 		
 		User user = (User) session.getAttribute("user");
@@ -75,14 +81,29 @@ public class ActionController {
 		ServiceImpl service  = new ServiceImpl();
 		if(service.createProject(project)==true){
 			System.out.println("创建成功！");
-			return "";
+			return "创建成功!";
 		}
 		else{
 			System.out.println("创建失败！");
-			return "";
+			return "工程名已存在,请重新输入。";
 		}
 		
 	}
+	
+	
+	@RequestMapping("/selectProjectList")
+	@ResponseBody
+	public String selectProjectList(Model model,HttpSession session){
+		ServiceImpl service = new ServiceImpl();
+		User user = (User)session.getAttribute("user");
+		List<Project> projects = service.findAllProjectByUserId(user);
+		System.out.println(JSoneUtils.ListToJson(projects).toString());
+		return JSoneUtils.ListToJson(projects).toString();
+	}
+
+
+
+
 	
 	
 	

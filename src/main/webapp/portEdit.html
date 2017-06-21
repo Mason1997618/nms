@@ -15,6 +15,7 @@
                 <h1>
                     网口编辑器 <small>详细属性查看&编辑</small>
                 </h1>
+
             </div>
         </div>
     </div>
@@ -22,12 +23,12 @@
 <body>
 <div class="container">
     <div class="row clearfix">
-        <div class="col-md-6 column">
+        <div class="col-md-10 column">
             <form class="form-horizontal" role="form">
                 <div class="form-group">
                     <label class="col-sm-2 control-label">网口名称</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control"  placeholder="链路1" id="portName">
+                        <input type="text" class="form-control"  placeholder="网口1" id="portName">
                     </div>
                 </div>
                 <div class="form-group">
@@ -37,23 +38,24 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-sm-2 control-label">关联链路</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  placeholder="链路1" id="" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-sm-2 control-label">网口类型</label>
                     <div class="col-sm-10">
                         <select class="form-control">
-                            <option value="0">有线一对多</option>
-                            <option value="1">有线一对一</option>
-                            <option value="2">无线一对多</option>
-                            <option value="3">无线一对一</option>
+                            <option value="0">有线</option>
+                            <option value="1">无线</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">网口种类</label>
+                    <label class="col-sm-2 control-label">网口ip</label>
                     <div class="col-sm-10">
-                        <select class="form-control">
-                            <option value="0">XXX</option>
-                            <option value="1">XXX</option>
-                        </select>
+                        <input type="text" class="form-control"  placeholder="192.168.1.1" id="" >
                     </div>
                 </div>
                 <div class="form-group">
@@ -66,16 +68,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">天线发射增益</label>
-                    <div class="col-sm-10">
-                        <select class="form-control">
-                            <option value="0">XXX</option>
-                            <option value="1">XXX</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">天线接收增益</label>
+                    <label class="col-sm-2 control-label">天线增益</label>
                     <div class="col-sm-10">
                         <select class="form-control">
                             <option value="0">XXX</option>
@@ -120,12 +113,18 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">最大发送速率</label>
+                    <label class="col-sm-2 control-label">最大速率</label>
                     <div class="col-sm-10">
                         <select class="form-control">
                             <option value="100">100Mbps</option>
                             <option value="1000">1000Mbps</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">丢包率</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  placeholder="0~100" id="" >
                     </div>
                 </div>
                 <div class="form-group">
@@ -135,15 +134,14 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-6 column">
-            <a href="#" class="list-group-item active">
-                <span class="badge">3</span>
-                关联链路
-            </a>
-            <a href="#" class="list-group-item">链路1</a>
-            <a href="#" class="list-group-item">链路2</a>
-            <a href="#" class="list-group-item">链路3</a>
-        </div>
+        <!--<div class="col-md-6 column">-->
+            <!--<a href="#" class="list-group-item active">-->
+                <!--关联链路-->
+            <!--</a>-->
+            <!--<a href="#" class="list-group-item">链路1</a>-->
+            <!--<a href="#" class="list-group-item">链路2</a>-->
+            <!--<a href="#" class="list-group-item">链路3</a>-->
+        <!--</div>-->
     </div>
 </div>
 

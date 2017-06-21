@@ -1,5 +1,8 @@
 package cn.edu.uestc.platform.service;
 
+import java.util.List;
+
+import cn.edu.uestc.platform.dao.ProjectDao;
 import cn.edu.uestc.platform.dao.ProjectDaoImpl;
 import cn.edu.uestc.platform.dao.ScenarioDao;
 import cn.edu.uestc.platform.dao.ScenarioDaoImpl;
@@ -70,6 +73,12 @@ public class ServiceImpl implements IService {
 			System.out.println("场景名已经存在！");
 			return false;
 		}
+	}
+	
+	public List<Project> findAllProjectByUserId(User user){
+		ProjectDaoImpl projectDao = new ProjectDaoImpl();
+		return projectDao.findAllProjectByUserId(user);
+		
 	}
 
 }

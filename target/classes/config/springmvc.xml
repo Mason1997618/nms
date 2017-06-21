@@ -37,6 +37,7 @@
 	<mvc:resources mapping="/dynamic.html" location="/dynamic.html" />
 	<mvc:resources mapping="/index1.html" location="/index1.html" />
 	<mvc:resources mapping="/startDynamic.html" location="/startDynamic.html" />
+	<mvc:resources mapping="/detailProject.html" location="/detailProject.html"/>
 
 	<!-- 视图解析器 解析jsp解析，默认使用jstl标签，classpath下的得有jstl的包 -->
 	<bean

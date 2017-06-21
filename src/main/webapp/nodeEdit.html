@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">节点名称</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control"  placeholder="请输入卫星名称" id="weixingName">
+                        <input type="email" class="form-control"  placeholder="请输入节点名称" id="weixingName">
                     </div>
                 </div>
                 <div class="form-group">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">管理ip地址</label>
+                    <label class="col-sm-2 control-label">管理ip</label>
                     <div class="col-sm-10">
                         <input type="email" class="form-control" placeholder="192.168.5.0/24" id="outIP">
                     </div>
@@ -46,24 +46,14 @@
                     <label class="col-sm-2 control-label">节点类型</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="zone">
-                            <option value="vm">虚拟机VM（复杂节点）</option>
-                            <option value="docker">容器Docker（简单节点）</option>
+                            <option value="0">简单二层节点（Docker）</option>
+                            <option value="1">简单三层节点（Docker）</option>
+                            <option value="2">复杂三层节点(VM)</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">节点种类</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="category">
-                            <option value="0">固网节点</option>
-                            <option value="1">卫星节点</option>
-                            <option value="2">自组网节点</option>
-                            <option value="3">终端节点</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">节点硬件架构</label>
+                    <label class="col-sm-2 control-label">硬件架构</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="hardwareArchitecture">
                             <option value="0">Intel x86 32bit</option>
@@ -74,7 +64,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">节点操作系统</label>
+                    <label class="col-sm-2 control-label">操作系统</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="operatingSystem">
                             <option value="0">Linux</option>
@@ -153,6 +143,7 @@
     </div>
 </div>
 
+<script type="text/javascript" src="js/nodeEdit.js"></script>
 <script type="text/javascript" src="lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="lib/jquery-ui-1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>

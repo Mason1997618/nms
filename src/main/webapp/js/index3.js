@@ -182,15 +182,33 @@ $("#canvas").droppable({
     }
 });
 
-//节点模态框中的数据
-var weixingName = document.getElementById("weixingName");
-var outIP = document.getElementById("outIP");
-
+var weixingName = document.getElementById("nodeName");
 var addNode = document.getElementById("addNode");
 //节点模态框中的提交
 addNode.onclick = function () {
     //发送执行ajax的请求
-    alert("ajax执行 卫星名称：" + weixingName.value + " 外网ip" + outIP.value);
+    $.ajax({
+        url: 'scenario/addNode',
+        data: {
+            nodeName : $("#nodeName").val(),
+            manageIP : $("#manageIP").val(),
+            nodeType : $("#nodeType").val(),
+            hardwareArchitecture : $("#hardwareArchitecture").val(),
+            operatingSystem : $("#operatingSystem").val(),
+            nodeConfig : $("#nodeConfig").val(),
+            nodeImage : $("#nodeImage").val()
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            alert(msg);
+        },
+        error: function () {
+
+        }
+    });
+    //在画布上绘制出节点图标
     var getId = uiOut.draggable[0].id;//jquery获取图片，竟然要加一个[0]，这是什么鬼 (⊙o⊙)
     if (getId == "weixing1") {
         createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
@@ -203,9 +221,6 @@ addNode.onclick = function () {
     }
     //关闭模态框
     $('#myModal').modal('hide');
-    //清空模态框内的表格内容
-    weixingName.value = "";
-    outIP.value = "";
 };
 
 //节点模态框中的数据
@@ -216,7 +231,29 @@ var toNodeIP = document.getElementById("toNodeIP");
 var addLink = document.getElementById("addLink");
 addLink.onclick = function () {
     //发送执行ajax的请求
-    alert("ajax执行");
+    $.ajax({
+        url: 'scenario/addLink',
+        data: {
+            linkName : $("#linkName").val(),
+            linkType : $("#linkType").val(),
+            fromNodeIP : $("#fromNodeIP").val(),
+            toNodeIP : $("#toNodeIP").val(),
+            channelNoise : $("#channelNoise").val(),
+            channelDisturbance : $("#channelDisturbance").val(),
+            channelType : $("#channelType").val(),
+            linkLenth : $("#linkLenth").val()
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            alert(msg);
+        },
+        error: function () {
+
+        }
+    });
+    //在画布上绘制出链路
     if (flag == 1) {
         newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,200,255");
     } else if (flag == 2) {
@@ -240,3 +277,13 @@ openInnerEdit.onclick = function () {
         window.open("innerEdit.html#"+ elements[0].text);
     }
 };
+
+//打开节点编辑器
+$("#editNode").click(function () {
+    var elements = scene.selectedElements;
+    if (elements[0] == undefined){
+        alert("请选中节点后在进行下一步操作");
+    }else {
+        window.open("nodeEdit.html?nodeName=" + elements[0].text);
+    }
+});

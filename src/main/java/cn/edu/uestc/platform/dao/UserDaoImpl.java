@@ -25,14 +25,11 @@ public class UserDaoImpl implements UserDao {
 			ps.setString(1, user.getUsername());
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-
 				dbuser.setU_id(rs.getInt(1));
 				dbuser.setUsername(rs.getString(2));
 				dbuser.setPsw(rs.getString(3));
 				dbuser.setUserstatus(rs.getInt(4));
-
 			}
-
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,7 +83,7 @@ public class UserDaoImpl implements UserDao {
 
 	/*
 	 * 根据工程名查工程
-	 * 
+	 * (待修改....)
 	 */
 	@Override
 	public Project findByProjectName(Project project) {
@@ -97,8 +94,6 @@ public class UserDaoImpl implements UserDao {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, project.getProjectName());
 			ResultSet rs = ps.executeQuery();
-			
-			
 			while (rs.next()) {
 				if ("".equals(rs.getString(2))) { //如果projectname字段为null 说明名字未被占用
 					return project;

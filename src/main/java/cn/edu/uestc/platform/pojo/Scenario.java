@@ -1,5 +1,7 @@
 package cn.edu.uestc.platform.pojo;
 
+import java.util.List;
+
 public class Scenario {
 	private int s_id;
 	private String scenarioName;
@@ -10,6 +12,15 @@ public class Scenario {
 	private int scenarioStatus;
 	private int scenarioType;
 	private int project_id;
+	private List<Node> nodes;
+
+	public List<Node> getNodes() {
+		return nodes;
+	}
+
+	public void setNodes(List<Node> nodes) {
+		this.nodes = nodes;
+	}
 
 	public int getS_id() {
 		return s_id;
@@ -88,7 +99,9 @@ public class Scenario {
 		return "Scenario [s_id=" + s_id + ", scenarioName=" + scenarioName + ", dynamicTopologyFile="
 				+ dynamicTopologyFile + ", numberNode=" + numberNode + ", numberSimpleNode=" + numberSimpleNode
 				+ ", numberComplexNode=" + numberComplexNode + ", scenarioStatus=" + scenarioStatus + ", scenarioType="
-				+ scenarioType + ", project_id=" + project_id + "]";
+				+ scenarioType + ", project_id=" + project_id + ", nodes=" + nodes + "]";
 	}
+
+	
 
 }
