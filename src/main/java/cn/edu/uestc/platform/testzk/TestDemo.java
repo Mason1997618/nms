@@ -133,6 +133,5 @@ public class TestDemo {
 		UserDaoImpl userdao = new UserDaoImpl();
 		Project project = new Project();
 		project.setProjectName("wocao");
-		userdao.findByProjectName(project);
 	}
 }

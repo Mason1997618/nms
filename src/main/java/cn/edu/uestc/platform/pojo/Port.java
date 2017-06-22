@@ -16,6 +16,7 @@ public class Port {
 	private double frequencyBandwidth;
 	private double txBitRate;
 	private double txPacketLoss;
+	//因为一个port只对应一条链路，所以这里存的是链路对象而不是链路集合。
 	private Link link;
 
 	public Link getLink() {

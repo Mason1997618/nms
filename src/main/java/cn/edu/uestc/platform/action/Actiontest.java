@@ -18,25 +18,39 @@ import cn.edu.uestc.platform.utils.JSoneUtils;
 //@Controller
 public class Actiontest {
 
-//	@RequestMapping("/login.action")
-//	public String login(Model model, User user) {
-//
-//		System.out.println(user);
-//		model.addAttribute("message", "用户名或者密码错误!");
-//
-//		return "login.jsp";
-//
-//	}
-	
-	
+	// @RequestMapping("/login.action")
+	// public String login(Model model, User user) {
+	//
+	// System.out.println(user);
+	// model.addAttribute("message", "用户名或者密码错误!");
+	//
+	// return "login.jsp";
+	//
+	// }
+
 	@Test
-	public void demo1(){
+	public void demo1() {
 		User user = new User();
 		user.setU_id(1);
 		ServiceImpl service = new ServiceImpl();
 		List<Project> projects = service.findAllProjectByUserId(user);
 		System.out.println(JSoneUtils.ListToJson(projects).toString());
 
+	}
+
+	@Test
+	public void demo2() {
+		ServiceImpl service = new ServiceImpl();
+		// System.out.println(service.userLogin(user));
+		User user = new User();
+		user.setUsername("woyuno");
+		user.setPsw("dfas");
+		System.out.println(service.userLogin(user));
+		if (service.userLogin(user) == null) {
+			System.out.println("用户未注册");
+		}
+		System.out.println("-----------");
+		
 	}
 
 }

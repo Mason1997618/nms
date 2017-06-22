@@ -11,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import cn.edu.uestc.platform.dynamicChange.DynamicController;
 import cn.edu.uestc.platform.dynamicChange.DynamicDockerController;
 
 public class UI extends JFrame {

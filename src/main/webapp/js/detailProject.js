@@ -1,69 +1,73 @@
 /*定义三级分类数据*/
 //一级分类
-var province = ["卫星网络项目", "自组织网络项目", "固定网络项目", "混合网络项目", "其他"];
+var province = [];
+var projectId = [];
 //二级分类
-var city = [
-	["场景11", "场景12", "场景13"],
-	["场景21", "场景22", "场景23", "场景24"],
-	["场景31", "场景32", "场景33"],
-	["场景41", "场景42", "场景43", "场景44"],
-	["场景51", "场景52", "场景53"],
-];
+var city = [];
+var scenarioId = [];
 //三级分类
-var district = [
-	[
-		["节点111", "链路112", "节点113"],
-		["链路121", "链路122", "节点123"],
-		["节点131", "链路132", "节点133", "链路134", "链路135", "节点136", "链路137", "链路138", "节点139"]
-	],
+var node = [];
+var nodeId = [];
 
-	[
-		["链路211", "链路212", "节点213"],
-		["链路221", "链路222", "节点223", "链路224", "链路225", "节点226", "链路227", "链路228", "节点229"],
-		["节点231", "链路232", "节点233"],
-		["链路241", "节点242",]
-	],
+//测试用工程对象列表的json
+//var json = '[{"p_id":1,"projectName":"wohaoniubi","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":2,"projectName":"worinidaye","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":3,"projectName":"worinimdaye","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":4,"projectName":"模式数","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":5,"projectName":"牛逼","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":7,"projectName":"我日你大爷","projectStatus":0,"scenarios":[],"user_id":1}]';
 
-	[
-		["链路311", "链路312", "节点313"],
-		["链路321", "链路322", "节点", "链路", "链路", "节点", "链路", "链路", "节点", "节点"],
-		["链路331", "链路332", "节点333", "链路334"]
-	],
+//解析工程对象列表的json，初始化到province里
+function praseProjectList(data) {
+    province = [];
+    projectId = [];
+    var objs = jQuery.parseJSON(data);
+    //alert(objs[0].projectName);
+    for (var i = 0; i < objs.length; i++){
+        province[i] = objs[i].projectName;
+        projectId[i] = objs[i].p_id;
+    }
+    intProvince();
+}
 
-    [
-        ["链路411", "链路412", "节点413"],
-        ["链路421", "链路422", "节点423", "链路424", "链路425", "节点426", "链路427", "链路428", "节点429"],
-        ["节点431", "链路432", "节点433"],
-        ["链路441", "节点442",]
-    ],
+//解析场景列表的json，初始化
+function praseScenarioList(data) {
+    city = [];
+    scenarioId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        city[i] = objs[i].scenarioName;
+        scenarioId[i] = objs[i].s_id;
+    }
+}
 
-    [
-        ["节点511", "链路512", "节点513"],
-        ["链路521", "链路522", "节点523"],
-        ["节点531", "链路532", "节点533", "链路534", "链路535", "节点536", "链路537", "链路538", "节点539"]
-    ]
-
-];
+//解析节点列表json
+function praseNodeList(data) {
+    node = [];
+    nodeId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        node[i] = objs[i].nodeName;
+        nodeId[i] = objs[i].n_id;
+    }
+}
 
 //预读
 $(document).ready(function(){
+    //测试用
+    //praseProjectList();
+    //发送ajax查询工程列表并显示
     $.ajax({
         url: '/NetworkSimulation/selectProjectList',
         data: {
-            
+
         },
         type: 'post',
         dataType: 'json',
         async: false,
         success: function (data) {
-            alert(data)
+            //alert(data);
+            praseProjectList(data);
         },
         error: function () {
 
         }
     });
-
-    intProvince();
 });
 
 var expressP, expressC, expressD, expressArea, areaCont;
@@ -72,7 +76,7 @@ var arrow = " <font>&gt;</font> ";
 /*初始化一级目录*/
 function intProvince() {
 	areaCont = "";
-	for (var i=0; i<province.length; i++) {
+	for (var i = 0; i < province.length; i++) {
 		areaCont += '<li onClick="selectP(' + i + ');"><a href="javascript:void(0)">' + province[i] + '</a></li>';
 	}
 	$("#sort1").html(areaCont);
@@ -80,9 +84,27 @@ function intProvince() {
 
 /*选择一级目录*/
 function selectP(p) {
+    //发送ajax查询场景列表
+    $.ajax({
+        url: '/NetworkSimulation/selectScenarioList',
+        data: {
+            p_id : projectId[p]
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+//            alert(data);
+            praseScenarioList(data);
+        },
+        error: function () {
+
+        }
+    });
+    //显示出场景列表
 	areaCont = "";
-	for (var j=0; j<city[p].length; j++) {
-		areaCont += '<li onClick="selectC(' + p + ',' + j + ');"><a href="javascript:void(0)">' + city[p][j] + '</a></li>';
+	for (var i = 0; i < city.length; i++) {
+		areaCont += '<li onClick="selectC(' + i + ');"><a href="javascript:void(0)">' + city[i] + '</a></li>';
 	}
 	$("#sort2").html(areaCont).show();
 	$("#sort3").hide();
@@ -90,44 +112,118 @@ function selectP(p) {
 	expressP = province[p];
 	$("#selectedSort").html(expressP);
 	$("#releaseBtn").removeAttr("disabled");
+	//打开工程编辑器
 	document.getElementById("releaseBtn").onclick =  function () {
         //location.href="projectEdit.html";
-        window.open("projectEdit.html?projectName=" + expressP);
+        window.open("projectEdit.html?projectId=" + projectId[p]);
     };
+	//删除工程
+	$("#delete").click(function () {
+        $.ajax({
+            url: '/NetworkSimulation/deleteProject',
+            data: {
+                projectId : projectId[p]
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+                //刷新页面
+                window.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+    });
 }
 
 /*选择二级目录*/
-function selectC(p,c) {
+function selectC(p) {
+    //发送ajax查询节点列表
+    $.ajax({
+        url: '/NetworkSimulation/selectNodeList',
+        data: {
+            scenarioId : scenarioId[p]
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            alert(data);
+            praseNodeList(data);
+        },
+        error: function () {
+
+        }
+    });
+    //显示出节点列表
 	areaCont = "";
 	expressC = "";
-	for (var k=0; k<district[p][c].length; k++) {
-		areaCont += '<li onClick="selectD(' + p + ',' + c + ',' + k + ');"><a href="javascript:void(0)">' + district[p][c][k] + '</a></li>';
+	for (var i = 0; i < node.length; i++) {
+		areaCont += '<li onClick="selectD(' + i + ');"><a href="javascript:void(0)">' + node[i] + '</a></li>';
 	}
 	$("#sort3").html(areaCont).show();
 	$("#sort2 li").eq(c).addClass("active").siblings("li").removeClass("active");
 	expressC = expressP + arrow + city[p][c];
 	$("#selectedSort").html(expressC);
+	//打开场景编辑器
     document.getElementById("releaseBtn").onclick =  function () {
         //location.href="index3.html";
-        window.open("index3.html?scenarioName=" + expressC);
+        window.open("index3.html?scenarioId=" + scenarioId[p]);
     };
+    //删除场景
+    $("#delete").click(function () {
+        $.ajax({
+            url: '/NetworkSimulation/deleteScenario',
+            data: {
+                scenarioId : scenarioId[p]
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+                //刷新页面
+                window.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+    });
 }
 
 /*选择三级目录*/
-function selectD(p,c,d) {
+function selectD(p) {
 	$("#sort3 li").eq(d).addClass("active").siblings("li").removeClass("active");
-	expressD = expressC + arrow + district[p][c][d];
+	expressD = expressC + arrow + node[p];
 	$("#selectedSort").html(expressD);
+	//打开节点编辑器
     document.getElementById("releaseBtn").onclick =  function () {
-        if((district[p][c][d]+"").indexOf("节点")>=0){
-            //location.href="nodeEdit.html";
-			window.open("nodeEdit.html?nodeName=" + expressD);
-        }
-        if((district[p][c][d]+"").indexOf("链路")>=0){
-            //location.href="linkEdit.html";
-			window.open("linkEdit.html?linkName=" + expressD);
-        }
+        window.open("nodeEdit.html?nodeId=" + nodeId[p]);
     };
+    //删除节点
+    $("#delete").click(function () {
+        $.ajax({
+            url: '/NetworkSimulation/deleteNode',
+            data: {
+                nodeId : nodeId[p]
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+                //刷新页面
+                window.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+    });
 }
 
 /*编辑工程*/
@@ -146,7 +242,7 @@ $("#add").click(function () {
 //新建工程提交
 $("#addProject").click(function () {
     $.ajax({
-        url: 'user/addProject',
+        url: '/NetworkSimulation/creatProject',
         data: {
             projectName : $("#projectName").val()
         },
@@ -157,28 +253,6 @@ $("#addProject").click(function () {
             alert(msg);
             //刷新页面
             // window.location.reload();
-        },
-        error: function () {
-
-        }
-    });
-});
-
-//删除工程
-$("#delete").click(function () {
-	alert(expressP);
-    $.ajax({
-        url: 'user/delete',
-        data: {
-            projectName : expressP
-        },
-        type: 'get',
-        dataType: 'json',
-        async: false,
-        success: function (msg) {
-            alert(msg);
-            //刷新页面
-            window.location.reload();
         },
         error: function () {
 

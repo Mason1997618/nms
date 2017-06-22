@@ -1,12 +1,10 @@
 package cn.edu.uestc.platform.service;
 
-import java.util.List;
 
 import org.junit.Test;
 
 import cn.edu.uestc.platform.dao.ProjectDao;
 import cn.edu.uestc.platform.dao.ProjectDaoImpl;
-import cn.edu.uestc.platform.dao.UserDao;
 import cn.edu.uestc.platform.dao.UserDaoImpl;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;

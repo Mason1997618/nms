@@ -16,6 +16,25 @@ public class Node {
 	private int nodeStatus;
 	private String imagePath;
 	private int Scenario_id;
+	//x,y用于记录画图的节点坐标
+	private int x;
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	private int y;
 
 	private List<Port> ports;
 
@@ -27,13 +46,14 @@ public class Node {
 		this.ports = ports;
 	}
 
+
 	@Override
 	public String toString() {
 		return "Node [n_id=" + n_id + ", nodeName=" + nodeName + ", manageIp=" + manageIp + ", nodeType=" + nodeType
 				+ ", hardwareArchitecture=" + hardwareArchitecture + ", operatingSystem=" + operatingSystem
 				+ ", numberPort=" + numberPort + ", numberInternalModule=" + numberInternalModule
 				+ ", numberInternalLink=" + numberInternalLink + ", nodeStatus=" + nodeStatus + ", imagePath="
-				+ imagePath + ", Scenario_id=" + Scenario_id + ", ports=" + ports + "]";
+				+ imagePath + ", Scenario_id=" + Scenario_id + ", x=" + x + ", y=" + y + ", ports=" + ports + "]";
 	}
 
 	public int getN_id() {

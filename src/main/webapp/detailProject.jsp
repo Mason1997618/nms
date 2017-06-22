@@ -39,7 +39,7 @@ pageEncoding="utf-8"%>
             <div class="wareSortBtn">
                 <input id="releaseBtn" type="button" class="btn btn-default" value="进入编辑器" disabled="disabled" />
                 <input id="add" type="button" class="btn btn-default" value="新建工程"/>
-                <input id="" type="button" class="btn btn-danger" value="删除"/>
+                <input id="delete" type="button" class="btn btn-danger" value="删除工程"/>
             </div>
         </div>
     </div>
@@ -107,6 +107,7 @@ pageEncoding="utf-8"%>
     </div><!-- /.modal -->
 </div>
 
+<!--<script type="text/javascript" src="lib/jquery/jquerySession.js"></script>-->
 <script type="text/javascript" src="lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="js/detailProject.js"></script>

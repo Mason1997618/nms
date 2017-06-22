@@ -1,0 +1,2 @@
+1、前端创建节点设置了size 数据库中无size node类中无size属性
+2、创建完工程要对detailProject页面刷新一次。

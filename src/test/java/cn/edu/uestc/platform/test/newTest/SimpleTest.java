@@ -6,11 +6,8 @@ import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.identity.v3.Project;
 import org.openstack4j.model.network.IPVersionType;
 import org.openstack4j.model.network.Network;
-import org.openstack4j.model.network.NetworkType;
 import org.openstack4j.model.network.Subnet;
 
-import cn.edu.uestc.platform.controller.LinkController;
-import cn.edu.uestc.platform.controller.NodeController;
 import cn.edu.uestc.platform.dynamicChange.DynamicNetWorkUtils;
 import cn.edu.uestc.platform.dynamicChange.Filters;
 import cn.edu.uestc.platform.factory.OSClientFactory;

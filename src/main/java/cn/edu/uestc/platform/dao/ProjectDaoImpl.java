@@ -86,6 +86,9 @@ public class ProjectDaoImpl implements ProjectDao {
 		return true;
 	}
 
+	/*
+	 * 根据uid查所有工程
+	 */
 	public List<Project> findAllProjectByUserId(User user) {
 		String sql = "select * from project as p where p.user_id=?";
 		Connection conn;

@@ -1,8 +1,6 @@
 package cn.edu.uestc.platform.dao;
 
 import java.util.List;
-
-import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.User;
 
 public interface UserDao {
@@ -15,7 +13,5 @@ public interface UserDao {
 	
 	public void insertUser(User user);
 
-	public Project findByProjectName(Project project);
 
-	public boolean insertProject(Project project);
 }

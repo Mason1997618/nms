@@ -14,15 +14,15 @@ $("#editScenario").click(function () {
 //预读
 $(document).ready(function(){
     $.ajax({
-        url: 'project/getScenarioList',
+        url: '/NetworkSimulation/selectScenarioList',
         data: {
-
+            p_id : $.getUrlParam("projectId")
         },
         type: 'post',
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+           // alert(msg);
         },
         error: function () {
 
@@ -52,6 +52,7 @@ $("#editProject").click(function () {
     $.ajax({
         url: 'project/editProject',
         data: {
+            projectId : $.getUrlParam("projectId"),
             projectName : $("#projectName").val()
         },
         type: 'post',
@@ -72,10 +73,11 @@ $("#editProject").click(function () {
 //添加场景提交
 $("#addScenario").click(function () {
     $.ajax({
-        url: 'project/addScenario',
+        url: '/NetworkSimulation/createScenario',
         data: {
             scenarioName : $("#scenarioName").val(),
-            scenarioType : $("#scenarioType").val()
+            scenarioType : $("#scenarioType").val(),
+            p_id : $.getUrlParam("projectId")
         },
         type: 'get',
         dataType: 'json',
@@ -97,6 +99,7 @@ $("#delScenatio").click(function () {
     $.ajax({
         url: 'project/delScenario',
         data: {
+            projectId : $.getUrlParam("projectId"),
             scenarioName : $("#selectScenario").val()
         },
         type: 'post',
@@ -113,3 +116,12 @@ $("#delScenatio").click(function () {
         }
     });
 });
+
+//解析url参数的函数
+(function ($) {
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+})(jQuery);

@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import cn.edu.uestc.platform.pojo.Project;
+import java.util.ArrayList;
+import java.util.List;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -49,6 +49,9 @@ public class ScenarioDaoImpl implements ScenarioDao {
 		return true;
 	}
 
+	/*
+	 * 根据名称查场景
+	 */
 	@Override
 	public Scenario findByScenarioName(Scenario scenario) {
 		// TODO Auto-generated method stub
@@ -80,6 +83,37 @@ public class ScenarioDaoImpl implements ScenarioDao {
 		}
 		// 未查到返回空对象
 		return new Scenario();
+	}
+
+	@Override
+	public List<Scenario> findAllScenarioByProjectId(int p_id) {
+		String sql = "select * from scenario as s where s.project_id=?";
+		Connection conn;
+		List<Scenario> scenarios = new ArrayList<>();
+
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, p_id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Scenario scenario = new Scenario();
+				scenario.setS_id(rs.getInt(1));
+				scenario.setScenarioName(rs.getString(2));
+				scenario.setNumberNode(rs.getInt(3));
+				scenario.setNumberSimpleNode(rs.getInt(4));
+				scenario.setNumberComplexNode(rs.getInt(5));
+				scenario.setDynamicTopologyFile(rs.getString(6));
+				scenario.setScenarioStatus(rs.getInt(7));
+				scenario.setScenarioType(rs.getInt(8));
+				scenario.setProject_id(rs.getInt(9));
+				scenarios.add(scenario);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return scenarios;
 	}
 
 }

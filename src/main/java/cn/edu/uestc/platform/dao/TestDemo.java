@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
@@ -32,17 +33,6 @@ public class TestDemo {
 
 	@Test
 	public void demo2() {
-		// ScenarioDao sDao =new ScenarioDaoImpl();
-		// Scenario scenario = new Scenario();
-		// scenario.setScenarioName("scenariotest");
-		// scenario.setProject_id(7);
-		// System.out.println(sDao.haveScenarioName(scenario));
-		// ScenarioDao sDao =new ScenarioDaoImpl();
-		// Scenario scenario = new Scenario();
-		// scenario.setScenarioName("scenariotest");
-		// scenario.setScenarioType(2);
-		// scenario.setProject_id(6);
-		// sDao.insertScenario(scenario);
 		ScenarioDao sDao = new ScenarioDaoImpl();
 		Scenario scenario = new Scenario();
 		scenario.setScenarioName("scenariotest");
@@ -56,19 +46,51 @@ public class TestDemo {
 		UserDao userdao = new UserDaoImpl();
 		User user = new User();
 		user.setUsername("小赖");
-		
+
 		System.out.println(userdao.findByUserName(user));
 	}
-	
-	
+
 	@Test
-	public void demo4(){
+	public void demo4() {
 		ProjectDaoImpl pdao = new ProjectDaoImpl();
 		User user = new User();
 		user.setU_id(1);
 		List<Project> projects = pdao.findAllProjectByUserId(user);
-		for(Project project :projects){
+		for (Project project : projects) {
 			System.out.println(project);
 		}
+	}
+
+	@Test
+	public void demo5() {
+		ScenarioDao scenario = new ScenarioDaoImpl();
+		System.out.println(scenario.findAllScenarioByProjectId(7));
+	}
+
+	@Test
+	public void demo6() {
+		NodeDao nodeDao = new NodeDaoImpl();
+		Node node = new Node();
+		node.setNodeName("节点1");
+		int s_id = 3;
+		node.setScenario_id(s_id);
+		nodeDao.insertNode(node);
+		
+
+	}
+	@Test
+	public void demo7(){
+		NodeDao nodeDao = new NodeDaoImpl();
+		for(Node node:nodeDao.findAllNodeByScenarioId(4)){
+			System.out.println(node);
+		}
+	}
+	
+	
+	@Test
+	public void demo8(){
+		NodeDao dao = new NodeDaoImpl();
+//		dao.plusNumberComplexNode(2);
+		dao.plusNumberSimpleNode(2);
 	}
 }
