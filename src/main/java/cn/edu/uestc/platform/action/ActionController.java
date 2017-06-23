@@ -123,6 +123,8 @@ public class ActionController {
 		ServiceImpl service = new ServiceImpl();
 		List<Scenario> scenarios = service.findAllScenarioByProjectId(p_id);
 	//	System.out.println(JSoneUtils.ListToJson(scenarios).toString());
+		System.out.println("已经获取到了场景列表");
+		System.out.println(JSoneUtils.ListToJson(scenarios).toString());
 		return JSoneUtils.ListToJson(scenarios).toString();
 	}
 

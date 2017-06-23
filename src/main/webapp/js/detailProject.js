@@ -94,7 +94,7 @@ function selectP(p) {
         dataType: 'json',
         async: false,
         success: function (data) {
-//            alert(data);
+          //  alert(data);
             praseScenarioList(data);
         },
         error: function () {
@@ -115,7 +115,7 @@ function selectP(p) {
 	//打开工程编辑器
 	document.getElementById("releaseBtn").onclick =  function () {
         //location.href="projectEdit.html";
-        window.open("projectEdit.html?projectId=" + projectId[p]);
+        window.open(encodeURI("projectEdit.html?projectId=" + projectId[p] + "&projectName=" + expressP));
     };
 	//删除工程
 	$("#delete").click(function () {
@@ -145,13 +145,13 @@ function selectC(p) {
     $.ajax({
         url: '/NetworkSimulation/selectNodeList',
         data: {
-            scenarioId : scenarioId[p]
+            s_id : scenarioId[p]
         },
         type: 'post',
         dataType: 'json',
         async: false,
         success: function (data) {
-            alert(data);
+          //  alert(data);
             praseNodeList(data);
         },
         error: function () {
@@ -252,7 +252,8 @@ $("#addProject").click(function () {
         success: function (msg) {
             alert(msg);
             //刷新页面
-            // window.location.reload();
+            $("#myModal").hide();
+            window.location.reload();
         },
         error: function () {
 

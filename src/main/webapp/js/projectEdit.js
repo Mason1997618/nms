@@ -1,6 +1,20 @@
 /**
  * Created by sjm on 2017/6/8.
  */
+var scenarioList = [];
+var scenarioId = [];
+
+//解析场景对象列表的json
+function praseScenarioList(data) {
+    scenarioList = [];
+    scenarioId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        scenarioList[i] = objs[i].scenarioName;
+        scenarioId[i] = objs[i].s_id;
+    }
+}
+
 //新建场景
 $("#add").click(function () {
    $("#myModal").modal();
@@ -13,6 +27,7 @@ $("#editScenario").click(function () {
 
 //预读
 $(document).ready(function(){
+    initProject();
     $.ajax({
         url: '/NetworkSimulation/selectScenarioList',
         data: {
@@ -22,18 +37,23 @@ $(document).ready(function(){
         dataType: 'json',
         async: false,
         success: function (msg) {
-           // alert(msg);
+          //  alert(msg);
+            praseScenarioList(msg);
         },
         error: function () {
 
         }
     });
-
     initScenarioList();
 });
 
-var scenarioList = ["场景1","场景2","场景3","场景4","场景5"];
+//初始化工程属性
+function initProject() {
+    $("#projectName").val($.getUrlParam("projectName"));
+    $("#projectId").val($.getUrlParam("projectId"));
+}
 
+//初始化场景列表
 function initScenarioList() {
     areaCont = "";
     for (var i = 0; i < scenarioList.length; i++){
@@ -45,6 +65,29 @@ function initScenarioList() {
 function selectP(i) {
     $("#editScenario").removeAttr("disabled");
     $("#delScenatio").removeAttr("disabled");
+    //打开场景编辑器
+    $("#editScenario").click(function () {
+        window.open("index3.html?scenarioId=" + scenarioId[i]);
+    });
+    //删除场景
+    $.ajax({
+        url: 'project/deleteScenario',
+        data: {
+            scenarioId : scenarioId[i]
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            alert(msg);
+            //刷新当前页面
+            window.location.reload();
+            // opener.location.reload()刷新父窗口对象（用于单开窗口）
+        },
+        error: function () {
+
+        }
+    });
 }
 
 //编辑工程属性提交
@@ -52,7 +95,7 @@ $("#editProject").click(function () {
     $.ajax({
         url: 'project/editProject',
         data: {
-            projectId : $.getUrlParam("projectId"),
+            p_id : $.getUrlParam("p_id"),
             projectName : $("#projectName").val()
         },
         type: 'post',
@@ -83,7 +126,7 @@ $("#addScenario").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+           // alert(msg);
             //刷新当前页面
             window.location.reload();
             // opener.location.reload()刷新父窗口对象（用于单开窗口）
@@ -99,7 +142,7 @@ $("#delScenatio").click(function () {
     $.ajax({
         url: 'project/delScenario',
         data: {
-            projectId : $.getUrlParam("projectId"),
+            projectId : $.getUrlParam("p_id"),
             scenarioName : $("#selectScenario").val()
         },
         type: 'post',
@@ -121,7 +164,8 @@ $("#delScenatio").click(function () {
 (function ($) {
     $.getUrlParam = function (name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
+        var url = decodeURI(window.location.search);
+        var r = url.substr(1).match(reg);
         if (r != null) return unescape(r[2]); return null;
     }
 })(jQuery);

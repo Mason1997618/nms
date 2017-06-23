@@ -50,6 +50,8 @@ public class ServiceImpl implements IService {
 		ProjectDaoImpl projectdao = new ProjectDaoImpl();
 		// 在插入数据之前 要先判断一下工程名是否已存在
 		if (projectdao.haveProjectName(project) == false) {
+			//默认工程一创建就是Enable状态
+			project.setProjectStatus(1);
 			projectdao.insertProject(project);
 			System.out.println("插入工程成功");
 			return true;
