@@ -17,8 +17,8 @@
                 <a class="navbar-brand" href="#">场景编辑器</a>
             </div>
             <div>
-                <p class="navbar-text navbar-left">工程1</p>
-                <p class="navbar-text navbar-left">场景2</p>
+                <p id="projectName" class="navbar-text navbar-left">工程1</p>
+                <p id="scenarioName" class="navbar-text navbar-left">场景2</p>
                 <!--向右对齐-->
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="register.html"  target="_blank"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
@@ -69,46 +69,46 @@
                 </div>
             </div>
         </div>
-        <div class="smallbox">
-            <a href="javascript:;" data-toggle="collapse" data-target="#zizuwang" class="title"><h4>自组织网络</h4></a>
-            <div id="zizuwang" class="collapse">
-                <div class="fenlei">
-                    <img src="img/gaogui00.png" id="">
-                    &nbsp;&nbsp;&nbsp;&nbsp;简单节点
-                </div>
-                <div class="fenlei">
-                    <img src="img/zhonggui00.png" id="">
-                    &nbsp;&nbsp;&nbsp;&nbsp;复杂节点
-                </div>
-                <div class="fenlei">
-                    <img src="img/digui00.png" id="">
-                    &nbsp;&nbsp;&nbsp;&nbsp;低轨卫星
-                </div>
-                <div class="fenlei">
-                    <img src="img/leida00.png" id="">
-                    &nbsp;&nbsp;&nbsp;&nbsp;移动终端
-                </div>
-            </div>
-        </div>
+        <!--<div class="smallbox">-->
+            <!--<a href="javascript:;" data-toggle="collapse" data-target="#zizuwang" class="title"><h4>自组织网络</h4></a>-->
+            <!--<div id="zizuwang" class="collapse">-->
+                <!--<div class="fenlei">-->
+                    <!--<img src="img/gaogui00.png" id="">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;简单节点-->
+                <!--</div>-->
+                <!--<div class="fenlei">-->
+                    <!--<img src="img/zhonggui00.png" id="">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;复杂节点-->
+                <!--</div>-->
+                <!--<div class="fenlei">-->
+                    <!--<img src="img/digui00.png" id="">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;低轨卫星-->
+                <!--</div>-->
+                <!--<div class="fenlei">-->
+                    <!--<img src="img/leida00.png" id="">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;移动终端-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="smallbox">
             <a href="javascript:;" data-toggle="collapse" data-target="#link" class="title"><h4>选择链路</h4></a>
-            <div id="link" class="collapse">
+            <div id="link" class="collapse in">
                 <div class="fenlei" id="addlink01">
                     <img src="img/link02.png">
-                    &nbsp;&nbsp;&nbsp;<span id="link01">有线点到点</span>
+                    &nbsp;&nbsp;&nbsp;<span id="link01">添加链路</span>
                 </div>
-                <div class="fenlei" id="addlink02">
-                    <img src="img/link02.png">
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="link02">有线广播</span>
-                </div>
-                <div class="fenlei" id="addlink03">
-                    <img src="img/link02.png">
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="link03">无线点到点</span>
-                </div>
-                <div class="fenlei">
-                    <img src="img/link02.png">
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span>无线广播</span>
-                </div>
+                <!--<div class="fenlei" id="addlink02">-->
+                    <!--<img src="img/link02.png">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;<span id="link02">有线广播</span>-->
+                <!--</div>-->
+                <!--<div class="fenlei" id="addlink03">-->
+                    <!--<img src="img/link02.png">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;<span id="link03">无线点到点</span>-->
+                <!--</div>-->
+                <!--<div class="fenlei">-->
+                    <!--<img src="img/link02.png">-->
+                    <!--&nbsp;&nbsp;&nbsp;&nbsp;<span>无线广播</span>-->
+                <!--</div>-->
                 <div class="fenlei" id="addlink04">
                     <img src="img/link03.png">
                     &nbsp;&nbsp;&nbsp;&nbsp;<span id="link04">停止添加链路</span>
@@ -131,8 +131,10 @@
         <div id="message">
             <span id="selectEle"></span> 被选中了 &nbsp;&nbsp;&nbsp;
             <button class="btn btn-default" id="remove">删除</button>
-            <button class="btn btn-default" id="editNode">编辑节点属性</button>
+            <button class="btn btn-info" id="editNode">编辑节点属性</button>
             <button class="btn btn-default" id="openInnerEdit">编辑内部场景</button>
+            <button class="btn btn-primary" id="startMove">开始动态变化</button>
+            <button class="btn btn-danger" id="stopMove">停止动态变化</button>
         </div>
         <canvas id="canvas"></canvas>
     </div>
@@ -205,9 +207,9 @@
                             <label class="col-sm-2 control-label">节点镜像</label>
                             <div class="col-sm-10">
                                 <select class="form-control" id="nodeImage">
-                                    <option value="tiny">Router</option>
-                                    <option value="small">Switch</option>
-                                    <option value="big">Zph/new:11.04</option>
+                                    <option value="Router">Router</option>
+                                    <option value="Switch">Switch</option>
+                                    <option value="Zph/new:11.04">Zph/new:11.04</option>
                                 </select>
                             </div>
                         </div>
@@ -301,5 +303,8 @@
 <script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="lib/jtopo/jtopo-0.4.8-min.js"></script>
 <script type="text/javascript" src="js/index3.js"></script>
+<script type="text/javascript" src="js/index3_1.js"></script>
+
+
 </body>
 </html>

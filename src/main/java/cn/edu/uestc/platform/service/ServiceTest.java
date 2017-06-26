@@ -33,14 +33,14 @@ public class ServiceTest {
 		System.out.println(project);
 	}
 	
-	@Test
-	public void demo3(){
-		ServiceImpl service = new ServiceImpl();
-		Scenario scenario = new Scenario();
-		scenario.setScenarioName("scenariotest");
-		scenario.setProject_id(7);
-		scenario.setScenarioType(3);
-		service.createScenario(scenario);
-	}
+//	@Test
+//	public void demo3(){
+//		ServiceImpl service = new ServiceImpl();
+//		Scenario scenario = new Scenario();
+//		scenario.setScenarioName("scenariotest");
+//		scenario.setProject_id(7);
+//		scenario.setScenarioType(3);
+//		service.createScenario(scenario);
+//	}
 
 }

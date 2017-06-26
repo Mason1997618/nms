@@ -53,12 +53,16 @@ public class TestDemo {
 	@Test
 	public void demo4() {
 		ProjectDaoImpl pdao = new ProjectDaoImpl();
-		User user = new User();
-		user.setU_id(1);
-		List<Project> projects = pdao.findAllProjectByUserId(user);
-		for (Project project : projects) {
-			System.out.println(project);
-		}
+//		User user = new User();
+//		user.setU_id(1);
+//		List<Project> projects = pdao.findAllProjectByUserId(user);
+//		for (Project project : projects) {
+//			System.out.println(project);
+//		}
+		Project project = new Project();
+		project.setProjectName("updataname");
+		project.setP_id(1);
+		pdao.updataProjectName(project);
 	}
 
 	@Test
@@ -73,7 +77,7 @@ public class TestDemo {
 		Node node = new Node();
 		node.setNodeName("节点1");
 		int s_id = 3;
-		node.setScenario_id(s_id);
+//		node.setScenario_id(s_id);
 		nodeDao.insertNode(node);
 		
 
@@ -93,4 +97,6 @@ public class TestDemo {
 //		dao.plusNumberComplexNode(2);
 		dao.plusNumberSimpleNode(2);
 	}
+	
+	
 }

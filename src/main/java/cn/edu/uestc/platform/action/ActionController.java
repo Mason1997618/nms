@@ -10,21 +10,23 @@ import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
-import cn.edu.uestc.platform.service.ServiceImpl;
+import cn.edu.uestc.platform.service.NodeService;
+import cn.edu.uestc.platform.service.ProjectService;
+import cn.edu.uestc.platform.service.ScenarioService;
+import cn.edu.uestc.platform.service.UserService;
 import cn.edu.uestc.platform.utils.JSoneUtils;
 
 @Controller
 public class ActionController {
-	
-	
+
 	/*
 	 * 用户注册
 	 * 
 	 */
 	@RequestMapping("/register.action")
 	public String userRegister(Model model, User user) {
-		ServiceImpl service = new ServiceImpl();
-		if (service.userRegister(user) == false) {
+		UserService userservice = new UserService();
+		if (userservice.userRegister(user) == false) {
 			System.out.println("用户名已经存在");
 			model.addAttribute("message", "用户名已经存在");
 			return "##跳转到错误信息提示页面";
@@ -35,7 +37,6 @@ public class ActionController {
 
 	}
 
-	
 	/*
 	 * 用户登陆
 	 * 
@@ -43,7 +44,7 @@ public class ActionController {
 	@RequestMapping("/login.action")
 	public String userLogin(Model model, User user, HttpSession session) {
 
-		ServiceImpl service = new ServiceImpl();
+		UserService service = new UserService();
 		// System.out.println(service.userLogin(user));
 
 		if (service.userLogin(user).getU_id() == 0) {
@@ -61,7 +62,6 @@ public class ActionController {
 		return "detailProject";
 	}
 
-	
 	/*
 	 * 新建工程
 	 * 
@@ -73,7 +73,7 @@ public class ActionController {
 		User user = (User) session.getAttribute("user");
 		System.out.println(user);
 		project.setUser_id(user.getU_id());// 将当前用户uid给要创建的工程
-		ServiceImpl service = new ServiceImpl();
+		ProjectService service = new ProjectService();
 		if (service.createProject(project) == true) {
 			System.out.println("创建成功！");
 			return "创建成功!";
@@ -90,21 +90,20 @@ public class ActionController {
 	@RequestMapping("/selectProjectList")
 	@ResponseBody
 	public String selectProjectList(Model model, HttpSession session) {
-		ServiceImpl service = new ServiceImpl();
+		ProjectService service = new ProjectService();
 		User user = (User) session.getAttribute("user");
 		List<Project> projects = service.findAllProjectByUserId(user);
-		//System.out.println(JSoneUtils.ListToJson(projects).toString());
+		// System.out.println(JSoneUtils.ListToJson(projects).toString());
 		return JSoneUtils.ListToJson(projects).toString();
 	}
 
-	
 	/*
 	 * 创建场景
 	 */
 	@RequestMapping("/createScenario")
 	@ResponseBody
-	public String createScenario(Model model, Scenario scenario,int p_id) {
-		ServiceImpl service = new ServiceImpl();
+	public String createScenario(Model model, Scenario scenario, int p_id) {
+		ScenarioService service = new ScenarioService();
 		// 现在假设能从前端拿到场景所属的工程id号。
 		scenario.setProject_id(p_id);
 		if (service.createScenario(scenario) == false) {
@@ -113,46 +112,59 @@ public class ActionController {
 		return "创建成功！！";
 	}
 
-	
 	/*
 	 * 根据工程id 查找所有场景
 	 */
 	@RequestMapping("/selectScenarioList")
 	@ResponseBody
 	public String selectScenarioList(int p_id) {
-		ServiceImpl service = new ServiceImpl();
+		ScenarioService service = new ScenarioService();
 		List<Scenario> scenarios = service.findAllScenarioByProjectId(p_id);
-	//	System.out.println(JSoneUtils.ListToJson(scenarios).toString());
-		System.out.println("已经获取到了场景列表");
-		System.out.println(JSoneUtils.ListToJson(scenarios).toString());
+		// System.out.println(JSoneUtils.ListToJson(scenarios).toString());
+		// System.out.println("已经获取到了场景列表");
+		// System.out.println(JSoneUtils.ListToJson(scenarios).toString());
 		return JSoneUtils.ListToJson(scenarios).toString();
 	}
 
-	
 	/*
 	 * 创建节点,需要底层启动虚拟机，数据库中不但需插入节点数据，相应的场景的节点总数+1,判断完是简单节点还是复杂节点之后对应类型数目+1
+	 * 依赖注入有问题 Node不能直接接受前端发来的消息
 	 */
-	@RequestMapping("/createNode")
+	@RequestMapping("/addNode")
 	@ResponseBody
-	public String createNode(Node node,int s_id){
-		ServiceImpl service = new ServiceImpl();
-		boolean flag = service.createNode(node,s_id);
-		if(flag==true){
+	public String createNode(Node node) {
+		NodeService service = new NodeService();
+		boolean flag = service.createNode(node);
+		if (flag == true) {
 			return "创建节点成功！";
 		}
 		return "创建节点失败！";
 	}
-	
-	
+
 	/*
 	 * 根据场景返回所有节点
 	 */
-	
 	@RequestMapping("/selectNodeList")
 	@ResponseBody
-	public String selectNodeList(int s_id){
-		ServiceImpl service = new ServiceImpl();
+	public String selectNodeList(int s_id) {
+		NodeService service = new NodeService();
 		List<Node> nodes = service.findAllNodeByScenarioId(s_id);
 		return JSoneUtils.ListToJson(nodes).toString();
+	}
+
+	/*
+	 * 修改工程名
+	 */
+	@RequestMapping("/editProject")
+	@ResponseBody
+	public String updateProjectName(Project project, HttpSession session) {
+		ProjectService service = new ProjectService();
+		System.out.println("收到工程" + project);
+		User user = (User) session.getAttribute("user");
+		project.setUser_id(user.getU_id());
+		if (service.updataProjectName(project) == true) {
+			return "修改工程名成功！";
+		}
+		return "工程名已经存在";
 	}
 }

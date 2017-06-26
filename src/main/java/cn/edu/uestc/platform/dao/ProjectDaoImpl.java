@@ -114,4 +114,24 @@ public class ProjectDaoImpl implements ProjectDao {
 		return projects;
 	}
 
+	
+	/*
+	 * 修改工程名
+	 */
+	@Override
+	public void updataProjectName(Project project) {
+		// TODO Auto-generated method stub
+		String sql = " update project set projectName=? where p_id=?;";
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, project.getProjectName());
+			ps.setInt(2, project.getP_id());
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

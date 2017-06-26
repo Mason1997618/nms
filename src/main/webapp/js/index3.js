@@ -1,6 +1,3 @@
-/**
- * Created by 包子 on 2016/8/19.
- */
 //设置canvas画布大小
 var canvas = document.getElementById('canvas');
 var content = document.getElementById('content');
@@ -12,6 +9,11 @@ window.onload = window.onresize = function () {
 var stage = new JTopo.Stage(canvas); // 创建一个舞台对象
 var scene = new JTopo.Scene(stage); // 创建一个场景对象
 
+//显示出工程名和场景名
+$(document).ready(function () {
+    $("#projectName").html($.getUrlParam("projectName"));
+    $("#scenarioName").html($.getUrlParam("scenarioName"));
+});
 /**
  * 右上角的选中状态
  */
@@ -27,24 +29,26 @@ scene.click(function () {
 /**
  * 删除选中元素
  */
-var remove = document.getElementById("remove");
-remove.onclick = function () {
+$("#remove").click = function () {
     var elements = scene.selectedElements;
-    for (var i = 0; i < elements.length; i++) {
-        if (elements[i] instanceof JTopo.Node) {
-            alert("删除一个节点" + elements[i].text);
+    if (elements[0] == undefined){
+        alert("请选中节点后在进行下一步操作");
+    }else {
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i] instanceof JTopo.Node) {
+                alert("删除一个节点" + elements[i].text);
+            }
+            if (elements[i] instanceof JTopo.Link) {
+                alert("删除一个链路" + elements[i].text);
+            }
+            scene.remove(elements[i]);
         }
-        if (elements[i] instanceof JTopo.Link) {
-            alert("删除一个链路" + elements[i].text);
-        }
-        scene.remove(elements[i]);
     }
 };
 
 /**
  * 创建连线
  */
-//连线
 var beginNode = null;
 var endLastNode = null;
 var tempNodeA = new JTopo.Node('tempA');
@@ -55,16 +59,18 @@ tempNodeZ.setSize(1, 1);
 
 var link1 = new JTopo.Link(tempNodeA, tempNodeZ);
 
-//按钮点击事件
+//按钮点击事件，添加
 var addlink01 = document.getElementById("addlink01");
 var link01 = document.getElementById("link01");
-var addlink02 = document.getElementById("addlink02");
-var link02 = document.getElementById("link02");
-var addlink03 = document.getElementById("addlink03");
-var link03 = document.getElementById("link03");
+// var addlink02 = document.getElementById("addlink02");
+// var link02 = document.getElementById("link02");
+// var addlink03 = document.getElementById("addlink03");
+// var link03 = document.getElementById("link03");
+//停止添加
 var addlink04 = document.getElementById("addlink04");
 var link04 = document.getElementById("link04");
-var flag = 0;//1,2,3表示三种链路，4表示停止添加链路--------------------->用于添加链路类型时候的判断
+var flag = 0;
+//1,2,3表示三种链路，4表示停止添加链路--------------------->用于添加链路类型时候的判断
 addlink01.onclick = function () {
     flag = 1;
     link01.style.color = "red";
@@ -72,21 +78,21 @@ addlink01.onclick = function () {
     link03.style.color = "#333";
     link04.style.color = "#333";
 };
-addlink02.onclick = function () {
-    flag = 2;
-    link01.style.color = "#333";
-    link02.style.color = "red";
-    link03.style.color = "#333";
-    link04.style.color = "#333";
-};
-addlink03.onclick = function () {
-    flag = 3;
-    link01.style.color = "#333";
-    link02.style.color = "#333";
-    link03.style.color = "red";
-    link04.style.color = "#333";
-
-};
+// addlink02.onclick = function () {
+//     flag = 2;
+//     link01.style.color = "#333";
+//     link02.style.color = "red";
+//     link03.style.color = "#333";
+//     link04.style.color = "#333";
+// };
+// addlink03.onclick = function () {
+//     flag = 3;
+//     link01.style.color = "#333";
+//     link02.style.color = "#333";
+//     link03.style.color = "red";
+//     link04.style.color = "#333";
+//
+// };
 addlink04.onclick = function () {
     flag = 0;
     link01.style.color = "#333";
@@ -97,7 +103,6 @@ addlink04.onclick = function () {
 };
 
 scene.mouseup(function (e) {
-
     if (e.target != null && e.target instanceof JTopo.Node && flag != 0) {
         if (beginNode == null) {
             beginNode = e.target;
@@ -184,19 +189,24 @@ $("#canvas").droppable({
 
 var weixingName = document.getElementById("nodeName");
 var addNode = document.getElementById("addNode");
-//节点模态框中的提交
+
+//创建节点模态框中的提交
 addNode.onclick = function () {
+    alert($.getUrlParam("scenarioId"));
     //发送执行ajax的请求
     $.ajax({
-        url: 'scenario/addNode',
+        url: '/NetworkSimulation/addNode',
         data: {
             nodeName : $("#nodeName").val(),
-            manageIP : $("#manageIP").val(),
+            manageIp : $("#manageIP").val(),
             nodeType : $("#nodeType").val(),
             hardwareArchitecture : $("#hardwareArchitecture").val(),
             operatingSystem : $("#operatingSystem").val(),
-            nodeConfig : $("#nodeConfig").val(),
-            nodeImage : $("#nodeImage").val()
+            flavorType : $("#nodeConfig").val(),
+            ImageName : $("#nodeImage").val(),
+            s_id : $.getUrlParam("scenarioId")
+//            X : uiOut.offset.left - document.getElementById("slider").offsetWidth,
+//            Y : uiOut.offset.top - 102,
         },
         type: 'post',
         dataType: 'json',
@@ -223,7 +233,7 @@ addNode.onclick = function () {
     $('#myModal').modal('hide');
 };
 
-//节点模态框中的数据
+//链路模态框中的数据
 var fromNodeIP = document.getElementById("fromNodeIP");
 var toNodeIP = document.getElementById("toNodeIP");
 
@@ -232,7 +242,7 @@ var addLink = document.getElementById("addLink");
 addLink.onclick = function () {
     //发送执行ajax的请求
     $.ajax({
-        url: 'scenario/addLink',
+        url: '/NetworkSimulation/addLink',
         data: {
             linkName : $("#linkName").val(),
             linkType : $("#linkType").val(),
@@ -241,7 +251,8 @@ addLink.onclick = function () {
             channelNoise : $("#channelNoise").val(),
             channelDisturbance : $("#channelDisturbance").val(),
             channelType : $("#channelType").val(),
-            linkLenth : $("#linkLenth").val()
+            linkLenth : $("#linkLenth").val(),
+            s_id : $.getUrlParam("scenarioId")
         },
         type: 'post',
         dataType: 'json',
@@ -254,12 +265,10 @@ addLink.onclick = function () {
         }
     });
     //在画布上绘制出链路
-    if (flag == 1) {
-        newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,200,255");
-    } else if (flag == 2) {
+    if ($("#linkType").val() == 0) {//有线链路
+        newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
+    } else if ($("#linkType").val() == 1) {//无线链路
         newLink(beginNode, endLastNode, "链路2", "0,0,0");
-    } else if (flag == 3) {
-        newLink(beginNode, endLastNode, "链路3", "178,34,34");
     }
     beginNode = null;
     scene.remove(link1);
@@ -268,13 +277,12 @@ addLink.onclick = function () {
 };
 
 //打开内部编辑器
-var openInnerEdit = document.getElementById("openInnerEdit");
-openInnerEdit.onclick = function () {
+$("#openInnerEdit").click = function () {
     var elements = scene.selectedElements;
     if (elements[0] == undefined) {
        alert("请选中节点后在进行下一步操作");
     }else{
-        window.open("innerEdit.html#"+ elements[0].text);
+        window.open("innerEdit.html?nodeName="+ elements[0].text);
     }
 };
 
@@ -287,3 +295,13 @@ $("#editNode").click(function () {
         window.open("nodeEdit.html?nodeName=" + elements[0].text);
     }
 });
+
+//解析url参数的函数，包括解码
+(function ($) {
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var url = decodeURI(window.location.search);
+        var r = url.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+})(jQuery);

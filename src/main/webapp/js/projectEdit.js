@@ -81,7 +81,7 @@ function selectP(i) {
         success: function (msg) {
             alert(msg);
             //刷新当前页面
-            window.location.reload();
+            //window.location.reload();
             // opener.location.reload()刷新父窗口对象（用于单开窗口）
         },
         error: function () {
@@ -93,9 +93,9 @@ function selectP(i) {
 //编辑工程属性提交
 $("#editProject").click(function () {
     $.ajax({
-        url: 'project/editProject',
+        url: '/NetworkSimulation/editProject',
         data: {
-            p_id : $.getUrlParam("p_id"),
+            p_id : $.getUrlParam("projectId"),
             projectName : $("#projectName").val()
         },
         type: 'post',
@@ -104,7 +104,7 @@ $("#editProject").click(function () {
         success: function (msg) {
             alert(msg);
             //刷新当前页面
-            window.location.reload();
+            location.href(encodeURI("projectEdit.html?projectId=" + $.getUrlParam("p_id") + "&projectName=" + $("#projectName").val()));
             // opener.location.reload()刷新父窗口对象（用于单开窗口）
         },
         error: function () {
@@ -160,7 +160,7 @@ $("#delScenatio").click(function () {
     });
 });
 
-//解析url参数的函数
+//解析url参数的函数，包括解码
 (function ($) {
     $.getUrlParam = function (name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

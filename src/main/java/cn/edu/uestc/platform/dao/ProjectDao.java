@@ -10,5 +10,7 @@ public interface ProjectDao {
 	public Project findByProjectName(Project project);
 	
 	public boolean insertProject(Project project);
+	
+	public void updataProjectName(Project project);
 
 }

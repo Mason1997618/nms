@@ -165,13 +165,13 @@ function selectC(p) {
 		areaCont += '<li onClick="selectD(' + i + ');"><a href="javascript:void(0)">' + node[i] + '</a></li>';
 	}
 	$("#sort3").html(areaCont).show();
-	$("#sort2 li").eq(c).addClass("active").siblings("li").removeClass("active");
-	expressC = expressP + arrow + city[p][c];
+	$("#sort2 li").eq(p).addClass("active").siblings("li").removeClass("active");
+	expressC = city[p];
 	$("#selectedSort").html(expressC);
 	//打开场景编辑器
     document.getElementById("releaseBtn").onclick =  function () {
         //location.href="index3.html";
-        window.open("index3.html?scenarioId=" + scenarioId[p]);
+        window.open(encodeURI("index3.html?scenarioId=" + scenarioId[p] + "&scenarioName=" + city[p] + "&projectName=" + expressP));
     };
     //删除场景
     $("#delete").click(function () {
@@ -197,12 +197,12 @@ function selectC(p) {
 
 /*选择三级目录*/
 function selectD(p) {
-	$("#sort3 li").eq(d).addClass("active").siblings("li").removeClass("active");
-	expressD = expressC + arrow + node[p];
+	$("#sort3 li").eq(p).addClass("active").siblings("li").removeClass("active");
+	expressD = node[p];
 	$("#selectedSort").html(expressD);
 	//打开节点编辑器
     document.getElementById("releaseBtn").onclick =  function () {
-        window.open("nodeEdit.html?nodeId=" + nodeId[p]);
+        window.open(encodeURI("nodeEdit.html?nodeId=" + nodeId[p]));
     };
     //删除节点
     $("#delete").click(function () {
