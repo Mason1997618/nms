@@ -121,7 +121,7 @@ public class ProjectDaoImpl implements ProjectDao {
 	@Override
 	public void updataProjectName(Project project) {
 		// TODO Auto-generated method stub
-		String sql = " update project set projectName=? where p_id=?;";
+		String sql = " update project set projectName=? where p_id=?";
 		Connection conn;
 		try {
 			conn = DBUtiles.getConnection();

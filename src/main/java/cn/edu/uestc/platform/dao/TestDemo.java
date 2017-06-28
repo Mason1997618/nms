@@ -16,30 +16,6 @@ import cn.edu.uestc.platform.utils.DBUtiles;
 
 public class TestDemo {
 
-	@Test
-	public void demo1() throws SQLException {
-		Connection conn = DBUtiles.getConnection();
-		Statement stmt = conn.createStatement();
-		String sql = "select * from user";
-		ResultSet rs = stmt.executeQuery(sql);
-
-		while (rs.next()) {
-			System.out.println(rs.getInt(1));
-			System.out.println(rs.getString(2));
-		}
-		stmt.close();
-		conn.close();
-	}
-
-	@Test
-	public void demo2() {
-		ScenarioDao sDao = new ScenarioDaoImpl();
-		Scenario scenario = new Scenario();
-		scenario.setScenarioName("scenariotest");
-		scenario.setProject_id(8);
-		System.out.println(sDao.findByScenarioName(scenario));
-
-	}
 
 	@Test
 	public void demo3() {
@@ -53,12 +29,12 @@ public class TestDemo {
 	@Test
 	public void demo4() {
 		ProjectDaoImpl pdao = new ProjectDaoImpl();
-//		User user = new User();
-//		user.setU_id(1);
-//		List<Project> projects = pdao.findAllProjectByUserId(user);
-//		for (Project project : projects) {
-//			System.out.println(project);
-//		}
+		// User user = new User();
+		// user.setU_id(1);
+		// List<Project> projects = pdao.findAllProjectByUserId(user);
+		// for (Project project : projects) {
+		// System.out.println(project);
+		// }
 		Project project = new Project();
 		project.setProjectName("updataname");
 		project.setP_id(1);
@@ -71,32 +47,18 @@ public class TestDemo {
 		System.out.println(scenario.findAllScenarioByProjectId(7));
 	}
 
-	@Test
-	public void demo6() {
-		NodeDao nodeDao = new NodeDaoImpl();
-		Node node = new Node();
-		node.setNodeName("节点1");
-		int s_id = 3;
-//		node.setScenario_id(s_id);
-		nodeDao.insertNode(node);
-		
 
-	}
 	@Test
-	public void demo7(){
-		NodeDao nodeDao = new NodeDaoImpl();
-		for(Node node:nodeDao.findAllNodeByScenarioId(4)){
-			System.out.println(node);
-		}
-	}
-	
-	
-	@Test
-	public void demo8(){
+	public void dem9() {
 		NodeDao dao = new NodeDaoImpl();
-//		dao.plusNumberComplexNode(2);
-		dao.plusNumberSimpleNode(2);
+		// System.out.println(dao.findAllNodeByScenarioId(15));
+		// List<Node> nodes = dao.findAllNodeByScenarioId(15);
+		// for(Node node :nodes){
+		// System.out.println(node);
+		Node node = new Node();
+		node.setManageIp("1.1");
+		
+		System.out.println(dao.isHaveIp(node));
 	}
-	
 	
 }

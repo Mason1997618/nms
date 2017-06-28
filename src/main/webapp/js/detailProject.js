@@ -70,7 +70,7 @@ $(document).ready(function(){
     });
 });
 
-var expressP, expressC, expressD, expressArea, areaCont;
+var expressP, expressC, expressD, expressArea, areaCont, s_id;
 var arrow = " <font>&gt;</font> ";
 
 /*初始化一级目录*/
@@ -167,11 +167,12 @@ function selectC(p) {
 	$("#sort3").html(areaCont).show();
 	$("#sort2 li").eq(p).addClass("active").siblings("li").removeClass("active");
 	expressC = city[p];
+	s_id = scenarioId[p];
 	$("#selectedSort").html(expressC);
 	//打开场景编辑器
     document.getElementById("releaseBtn").onclick =  function () {
         //location.href="index3.html";
-        window.open(encodeURI("index3.html?scenarioId=" + scenarioId[p] + "&scenarioName=" + city[p] + "&projectName=" + expressP));
+        window.open(encodeURI("index3.html?scenarioId=" + s_id + "&scenarioName=" + city[p] + "&projectName=" + expressP));
     };
     //删除场景
     $("#delete").click(function () {
@@ -202,7 +203,7 @@ function selectD(p) {
 	$("#selectedSort").html(expressD);
 	//打开节点编辑器
     document.getElementById("releaseBtn").onclick =  function () {
-        window.open(encodeURI("nodeEdit.html?nodeId=" + nodeId[p]));
+        window.open(encodeURI("nodeEdit.html?nodeName=" + expressD + "&scenarioId=" + s_id));
     };
     //删除节点
     $("#delete").click(function () {

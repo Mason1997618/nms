@@ -36,11 +36,14 @@ public class ServerFactory {
 		ServerCreate sc = Builders.server().name(name).flavor(Constants.NOVA_FLAVOR).image(Constants.GLANCE_IMAGE).availabilityZone(Constants.VM_ZONE)
 				.build();
 		// 添加固定外网端口的IP，用与外部通信ssh进入虚拟机
-//		sc.addNetwork(NetworkUtils.getIdByIp(extIp), extIp);
-//		Server server = os.compute().servers().boot(sc);
-		Server server = os.compute().servers().boot(sc);
+		System.out.println("添加网段前");
 		sc.addNetwork(NetworkUtils.getIdByIp(extIp), extIp);
+		System.out.println("添加网段后");
+		System.out.println("启动节点前");
+		Server server = os.compute().servers().boot(sc);
+		System.out.println("启动节点后");
 		os.compute().servers().action(server.getId(), Action.START);
+		System.out.println("启动成功");
 		// 为这个实例添加浮动ip
 		addFloatingIP(os, server);
 		return server;

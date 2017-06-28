@@ -1,6 +1,16 @@
 /**
  * Created by sjm on 2017/6/8.
  */
+//解析url参数的函数，包括解码
+(function ($) {
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var url = decodeURI(window.location.search);
+        var r = url.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+})(jQuery);
+
 var scenarioList = [];
 var scenarioId = [];
 
@@ -62,6 +72,7 @@ function initScenarioList() {
     $("#selectScenario").html(areaCont);
 }
 
+//选中场景后
 function selectP(i) {
     $("#editScenario").removeAttr("disabled");
     $("#delScenatio").removeAttr("disabled");
@@ -70,23 +81,24 @@ function selectP(i) {
         window.open("index3.html?scenarioId=" + scenarioId[i]);
     });
     //删除场景
-    $.ajax({
-        url: 'project/deleteScenario',
-        data: {
-            scenarioId : scenarioId[i]
-        },
-        type: 'post',
-        dataType: 'json',
-        async: false,
-        success: function (msg) {
-            alert(msg);
-            //刷新当前页面
-            //window.location.reload();
-            // opener.location.reload()刷新父窗口对象（用于单开窗口）
-        },
-        error: function () {
+    $("#delScenatio").click(function () {
+        $.ajax({
+            url: '/NetworkSimulation/deleteScenario',
+            data: {
+                s_id : scenarioId[i]
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+                //刷新当前页面
+                window.location.reload();
+            },
+            error: function () {
 
-        }
+            }
+        });
     });
 }
 
@@ -104,8 +116,7 @@ $("#editProject").click(function () {
         success: function (msg) {
             alert(msg);
             //刷新当前页面
-            location.href(encodeURI("projectEdit.html?projectId=" + $.getUrlParam("p_id") + "&projectName=" + $("#projectName").val()));
-            // opener.location.reload()刷新父窗口对象（用于单开窗口）
+            location.herf = encodeURI("projectEdit.html?projectId=" + $.getUrlParam("projectId") + "&projectName=" + $("#projectName").val());
         },
         error: function () {
 
@@ -126,7 +137,7 @@ $("#addScenario").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-           // alert(msg);
+            alert(msg);
             //刷新当前页面
             window.location.reload();
             // opener.location.reload()刷新父窗口对象（用于单开窗口）
@@ -159,13 +170,3 @@ $("#delScenatio").click(function () {
         }
     });
 });
-
-//解析url参数的函数，包括解码
-(function ($) {
-    $.getUrlParam = function (name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var url = decodeURI(window.location.search);
-        var r = url.substr(1).match(reg);
-        if (r != null) return unescape(r[2]); return null;
-    }
-})(jQuery);

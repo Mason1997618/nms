@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.uestc.platform.pojo.Node;
-import cn.edu.uestc.platform.pojo.Project;
-import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
 public class NodeDaoImpl implements NodeDao {
@@ -43,7 +41,8 @@ public class NodeDaoImpl implements NodeDao {
 	public void insertNode(Node node) {
 		// TODO Auto-generated method stub
 		String sql = "insert into node(nodeName,manageIp,nodeType,hardwareArchitecture,"
-				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn;
 		try {
 			conn = DBUtiles.getConnection();
@@ -59,8 +58,8 @@ public class NodeDaoImpl implements NodeDao {
 			ps.setString(9, node.getImageName());
 			ps.setInt(10, node.getNodeStatus());
 			ps.setInt(11, node.getS_id());
-			ps.setInt(12, 0);
-			ps.setInt(13, 0);
+			ps.setFloat(12, node.getX());
+			ps.setFloat(13, node.getY());
 			ps.setString(14, node.getFlavorType());
 			ps.execute();
 		} catch (SQLException e) {
@@ -94,11 +93,12 @@ public class NodeDaoImpl implements NodeDao {
 				node.setNumberPort(rs.getInt(7));
 				node.setNumberInternalModule(rs.getInt(8));
 				node.setNumberInternalLink(rs.getInt(9));
-//				node.setImagePath(rs.getString(10));
+				node.setImageName(rs.getString(10));
 				node.setNodeStatus(rs.getInt(11));
 				node.setS_id(rs.getInt(12));
-//				node.setX(rs.getInt(13));
-//				node.setY(rs.getInt(14));
+				node.setX(rs.getFloat(13));
+				node.setY(rs.getFloat(14));
+				node.setFlavorType(rs.getString(15));
 				nodes.add(node);
 			}
 
@@ -127,7 +127,6 @@ public class NodeDaoImpl implements NodeDao {
 		}
 	}
 
-	
 	/*
 	 * 总节点数和复杂节点数+1
 	 */
@@ -147,4 +146,126 @@ public class NodeDaoImpl implements NodeDao {
 		}
 	}
 
+	/*
+	 * 根据节点id查找节点
+	 */
+	@Override
+	public Node getNodeByNodeId(int n_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from node where n_id = ?";
+		Node node = new Node();
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, n_id);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				node.setN_id(rs.getInt(1));
+				node.setNodeName(rs.getString(2));
+				node.setManageIp(rs.getString(3));
+				node.setNodeType(rs.getInt(4));
+				node.setHardwareArchitecture(rs.getInt(5));
+				node.setOperatingSystem(rs.getInt(6));
+				node.setNumberPort(rs.getInt(7));
+				node.setNumberInternalModule(rs.getInt(8));
+				node.setNumberInternalLink(rs.getInt(9));
+				node.setImageName(rs.getString(10));
+				node.setNodeStatus(rs.getInt(11));
+				node.setS_id(rs.getInt(12));
+				node.setX(rs.getFloat(13));
+				node.setY(rs.getFloat(14));
+				node.setFlavorType(rs.getString(15));
+			}
+		} catch (SQLException e) {
+
+		}
+		return node;
+	}
+
+	/*
+	 * 根据节点nodeName和s_id拿节点
+	 */
+	@Override
+	public Node getNodeBynodeName(String nodeName, int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from node where scenario_id = ? and nodeName = ?";
+		Node node = new Node();
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.setString(2, nodeName);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				node.setN_id(rs.getInt(1));
+				node.setNodeName(rs.getString(2));
+				node.setManageIp(rs.getString(3));
+				node.setNodeType(rs.getInt(4));
+				node.setHardwareArchitecture(rs.getInt(5));
+				node.setOperatingSystem(rs.getInt(6));
+				node.setNumberPort(rs.getInt(7));
+				node.setNumberInternalModule(rs.getInt(8));
+				node.setNumberInternalLink(rs.getInt(9));
+				node.setImageName(rs.getString(10));
+				node.setNodeStatus(rs.getInt(11));
+				node.setS_id(rs.getInt(12));
+				node.setX(rs.getFloat(13));
+				node.setY(rs.getFloat(14));
+				node.setFlavorType(rs.getString(15));
+			}
+		} catch (SQLException e) {
+
+		}
+		return node;
+	}
+
+	/*
+	 * ip是否冲突
+	 */
+	@Override
+	public boolean isHaveIp(Node node) {
+		// TODO Auto-generated method stub
+		String sql = "select *from node where manageIp = ?";
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, node.getManageIp());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() == false) {
+				return false;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/*
+	 * update节点属性
+	 */
+
+	public boolean updataNode(Node node) {
+		String sql = " update node set nodeName=?,manageIp=?,flavorType=? where n_id=?";
+		Connection conn;
+		boolean flag=false;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, node.getNodeName());
+			ps.setString(2, node.getManageIp());
+			ps.setString(3, node.getFlavorType());
+			ps.setInt(4, node.getN_id());
+			flag = ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return flag;
+	}
+		
 }

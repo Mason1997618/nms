@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import cn.edu.uestc.platform.pojo.Node;
+import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
@@ -127,7 +128,8 @@ public class ActionController {
 	}
 
 	/*
-	 * 创建节点,需要底层启动虚拟机，数据库中不但需插入节点数据，相应的场景的节点总数+1,判断完是简单节点还是复杂节点之后对应类型数目+1
+	 * 创建节点
+	 * 需要底层启动虚拟机，数据库中不但需插入节点数据，相应的场景的节点总数+1,判断完是简单节点还是复杂节点之后对应类型数目+1
 	 * 依赖注入有问题 Node不能直接接受前端发来的消息
 	 */
 	@RequestMapping("/addNode")
@@ -142,6 +144,30 @@ public class ActionController {
 	}
 
 	/*
+	 * 根据节点id返回节点
+	 */
+	@RequestMapping("/getNodeByn_id")
+	public String getNode(int n_id) {
+		NodeService service = new NodeService();
+		Node node = service.getNode(n_id);
+		System.out.println(JSoneUtils.ObjToJson(node).toString());
+		return JSoneUtils.ObjToJson(node).toString();
+	}
+
+	/*
+	 * 根据节点名nodeName和场景s_id查找节点
+	 */
+	@RequestMapping("/getNodeBynodeName")
+	@ResponseBody
+	public String getNodeBynodeName(String nodeName, int s_id) {
+		NodeService service = new NodeService();
+		System.out.println(s_id + "-----" + nodeName);
+		Node node = service.getNodeBynodeName(nodeName, s_id);
+		System.out.println(JSoneUtils.ObjToJson(node).toString());
+		return JSoneUtils.ObjToJson(node).toString();
+	}
+
+	/*
 	 * 根据场景返回所有节点
 	 */
 	@RequestMapping("/selectNodeList")
@@ -149,11 +175,12 @@ public class ActionController {
 	public String selectNodeList(int s_id) {
 		NodeService service = new NodeService();
 		List<Node> nodes = service.findAllNodeByScenarioId(s_id);
+		System.out.println(JSoneUtils.ListToJson(nodes).toString());
 		return JSoneUtils.ListToJson(nodes).toString();
 	}
 
 	/*
-	 * 修改工程名
+	 * 编辑工程名
 	 */
 	@RequestMapping("/editProject")
 	@ResponseBody
@@ -166,5 +193,31 @@ public class ActionController {
 			return "修改工程名成功！";
 		}
 		return "工程名已经存在";
+	}
+	
+	/*
+	 * 编辑节点名
+	 */
+	
+	@RequestMapping("/editNode")
+	@ResponseBody
+	public String editNode(Node node){
+		NodeService service = new NodeService();
+		boolean flag = service.editNode(node);
+		if(flag==true){
+			return "修改成功！";
+		}
+		return "修改失败！";
+	}
+	
+	/*
+	 * 新建网口
+	 */
+	@RequestMapping("")
+	@ResponseBody
+	public String createPort(Port port,int n_id){
+		
+		
+		return null;
 	}
 }

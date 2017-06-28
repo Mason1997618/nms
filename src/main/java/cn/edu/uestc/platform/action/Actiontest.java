@@ -1,5 +1,16 @@
 package cn.edu.uestc.platform.action;
 
+import java.util.List;
+
+import org.junit.Test;
+import org.openstack4j.api.OSClient.OSClientV3;
+import org.openstack4j.model.network.Subnet;
+
+import cn.edu.uestc.platform.controller.LinkController;
+import cn.edu.uestc.platform.controller.NodeController;
+import cn.edu.uestc.platform.factory.OSClientFactory;
+import cn.edu.uestc.platform.utils.Constants;
+
 //import java.util.ArrayList;
 //import java.util.List;
 //
@@ -17,39 +28,14 @@ package cn.edu.uestc.platform.action;
 //@Controller
 public class Actiontest {
 
-//	// @RequestMapping("/login.action")
-//	// public String login(Model model, User user) {
-//	//
-//	// System.out.println(user);
-//	// model.addAttribute("message", "用户名或者密码错误!");
-//	//
-//	// return "login.jsp";
-//	//
-//	// }
-//
-//	@Test
-//	public void demo1() {
-//		User user = new User();
-//		user.setU_id(1);
-//		ServiceImpl service = new ServiceImpl();
-//		List<Project> projects = service.findAllProjectByUserId(user);
-//		System.out.println(JSoneUtils.ListToJson(projects).toString());
-//
-//	}
-//
-//	@Test
-//	public void demo2() {
-//		ServiceImpl service = new ServiceImpl();
-//		// System.out.println(service.userLogin(user));
-//		User user = new User();
-//		user.setUsername("woyuno");
-//		user.setPsw("dfas");
-//		System.out.println(service.userLogin(user));
-//		if (service.userLogin(user) == null) {
-//			System.out.println("用户未注册");
-//		}
-//		System.out.println("-----------");
-//		
-//	}
+	@Test
+	public void demo1() {
 
+//		NodeController controller = new NodeController();
+//		controller.createNode("zktest3", "192.168.10.33", "vm");
+		OSClientV3 os = OSClientFactory.authenticate("zph", "123456", Constants.ZPH_PROJECT_ID);
+		LinkController link = new LinkController();
+		link.createLinkMTM("zktest2", "192.168.7.6", "zktest3", "192.168.7.7");
+		
+	}
 }
