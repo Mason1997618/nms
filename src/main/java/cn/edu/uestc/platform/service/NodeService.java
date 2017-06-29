@@ -10,6 +10,7 @@ import cn.edu.uestc.platform.dao.NodeDaoImpl;
 import cn.edu.uestc.platform.pojo.Node;
 
 public class NodeService {
+	
 	/*
 	 * 查找当前场景下的所有节点
 	 */
@@ -56,12 +57,18 @@ public class NodeService {
 		controller.createNode("tianyu123", "192.168.8.321", "vm");
 	}
 
+	/*
+	 * 根据n_id查节点
+	 */
 	public Node getNode(int n_id) {
 		// TODO Auto-generated method stub
 		NodeDao dao = new NodeDaoImpl();
 		return dao.getNodeByNodeId(n_id);
 	}
 
+	/*
+	 * 根据节点名和s_id查节点
+	 */
 	public Node getNodeBynodeName(String nodeName, int s_id) {
 		// TODO Auto-generated method stub
 		NodeDao dao = new NodeDaoImpl();
@@ -69,10 +76,33 @@ public class NodeService {
 	}
 
 
+	/*
+	 * 编辑节点
+	 */
 	public boolean editNode(Node node) {
 		// TODO Auto-generated method stub
 		NodeDao dao = new NodeDaoImpl();
 		//boolean flag = dao.updataNode();
-		return false;
+		if(dao.isHaveIp(node)||dao.haveNodeName(node)){ //ip或者nodeName其中一个为true则冲突，返回false
+			System.out.println("~~~~~~~~~~~~");
+			return false;
+		}
+		dao.updataNode(node);
+		return true;
+	}
+	
+	@Test
+	public void  demo2(){
+		NodeService service = new NodeService();
+		NodeDao dao = new NodeDaoImpl();
+		Node node = new Node();
+		node.setN_id(19);
+		node.setNodeName("编辑节点12");
+		node.setManageIp("2.3.4.6");
+		node.setFlavorType("big");
+		node.setS_id(15);
+		System.out.println(dao.haveNodeName(node));//false
+		System.out.println(dao.isHaveIp(node));//false
+		System.out.println(service.editNode(node));
 	}
 }

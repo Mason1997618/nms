@@ -15,4 +15,5 @@ public interface NodeDao {
 	public Node getNodeByNodeId(int n_id);
 	public Node getNodeBynodeName(String nodeName, int s_id);
 	public boolean isHaveIp(Node node);
+	public boolean updataNode(Node node);
 }

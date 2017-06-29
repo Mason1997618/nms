@@ -16,7 +16,6 @@ import cn.edu.uestc.platform.utils.DBUtiles;
 
 public class TestDemo {
 
-
 	@Test
 	public void demo3() {
 		UserDao userdao = new UserDaoImpl();
@@ -47,18 +46,15 @@ public class TestDemo {
 		System.out.println(scenario.findAllScenarioByProjectId(7));
 	}
 
-
 	@Test
 	public void dem9() {
 		NodeDao dao = new NodeDaoImpl();
-		// System.out.println(dao.findAllNodeByScenarioId(15));
-		// List<Node> nodes = dao.findAllNodeByScenarioId(15);
-		// for(Node node :nodes){
-		// System.out.println(node);
 		Node node = new Node();
-		node.setManageIp("1.1");
-		
+		node.setManageIp("1.1.1.1");
 		System.out.println(dao.isHaveIp(node));
+		node.setNodeName("编辑节点12");
+		node.setS_id(15);
+		System.out.println(dao.haveNodeName(node));
 	}
-	
+
 }

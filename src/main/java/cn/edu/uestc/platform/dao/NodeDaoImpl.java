@@ -13,7 +13,7 @@ import cn.edu.uestc.platform.utils.DBUtiles;
 public class NodeDaoImpl implements NodeDao {
 
 	/*
-	 * 判断节点存在否,当前场景下的节点名不能重复，需要传入当前场景s_id和节点名
+	 * 判断节点存在否,当前场景下的节点名不能重复
 	 */
 
 	public boolean haveNodeName(Node node) {
@@ -245,10 +245,10 @@ public class NodeDaoImpl implements NodeDao {
 		return true;
 	}
 
+	
 	/*
 	 * update节点属性
 	 */
-
 	public boolean updataNode(Node node) {
 		String sql = " update node set nodeName=?,manageIp=?,flavorType=? where n_id=?";
 		Connection conn;

@@ -163,12 +163,13 @@ $("#editNode").click(function () {
         data: {
             nodeName : $("#nodeName").val(),
             n_id : $("#nodeId").val(),
-            manageIP : $("#manageIP").val(),
+            manageIp : $("#manageIP").val(),
             nodeType : $("#nodeType").val(),
             hardwareArchitecture : $("#hardwareArchitecture").val(),
             operatingSystem : $("#operatingSystem").val(),
             nodeConfig : $("#nodeConfig").val(),
-            nodeImage : $("#nodeImage").val()
+            nodeImage : $("#nodeImage").val(),
+            s_id : $.getUrlParam("scenarioId")
         },
         type: 'post',
         dataType: 'json',
@@ -176,6 +177,7 @@ $("#editNode").click(function () {
         success: function (msg) {
             alert(msg);
             //刷新当前页面
+            alert(encodeURI("nodeEdit.html?nodeName=" + $("#nodeName").val() + "&scenarioId=" + $.getUrlParam("scenarioId")));
             location.herf = encodeURI("nodeEdit.html?nodeName=" + $("#nodeName").val() + "&scenarioId=" + $.getUrlParam("scenarioId"));
         },
         error: function () {

@@ -211,11 +211,11 @@ public class ActionController {
 	}
 	
 	/*
-	 * 新建网口
+	 * 新建端口
 	 */
 	@RequestMapping("")
 	@ResponseBody
-	public String createPort(Port port,int n_id){
+	public String createPort(Port port){
 		
 		
 		return null;
