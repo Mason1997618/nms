@@ -29,13 +29,23 @@ import cn.edu.uestc.platform.utils.Constants;
 public class Actiontest {
 
 	@Test
-	public void demo1() {
+	public void linkTest() {
+		LinkController controller = new LinkController();
 
-//		NodeController controller = new NodeController();
-//		controller.createNode("zktest3", "192.168.10.33", "vm");
-		OSClientV3 os = OSClientFactory.authenticate("zph", "123456", Constants.ZPH_PROJECT_ID);
-		LinkController link = new LinkController();
-		link.createLinkMTM("zktest2", "192.168.7.6", "zktest3", "192.168.7.7");
+		controller.createLinkMTM("可以哟", "192.168.8.6", "nodeTest2", "192.168.8.7");
+	}
+
+	@Test
+	public void NodeTest(){
+		NodeController controller = new NodeController();
+		controller.createNode("nodeTest1", "192.168.10.4", "vm");
+		controller.createNode("nodeTest2", "192.168.10.5", "vm");
+//		
+//LinkController controller = new LinkController();
+//		
+//		controller.createLinkMTM(nodeTest1, 192.168.10.2, toNode, toNodeIP);
+
 		
+	
 	}
 }

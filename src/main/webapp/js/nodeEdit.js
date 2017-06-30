@@ -39,8 +39,7 @@ $(document).ready(function () {
     $.ajax({
         url: '/NetworkSimulation/getPortList',
         data: {
-            nodeName : $.getUrlParam("nodeName"),
-            s_id : $.getUrlParam("scenarioId")
+            n_id : $("#nodeId").val()
         },
         type: 'post',
         dataType: 'json',
@@ -127,9 +126,10 @@ $("#submitPort").click(function () {
     $.ajax({
         url: '/NetworkSimulation/addPort',
         data: {
+            n_id : $("#nodeId").val(),
             portName : $("#portName").val(),
             portType : $("#portType").val(),
-            portIP : $("#portIP").val(),
+            // portIP : $("#portIP").val(),
             antennaType : $("#antennaType").val(),
             antennaGain : $("#antennaGain").val(),
             txPower : $("#txPower").val(),
@@ -143,7 +143,7 @@ $("#submitPort").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+//            alert(msg);
         },
         error: function () {
 
@@ -177,7 +177,6 @@ $("#editNode").click(function () {
         success: function (msg) {
             alert(msg);
             //刷新当前页面
-            alert(encodeURI("nodeEdit.html?nodeName=" + $("#nodeName").val() + "&scenarioId=" + $.getUrlParam("scenarioId")));
             location.herf = encodeURI("nodeEdit.html?nodeName=" + $("#nodeName").val() + "&scenarioId=" + $.getUrlParam("scenarioId"));
         },
         error: function () {

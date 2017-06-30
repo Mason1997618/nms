@@ -8,14 +8,22 @@ public class Port {
 	private int portStatus;
 	private int modulationScheme;
 	private int channelCodingScheme;
-	private int node_id;
+	private int n_id;
 	private String portName;
-	private String portIP;
 	private double antennaGain;
 	private double txPower;
 	private double frequencyBandwidth;
 	private double txBitRate;
 	private double txPacketLoss;
+	private String portIp;
+	public String getPortIp() {
+		return portIp;
+	}
+
+	public void setPortIp(String portIp) {
+		this.portIp = portIp;
+	}
+
 	//因为一个port只对应一条链路，所以这里存的是链路对象而不是链路集合。
 	private Link link;
 
@@ -75,12 +83,14 @@ public class Port {
 		this.channelCodingScheme = channelCodingScheme;
 	}
 
-	public int getNode_id() {
-		return node_id;
+	
+
+	public int getN_id() {
+		return n_id;
 	}
 
-	public void setNode_id(int node_id) {
-		this.node_id = node_id;
+	public void setN_id(int n_id) {
+		this.n_id = n_id;
 	}
 
 	public String getPortName() {
@@ -89,14 +99,6 @@ public class Port {
 
 	public void setPortName(String portName) {
 		this.portName = portName;
-	}
-
-	public String getPortIP() {
-		return portIP;
-	}
-
-	public void setPortIP(String portIP) {
-		this.portIP = portIP;
 	}
 
 	public double getAntennaGain() {
@@ -143,9 +145,12 @@ public class Port {
 	public String toString() {
 		return "Port [pt_id=" + pt_id + ", antennaType=" + antennaType + ", portType=" + portType + ", portStatus="
 				+ portStatus + ", modulationScheme=" + modulationScheme + ", channelCodingScheme=" + channelCodingScheme
-				+ ", node_id=" + node_id + ", portName=" + portName + ", portIP=" + portIP + ", antennaGain="
-				+ antennaGain + ", txPower=" + txPower + ", frequencyBandwidth=" + frequencyBandwidth + ", txBitRate="
-				+ txBitRate + ", txPacketLoss=" + txPacketLoss + ", link=" + link + "]";
+				+ ", node_id=" + n_id + ", portName=" + portName + ", antennaGain=" + antennaGain + ", txPower="
+				+ txPower + ", frequencyBandwidth=" + frequencyBandwidth + ", txBitRate=" + txBitRate
+				+ ", txPacketLoss=" + txPacketLoss + ", portIp=" + portIp + ", link=" + link + "]";
 	}
 
+	
+
+	
 }

@@ -12,6 +12,7 @@ import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
 import cn.edu.uestc.platform.service.NodeService;
+import cn.edu.uestc.platform.service.PortService;
 import cn.edu.uestc.platform.service.ProjectService;
 import cn.edu.uestc.platform.service.ScenarioService;
 import cn.edu.uestc.platform.service.UserService;
@@ -213,11 +214,30 @@ public class ActionController {
 	/*
 	 * 新建端口
 	 */
-	@RequestMapping("")
+	@RequestMapping("/addPort")
 	@ResponseBody
 	public String createPort(Port port){
-		
-		
-		return null;
+		PortService service = new PortService();
+//		System.out.println(n_id);
+		boolean flag = service.createPort(port);
+		return "创建成功";
 	}
+	
+	
+	/*
+	 * 获取端口列表
+	 */
+	@RequestMapping("/getPortList")
+	@ResponseBody
+	public String getPortList(int n_id){
+		PortService service = new PortService();
+		List<Port> ports = service.getPortList(n_id);
+		return JSoneUtils.ListToJson(ports).toString();
+	}
+	
+	/*
+	 * 创建链路
+	 */
+	
+	
 }

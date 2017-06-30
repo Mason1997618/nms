@@ -19,7 +19,7 @@ $("#editPort").click(function () {
             portName : $("#portName").val(),
             p_id : $("#portId").val(),
             portType : $("#portType").val(),
-            portIp : $("#portIp").val(),
+            // portIP : $("#portIp").val(),
             antennaType : $("#antennaType").val(),
             antennaGain : $("#antennaGain").val(),
             transmittingPower : $("#transmittingPower").val(),
@@ -69,7 +69,7 @@ function initPortAttr(data) {
     $("#portName").val(objs[0].portName);
     $("#portId").val(objs[0].p_id);
     $("#portType").val(objs[0].portType);
-    $("#portIp").val(objs[0].portIp);
+    // $("#portIP").val(objs[0].portIP);
     $("#antennaType").val(objs[0].antennaType);
     $("#antennaGain").val(objs[0].antennaGain);
     $("#transmittingPower").val(objs[0].transmittingPower);

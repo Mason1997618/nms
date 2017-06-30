@@ -30,10 +30,13 @@ public class ScenarioDaoImpl implements ScenarioDao {
 		return true;
 	}
 
+	/*
+	 * 插入场景
+	 */
 	@Override
 	public boolean insertScenario(Scenario scenario) {
 
-		String sql = "insert into scenario(scenarioName,scenarioType,project_id)values(?,?,?)";
+		String sql = "insert into scenario(scenarioName,scenarioType,project_id,numberNode,numberSimpleNode,numberComplexNode)values(?,?,?,?,?,?)";
 		Connection conn;
 		try {
 			conn = DBUtiles.getConnection();
@@ -41,6 +44,9 @@ public class ScenarioDaoImpl implements ScenarioDao {
 			ps.setString(1, scenario.getScenarioName());
 			ps.setInt(2, scenario.getScenarioType());
 			ps.setInt(3, scenario.getProject_id());
+			ps.setInt(4, scenario.getNumberNode());
+			ps.setInt(5, scenario.getNumberSimpleNode());
+			ps.setInt(6, scenario.getNumberComplexNode());
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -145,6 +145,22 @@ public class NodeDaoImpl implements NodeDao {
 			e.printStackTrace();
 		}
 	}
+	/*
+	 * 节点的端口数+1
+	 */
+	
+	public void plusNumberPort(int n_id){
+		String sql = "update node set numberPort = numberPort + 1 where n_id = ?";
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, n_id);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/*
 	 * 根据节点id查找节点

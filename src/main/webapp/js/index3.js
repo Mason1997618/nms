@@ -1,3 +1,13 @@
+//解析url参数的函数，包括解码
+(function ($) {
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var url = decodeURI(window.location.search);
+        var r = url.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+})(jQuery);
+
 //设置canvas画布大小
 var canvas = document.getElementById('canvas');
 var content = document.getElementById('content');
@@ -108,18 +118,44 @@ scene.mouseup(function (e) {
             tempNodeZ.setLocation(e.x, e.y);
         } else if (beginNode !== e.target) {
             endLastNode = e.target;
-            // var endNode = e.target;
             //首先弹出模态框
             $("#linkModal").modal();
-            // if (flag == 1) {
-            //     newLink(beginNode, endNode, "链路1", "0,200,255");
-            // } else if (flag == 2) {
-            //     newLink(beginNode, endNode, "链路2", "0,0,0");
-            // } else if (flag == 3) {
-            //     newLink(beginNode, endNode, "链路3", "178,34,34");
-            // }
-            // beginNode = null;
-            // scene.remove(link1);
+            //发送ajax查询from端口
+            $.ajax({
+                url: '/NetworkSimulation/getFromPortList',
+                data: {
+                    nodeName: beginNode.text,
+                    s_id : $.getUrlParam("scenarioId")
+                },
+                type: 'post',
+                dataType: 'json',
+                async: false,
+                success: function (msg) {
+                    alert(msg);
+                    initFromPortList(msg);
+                },
+                error: function () {
+
+                }
+            });
+            //发送ajax查询to端口
+            $.ajax({
+                url: '/NetworkSimulation/getToPortList',
+                data: {
+                    nodeName: endLastNode.text,
+                    s_id : $.getUrlParam("scenarioId")
+                },
+                type: 'post',
+                dataType: 'json',
+                async: false,
+                success: function (msg) {
+                    alert(msg);
+                    initToPortList(msg);
+                },
+                error: function () {
+
+                }
+            });
         } else {
             beginNode = null;
         }
@@ -128,11 +164,48 @@ scene.mouseup(function (e) {
     }
 });
 
+var fromPortList = [];
+var fromPortId = [];
+//初始化from端口下拉框
+function initFromPortList(data) {
+    fromPortList = [];
+    fromPortId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        fromPortList[i] = objs[i].portName;
+        fromPortId[i] = objs[i].pt_id;
+    }
+    areaCont = "";
+    for (var i = 0; i < fromPortList.length; i++){
+        areaCont += '<option value="' + fromPortId[i] + '">' + fromPortList[i] + '</option>';
+    }
+    $("#fromPort").html(areaCont);
+}
+
+var toPortList = [];
+var toPortId = [];
+//初始化to端口下拉框
+function initToPortList(data) {
+    toPortList = [];
+    toPortId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        toPortList[i] = objs[i].portName;
+        toPortId[i] = objs[i].pt_id;
+    }
+    areaCont = "";
+    for (var i = 0; i < toPortList.length; i++){
+        areaCont += '<option value="' + toPortId[i] + '">' + toPortList[i] + '</option>';
+    }
+    $("#toPort").html(areaCont);
+}
+
 scene.mousedown(function (e) {
     if (e.target == null || e.target === beginNode || e.target === link1) {
         scene.remove(link1);
     }
 });
+
 scene.mousemove(function (e) {
     tempNodeZ.setLocation(e.x, e.y);
 });
@@ -187,7 +260,6 @@ $("#canvas").droppable({
 var weixingName = document.getElementById("nodeName");
 //创建节点模态框中的提交
 $("#addNode").click(function () {
-    //alert($.getUrlParam("scenarioId"));
     //发送执行ajax的请求
     $.ajax({
         url: '/NetworkSimulation/addNode',
@@ -242,6 +314,7 @@ $("#addLink").click(function () {
             linkType : $("#linkType").val(),
             fromNodeIP : $("#fromNodeIP").val(),
             toNodeIP : $("#toNodeIP").val(),
+
             channelNoise : $("#channelNoise").val(),
             channelDisturbance : $("#channelDisturbance").val(),
             channelType : $("#channelType").val(),
@@ -289,13 +362,3 @@ $("#editNode").click(function () {
         window.open(encodeURI("nodeEdit.html?nodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
 });
-
-//解析url参数的函数，包括解码
-(function ($) {
-    $.getUrlParam = function (name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var url = decodeURI(window.location.search);
-        var r = url.substr(1).match(reg);
-        if (r != null) return unescape(r[2]); return null;
-    }
-})(jQuery);
