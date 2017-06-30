@@ -19,10 +19,31 @@ window.onload = window.onresize = function () {
 var stage = new JTopo.Stage(canvas); // 创建一个舞台对象
 var scene = new JTopo.Scene(stage); // 创建一个场景对象
 
-//显示出工程名和场景名
+//预读
 $(document).ready(function () {
+    //显示工程名和场景名
     $("#projectName").html($.getUrlParam("projectName"));
     $("#scenarioName").html($.getUrlParam("scenarioName"));
+    //画出已有节点
+    $.ajax({
+        url: '/NetworkSimulation/selectNodeList',
+        data: {
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++){
+                //数据库中未存节点图片，此处还应有判断来判断出节点应是哪个图片。。。气人
+                createNode(objs[i].nodeName, objs[i].x, objs[i].y, "img/gaogui00.png");
+            }
+        },
+        error: function () {
+
+        }
+    });
 });
 /**
  * 右上角的选中状态
@@ -122,7 +143,7 @@ scene.mouseup(function (e) {
             $("#linkModal").modal();
             //发送ajax查询from端口
             $.ajax({
-                url: '/NetworkSimulation/getFromPortList',
+                url: '/NetworkSimulation/getPortList',
                 data: {
                     nodeName: beginNode.text,
                     s_id : $.getUrlParam("scenarioId")
@@ -140,7 +161,7 @@ scene.mouseup(function (e) {
             });
             //发送ajax查询to端口
             $.ajax({
-                url: '/NetworkSimulation/getToPortList',
+                url: '/NetworkSimulation/getPortList',
                 data: {
                     nodeName: endLastNode.text,
                     s_id : $.getUrlParam("scenarioId")

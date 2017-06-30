@@ -6,11 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
+import cn.edu.uestc.platform.service.LinkService;
 import cn.edu.uestc.platform.service.NodeService;
 import cn.edu.uestc.platform.service.PortService;
 import cn.edu.uestc.platform.service.ProjectService;
@@ -238,6 +241,14 @@ public class ActionController {
 	/*
 	 * 创建链路
 	 */
+	@RequestMapping("/addLink")
+	@ResponseBody
+	public String createLink(Link link,String fromIp,String toIp){
+		LinkService linkService = new LinkService();
+		PortService portService = new PortService();
+		linkService.createLink(link);
+		return null;
+	}
 	
 	
 }
