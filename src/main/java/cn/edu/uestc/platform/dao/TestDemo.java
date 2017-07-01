@@ -1,19 +1,12 @@
 package cn.edu.uestc.platform.dao;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
-
 import org.junit.Test;
-
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
-import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
-import cn.edu.uestc.platform.utils.DBUtiles;
 
 public class TestDemo {
 
@@ -29,12 +22,6 @@ public class TestDemo {
 	@Test
 	public void demo4() {
 		ProjectDaoImpl pdao = new ProjectDaoImpl();
-		// User user = new User();
-		// user.setU_id(1);
-		// List<Project> projects = pdao.findAllProjectByUserId(user);
-		// for (Project project : projects) {
-		// System.out.println(project);
-		// }
 		Project project = new Project();
 		project.setProjectName("updataname");
 		project.setP_id(1);
@@ -56,10 +43,9 @@ public class TestDemo {
 	@Test
 	public void demo10(){
 		PortDao dao = new PortDaoImpl();
-		List<Port> ports = dao.getPortList(1);
+		List<Port> ports = dao.getPortListBynodeName(20, "test5");
 		for(Port p :ports){
 			System.out.println(p);
 		}
 	}
-
 }

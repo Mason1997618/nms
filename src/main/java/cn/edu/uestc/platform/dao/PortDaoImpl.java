@@ -83,4 +83,65 @@ public class PortDaoImpl implements PortDao {
 		}
 		return ports;
 	}
+
+
+	/*
+	 * 根据场景s_id和节点名查询到节点所包含的port
+	 */
+	@Override
+	public List<Port> getPortListBynodeName(int s_id, String nodeName) {
+		// TODO Auto-generated method stub
+		String sql = "select *from port as p join (select *from node as n where n.nodeName=? "
+				+ "and n.scenario_id = ?) as n on p.node_id=n.n_id;";
+		Connection conn;
+		List<Port> ports=new ArrayList<Port>();
+		try {
+			conn=DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, nodeName);
+			ps.setInt(2, s_id);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				Port port = new Port();
+				port.setPt_id(rs.getInt(1));
+				port.setPortName(rs.getString(2));
+				port.setAntennaType(rs.getInt(3));
+				port.setPortType(rs.getInt(4));
+				port.setPortStatus(rs.getInt(5));
+				port.setAntennaGain(rs.getDouble(6));
+				port.setTxPower(rs.getDouble(7));
+				port.setModulationScheme(rs.getInt(8));
+				port.setChannelCodingScheme(rs.getInt(9));
+				port.setFrequencyBandwidth(rs.getDouble(10));
+				port.setTxBitRate(rs.getDouble(11));
+				port.setTxPacketLoss(rs.getDouble(12));
+				port.setN_id(rs.getInt(13));
+				port.setPortIp(rs.getString(14));
+				ports.add(port);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ports;
+	}
+
+
+	@Override
+	public void updatePortIP(int Port_id, String IP) {
+		// TODO Auto-generated method stub
+		String sql = "update port as p set p.portIP = ? where p.pt_id=?";
+		Connection conn;
+		try {
+			conn = DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, IP);
+			ps.setInt(2, Port_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

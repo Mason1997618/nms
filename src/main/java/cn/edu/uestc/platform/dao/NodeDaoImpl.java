@@ -283,5 +283,41 @@ public class NodeDaoImpl implements NodeDao {
 		}
 		return flag;
 	}
+
+	@Override
+	public Node getNodeByPortId(int txPort_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from node as n join (select *from port as p where p.pt_id=?) as p"
+				+ " where n.n_id=p.node_id";
+		Connection conn;
+		Node node = new Node();
+		try {
+			conn= DBUtiles.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, txPort_id);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				node.setN_id(rs.getInt(1));
+				node.setNodeName(rs.getString(2));
+				node.setManageIp(rs.getString(3));
+				node.setNodeType(rs.getInt(4));
+				node.setHardwareArchitecture(rs.getInt(5));
+				node.setOperatingSystem(rs.getInt(6));
+				node.setNumberPort(rs.getInt(7));
+				node.setNumberInternalModule(rs.getInt(8));
+				node.setNumberInternalLink(rs.getInt(9));
+				node.setImageName(rs.getString(10));
+				node.setNodeStatus(rs.getInt(11));
+				node.setS_id(rs.getInt(12));
+				node.setX(rs.getFloat(13));
+				node.setY(rs.getFloat(14));
+				node.setFlavorType(rs.getString(15));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return node;
+	}
 		
 }

@@ -16,12 +16,11 @@ public class LinkDaoImpl implements LinkDao {
 	public void insertLink(Link link) {
 		// TODO Auto-generated method stub
 		String sql = "insert into link(linkName,linkType,linkLength,linkStatus,linkNoise,"
-				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID) "
-				+ "values(?,?,?,?,?,?,?,?,?,?)";
+				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID) " + "values(?,?,?,?,?,?,?,?,?,?)";
 		Connection conn;
-		
+
 		try {
-			conn=DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, link.getLinkName());
 			ps.setInt(2, link.getLinkType());
@@ -34,7 +33,7 @@ public class LinkDaoImpl implements LinkDao {
 			ps.setInt(9, link.getTxPort_id());
 			ps.setInt(10, link.getRxPort_id());
 			ps.execute();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -132,8 +132,7 @@ public class ActionController {
 	}
 
 	/*
-	 * 创建节点
-	 * 需要底层启动虚拟机，数据库中不但需插入节点数据，相应的场景的节点总数+1,判断完是简单节点还是复杂节点之后对应类型数目+1
+	 * 创建节点 需要底层启动虚拟机，数据库中不但需插入节点数据，相应的场景的节点总数+1,判断完是简单节点还是复杂节点之后对应类型数目+1
 	 * 依赖注入有问题 Node不能直接接受前端发来的消息
 	 */
 	@RequestMapping("/addNode")
@@ -165,7 +164,7 @@ public class ActionController {
 	@ResponseBody
 	public String getNodeBynodeName(String nodeName, int s_id) {
 		NodeService service = new NodeService();
-		System.out.println(s_id + "-----" + nodeName);
+		// System.out.println(s_id + "-----" + nodeName);
 		Node node = service.getNodeBynodeName(nodeName, s_id);
 		System.out.println(JSoneUtils.ObjToJson(node).toString());
 		return JSoneUtils.ObjToJson(node).toString();
@@ -179,7 +178,7 @@ public class ActionController {
 	public String selectNodeList(int s_id) {
 		NodeService service = new NodeService();
 		List<Node> nodes = service.findAllNodeByScenarioId(s_id);
-		System.out.println(JSoneUtils.ListToJson(nodes).toString());
+		// System.out.println(JSoneUtils.ListToJson(nodes).toString());
 		return JSoneUtils.ListToJson(nodes).toString();
 	}
 
@@ -190,7 +189,7 @@ public class ActionController {
 	@ResponseBody
 	public String updateProjectName(Project project, HttpSession session) {
 		ProjectService service = new ProjectService();
-		System.out.println("收到工程" + project);
+		System.out.println("编辑工程" + project);
 		User user = (User) session.getAttribute("user");
 		project.setUser_id(user.getU_id());
 		if (service.updataProjectName(project) == true) {
@@ -198,57 +197,68 @@ public class ActionController {
 		}
 		return "工程名已经存在";
 	}
-	
+
 	/*
 	 * 编辑节点名
 	 */
-	
+
 	@RequestMapping("/editNode")
 	@ResponseBody
-	public String editNode(Node node){
+	public String editNode(Node node) {
 		NodeService service = new NodeService();
 		boolean flag = service.editNode(node);
-		if(flag==true){
+		if (flag == true) {
 			return "修改成功！";
 		}
 		return "修改失败！";
 	}
-	
+
 	/*
 	 * 新建端口
 	 */
 	@RequestMapping("/addPort")
 	@ResponseBody
-	public String createPort(Port port){
+	public String createPort(Port port) {
 		PortService service = new PortService();
-//		System.out.println(n_id);
+		// System.out.println(n_id);
 		boolean flag = service.createPort(port);
 		return "创建成功";
 	}
-	
-	
+
 	/*
-	 * 获取端口列表
+	 * 获取端口列表（根据n_id）
 	 */
 	@RequestMapping("/getPortList")
 	@ResponseBody
-	public String getPortList(int n_id){
+	public String getPortList(int n_id) {
 		PortService service = new PortService();
 		List<Port> ports = service.getPortList(n_id);
 		return JSoneUtils.ListToJson(ports).toString();
 	}
-	
+
+	/*
+	 * 获取端口列表(根据场景s_id和节点名称nodeName)
+	 */
+	@RequestMapping("/getPortBynodeName")
+	@ResponseBody
+	public String getPortListBynodeName(int s_id, String nodeName) {
+		PortService service = new PortService();
+		List<Port> ports = service.getPortListBynodeName(s_id, nodeName);
+		return JSoneUtils.ListToJson(ports).toString();
+	}
+
 	/*
 	 * 创建链路
 	 */
 	@RequestMapping("/addLink")
 	@ResponseBody
-	public String createLink(Link link,String fromIp,String toIp){
+	public String createLink(Link link, String fromNodeIP, String toNodeIP) {
 		LinkService linkService = new LinkService();
-		PortService portService = new PortService();
-		linkService.createLink(link);
-		return null;
+		boolean flag = linkService.createLink(link, fromNodeIP, toNodeIP);
+		if(flag==true){
+			return "创建成功！";
+		}
+		return "创建失败！";
 	}
-	
-	
+
 }

@@ -32,6 +32,12 @@ public class PortService {
 		PortDao dao = new PortDaoImpl();
 		return dao.getPortList(n_id);
 	}
+
+	public List<Port> getPortListBynodeName(int s_id, String nodeName) {
+		// TODO Auto-generated method stub
+		PortDao pdao = new PortDaoImpl();
+		return pdao.getPortListBynodeName(s_id,nodeName);
+	}
 	
 	
 }

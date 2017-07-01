@@ -143,7 +143,7 @@ scene.mouseup(function (e) {
             $("#linkModal").modal();
             //发送ajax查询from端口
             $.ajax({
-                url: '/NetworkSimulation/getPortList',
+                url: '/NetworkSimulation/getPortBynodeName',
                 data: {
                     nodeName: beginNode.text,
                     s_id : $.getUrlParam("scenarioId")
@@ -161,7 +161,7 @@ scene.mouseup(function (e) {
             });
             //发送ajax查询to端口
             $.ajax({
-                url: '/NetworkSimulation/getPortList',
+                url: '/NetworkSimulation/getPortBynodeName',
                 data: {
                     nodeName: endLastNode.text,
                     s_id : $.getUrlParam("scenarioId")
@@ -335,12 +335,13 @@ $("#addLink").click(function () {
             linkType : $("#linkType").val(),
             fromNodeIP : $("#fromNodeIP").val(),
             toNodeIP : $("#toNodeIP").val(),
-
-            channelNoise : $("#channelNoise").val(),
-            channelDisturbance : $("#channelDisturbance").val(),
-            channelType : $("#channelType").val(),
-            linkLenth : $("#linkLenth").val(),
-            s_id : $.getUrlParam("scenarioId")
+            txPort_id : $("#fromPort").val(),
+            rxPort_id : $("#toPort").val(),
+            linkNoise : $("#channelNoise").val(),
+            linkInterference : $("#channelDisturbance").val(),
+            channelModel : $("#channelType").val(),
+            linkLength : $("#linkLenth").val(),
+            scenario_id : $.getUrlParam("scenarioId")
         },
         type: 'post',
         dataType: 'json',
