@@ -2,11 +2,15 @@ package cn.edu.uestc.platform.action;
 
 import java.util.List;
 import javax.servlet.http.HttpSession;
+
+import org.junit.Test;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.edu.uestc.platform.dao.LinkDao;
+import cn.edu.uestc.platform.dao.LinkDaoImpl;
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
@@ -125,9 +129,6 @@ public class ActionController {
 	public String selectScenarioList(int p_id) {
 		ScenarioService service = new ScenarioService();
 		List<Scenario> scenarios = service.findAllScenarioByProjectId(p_id);
-		// System.out.println(JSoneUtils.ListToJson(scenarios).toString());
-		// System.out.println("已经获取到了场景列表");
-		// System.out.println(JSoneUtils.ListToJson(scenarios).toString());
 		return JSoneUtils.ListToJson(scenarios).toString();
 	}
 
@@ -139,6 +140,7 @@ public class ActionController {
 	@ResponseBody
 	public String createNode(Node node) {
 		NodeService service = new NodeService();
+		System.out.println(node);
 		boolean flag = service.createNode(node);
 		if (flag == true) {
 			return "创建节点成功！";
@@ -178,7 +180,6 @@ public class ActionController {
 	public String selectNodeList(int s_id) {
 		NodeService service = new NodeService();
 		List<Node> nodes = service.findAllNodeByScenarioId(s_id);
-		// System.out.println(JSoneUtils.ListToJson(nodes).toString());
 		return JSoneUtils.ListToJson(nodes).toString();
 	}
 
@@ -220,7 +221,6 @@ public class ActionController {
 	@ResponseBody
 	public String createPort(Port port) {
 		PortService service = new PortService();
-		// System.out.println(n_id);
 		boolean flag = service.createPort(port);
 		return "创建成功";
 	}

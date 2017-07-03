@@ -15,21 +15,24 @@ public class NodeDaoImpl implements NodeDao {
 	/*
 	 * 判断节点存在否,当前场景下的节点名不能重复
 	 */
-
 	public boolean haveNodeName(Node node) {
 		String sql = "select *from node as n where n.nodeName=? and n.scenario_id=?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, node.getNodeName());
 			ps.setInt(2, node.getS_id());
-			ResultSet rs = ps.executeQuery();
+			 rs = ps.executeQuery();
 			if (rs.next() == false) {
 				return false;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return true;
 	}
@@ -43,10 +46,11 @@ public class NodeDaoImpl implements NodeDao {
 		String sql = "insert into node(nodeName,manageIp,nodeType,hardwareArchitecture,"
 				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType) "
 				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, node.getNodeName());
 			ps.setString(2, node.getManageIp());
 			ps.setInt(3, node.getNodeType());
@@ -64,6 +68,8 @@ public class NodeDaoImpl implements NodeDao {
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 
@@ -74,14 +80,16 @@ public class NodeDaoImpl implements NodeDao {
 	public List<Node> findAllNodeByScenarioId(int s_id) {
 		// TODO Auto-generated method stub
 		String sql = "select * from Node as n where n.scenario_id=?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		List<Node> nodes = new ArrayList<>();
 
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, s_id);
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				Node node = new Node();
 				node.setN_id(rs.getInt(1));
@@ -104,6 +112,8 @@ public class NodeDaoImpl implements NodeDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return nodes;
 	}
@@ -116,14 +126,17 @@ public class NodeDaoImpl implements NodeDao {
 		// TODO Auto-generated method stub
 		String sql = "update scenario set numberNode = numberNode + 1,numberSimpleNode"
 				+ " = numberSimpleNode + 1 where s_id = ?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, s_id);
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 
@@ -135,30 +148,36 @@ public class NodeDaoImpl implements NodeDao {
 		// TODO Auto-generated method stub
 		String sql = "update scenario set numberNode = numberNode + 1,numberComplexNode"
 				+ " = numberComplexNode + 1 where s_id = ?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, s_id);
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 	/*
 	 * 节点的端口数+1
 	 */
-	
-	public void plusNumberPort(int n_id){
+
+	public void plusNumberPort(int n_id) {
 		String sql = "update node set numberPort = numberPort + 1 where n_id = ?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, n_id);
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 
@@ -170,13 +189,14 @@ public class NodeDaoImpl implements NodeDao {
 		// TODO Auto-generated method stub
 		String sql = "select *from node where n_id = ?";
 		Node node = new Node();
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, n_id);
-			ResultSet rs = ps.executeQuery();
-
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				node.setN_id(rs.getInt(1));
 				node.setNodeName(rs.getString(2));
@@ -195,7 +215,9 @@ public class NodeDaoImpl implements NodeDao {
 				node.setFlavorType(rs.getString(15));
 			}
 		} catch (SQLException e) {
-
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return node;
 	}
@@ -208,13 +230,15 @@ public class NodeDaoImpl implements NodeDao {
 		// TODO Auto-generated method stub
 		String sql = "select *from node where scenario_id = ? and nodeName = ?";
 		Node node = new Node();
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, s_id);
 			ps.setString(2, nodeName);
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				node.setN_id(rs.getInt(1));
 				node.setNodeName(rs.getString(2));
@@ -245,33 +269,37 @@ public class NodeDaoImpl implements NodeDao {
 	public boolean isHaveIp(Node node) {
 		// TODO Auto-generated method stub
 		String sql = "select *from node where manageIp = ?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, node.getManageIp());
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			if (rs.next() == false) {
 				return false;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return true;
 	}
 
-	
 	/*
 	 * update节点属性
 	 */
 	public boolean updataNode(Node node) {
 		String sql = " update node set nodeName=?,manageIp=?,flavorType=? where n_id=?";
-		Connection conn;
-		boolean flag=false;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		boolean flag = false;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, node.getNodeName());
 			ps.setString(2, node.getManageIp());
 			ps.setString(3, node.getFlavorType());
@@ -280,6 +308,8 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			DBUtiles.releaseResource(ps, conn);
 		}
 		return flag;
 	}
@@ -289,14 +319,16 @@ public class NodeDaoImpl implements NodeDao {
 		// TODO Auto-generated method stub
 		String sql = "select *from node as n join (select *from port as p where p.pt_id=?) as p"
 				+ " where n.n_id=p.node_id";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		Node node = new Node();
 		try {
-			conn= DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, txPort_id);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
+			rs = ps.executeQuery();
+			while (rs.next()) {
 				node.setN_id(rs.getInt(1));
 				node.setNodeName(rs.getString(2));
 				node.setManageIp(rs.getString(3));
@@ -316,8 +348,10 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return node;
 	}
-		
+
 }

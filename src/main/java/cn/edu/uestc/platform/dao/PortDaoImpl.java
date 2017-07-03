@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -21,15 +24,16 @@ public class PortDaoImpl implements PortDao {
 		String sql = "insert into port(portName,portType,antennaType,portStatus,"
 				+ "antennaGain,txPower,modulationScheme,channelCodingScheme,frequencyBandwidth,txBitRate,txPacketLoss,node_id,portIP) "
 				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, port.getPortName());
 			ps.setInt(2, port.getPortType());
 			ps.setInt(3, port.getAntennaType());
-			ps.setInt(4,port.getPortStatus());
-			ps.setDouble(5,  port.getAntennaGain());
+			ps.setInt(4, port.getPortStatus());
+			ps.setDouble(5, port.getAntennaGain());
 			ps.setDouble(6, port.getTxPower());
 			ps.setInt(7, port.getModulationScheme());
 			ps.setInt(8, port.getChannelCodingScheme());
@@ -41,10 +45,11 @@ public class PortDaoImpl implements PortDao {
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 
-	
 	/*
 	 * 根据节点n_id返回所有端口
 	 */
@@ -52,14 +57,16 @@ public class PortDaoImpl implements PortDao {
 	public List<Port> getPortList(int n_id) {
 		// TODO Auto-generated method stub
 		String sql = "select *from port as p where p.node_id=?";
-		Connection conn;
-		List<Port> ports=new ArrayList<Port>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Port> ports = new ArrayList<Port>();
 		try {
-			conn=DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, n_id);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
+			rs = ps.executeQuery();
+			while (rs.next()) {
 				Port port = new Port();
 				port.setPt_id(rs.getInt(1));
 				port.setPortName(rs.getString(2));
@@ -80,10 +87,11 @@ public class PortDaoImpl implements PortDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return ports;
 	}
-
 
 	/*
 	 * 根据场景s_id和节点名查询到节点所包含的port
@@ -93,15 +101,17 @@ public class PortDaoImpl implements PortDao {
 		// TODO Auto-generated method stub
 		String sql = "select *from port as p join (select *from node as n where n.nodeName=? "
 				+ "and n.scenario_id = ?) as n on p.node_id=n.n_id;";
-		Connection conn;
-		List<Port> ports=new ArrayList<Port>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Port> ports = new ArrayList<Port>();
 		try {
-			conn=DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, nodeName);
 			ps.setInt(2, s_id);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
+			rs = ps.executeQuery();
+			while (rs.next()) {
 				Port port = new Port();
 				port.setPt_id(rs.getInt(1));
 				port.setPortName(rs.getString(2));
@@ -122,26 +132,75 @@ public class PortDaoImpl implements PortDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return ports;
 	}
 
-
+	/*
+	 * 更新端口IP,以及端口状态
+	 */
 	@Override
 	public void updatePortIP(int Port_id, String IP) {
 		// TODO Auto-generated method stub
-		String sql = "update port as p set p.portIP = ? where p.pt_id=?";
-		Connection conn;
+		String sql = "update port as p set p.portIP = ?,p.portStatus = ? where p.pt_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, IP);
-			ps.setInt(2, Port_id);
+			ps.setInt(2, 1);
+			ps.setInt(3, Port_id);
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
-		
+
 	}
+
+	/*
+	 * 通过链路查链路两端的portID,返回一个长度为2的整型数组。
+	 */
+	@Override
+	public int[] getPortIdsOnSameLinkByPort(Port port) {
+		// TODO Auto-generated method stub
+		String sql = "select txPortID,rxPortID from link where txPortID =? or rxPortID =?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int portId[] = new int[2];
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, port.getPt_id());
+			ps.setInt(2, port.getPt_id());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				portId[0] = rs.getInt(1);
+				portId[1] = rs.getInt(2);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+		return portId;
+	}
+
+	// @Test
+	// public void demo2() {
+	// Port port = new Port();
+	// port.setPt_id(17);
+	// PortDao dao = new PortDaoImpl();
+	// int arr[] = dao.getPortIdsByLink(port);
+	// for(int x=0;x<arr.length;x++){
+	// System.out.println(arr[x]);
+	// }
+	// }
 }

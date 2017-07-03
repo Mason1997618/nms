@@ -13,19 +13,23 @@ public class ScenarioDaoImpl implements ScenarioDao {
 
 	@Override
 	public boolean haveScenarioName(Scenario scenario) {
-
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			String sql = "select s.s_id from scenario as s where s.project_id=? AND s.scenarioName=?";
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, scenario.getProject_id());
 			ps.setString(2, scenario.getScenarioName());
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			if (rs.next() == false) {
 				return false;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return true;
 	}
@@ -37,10 +41,12 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	public boolean insertScenario(Scenario scenario) {
 
 		String sql = "insert into scenario(scenarioName,scenarioType,project_id,numberNode,numberSimpleNode,numberComplexNode)values(?,?,?,?,?,?)";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, scenario.getScenarioName());
 			ps.setInt(2, scenario.getScenarioType());
 			ps.setInt(3, scenario.getProject_id());
@@ -50,6 +56,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
 		}
 
 		return true;
@@ -61,15 +69,16 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	@Override
 	public Scenario findByScenarioName(Scenario scenario) {
 		// TODO Auto-generated method stub
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
-
-			Connection conn = DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			String sql = " select *from scenario as s where s.project_id = ? and s.scenarioName=? ";
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, scenario.getProject_id());
 			ps.setString(2, scenario.getScenarioName());
-			ResultSet rs = ps.executeQuery();
-
+			rs = ps.executeQuery();
 			// 根据名字返回 对象，如果查到了就全部写回对象
 			if (rs.next() != false) {
 				scenario.setS_id(rs.getInt(1));
@@ -94,14 +103,15 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	@Override
 	public List<Scenario> findAllScenarioByProjectId(int p_id) {
 		String sql = "select * from scenario as s where s.project_id=?";
-		Connection conn;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		List<Scenario> scenarios = new ArrayList<>();
-
 		try {
 			conn = DBUtiles.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setInt(1, p_id);
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				Scenario scenario = new Scenario();
 				scenario.setS_id(rs.getInt(1));
@@ -118,6 +128,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return scenarios;
 	}

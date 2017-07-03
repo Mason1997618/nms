@@ -34,7 +34,6 @@ $(document).ready(function () {
 
         }
     });
-
     //获得网口列表，显示网口
     $.ajax({
         url: '/NetworkSimulation/getPortList',
@@ -45,7 +44,7 @@ $(document).ready(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+            //alert(msg);
             prasePortList(msg);
             initPortList();
         },
@@ -144,6 +143,7 @@ $("#submitPort").click(function () {
         async: false,
         success: function (msg) {
             alert(msg);
+            window.location.reload();
         },
         error: function () {
 

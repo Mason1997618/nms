@@ -38,14 +38,30 @@ public class TestDemo {
 	public void dem9() {
 		NodeDao dao = new NodeDaoImpl();
 		Node node = new Node();
-		dao.insertNode(node);
+		node.setNodeName("zty1");
+		node.setS_id(15);
+		System.out.println(dao.haveNodeName(node));
 	}
+
 	@Test
-	public void demo10(){
+	public void demo10() {
 		PortDao dao = new PortDaoImpl();
-		List<Port> ports = dao.getPortListBynodeName(20, "test5");
-		for(Port p :ports){
-			System.out.println(p);
-		}
+//		List<Port> ports = dao.getPortListBynodeName(20, "test5");
+//		for (Port p : ports) {
+//			System.out.println(p);
+//		}
+//		Link link = new Link();
+//		link.setL_id(3);
+//		int arr[] = dao.getPortIdsByLink(link);
+//		for(int i=0;i<arr.length;i++){
+//			System.out.println(arr[i]);
+//		}
+	}
+
+	@Test
+	public void demo11() {
+		LinkDao dao = new LinkDaoImpl();
+//		System.out.println(dao.getLink(18, "testLInkDemo1"));
+	
 	}
 }

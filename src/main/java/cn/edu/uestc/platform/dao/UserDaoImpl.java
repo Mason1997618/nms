@@ -18,12 +18,15 @@ public class UserDaoImpl implements UserDao {
 	public User findByUserName(User user) {
 		// TODO Auto-generated method stub
 		User dbuser = new User();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			String sql = "select * from user where username=?";
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, user.getUsername());
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				dbuser.setU_id(rs.getInt(1));
 				dbuser.setUsername(rs.getString(2));
@@ -33,20 +36,26 @@ public class UserDaoImpl implements UserDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return dbuser;
 	}
 
+	/*
+	 * 尚未用到的函数
+	 */
 	@Override
 	public List<User> findAllUser() {
 
 		List<User> users = new ArrayList<User>();
+		Connection conn = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			Statement stmt = conn.createStatement();
 			String sql = "select * from user";
-			ResultSet rs = stmt.executeQuery(sql);
-
+			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				User user = new User();
 				user.setU_id(rs.getInt(1));
@@ -60,23 +69,26 @@ public class UserDaoImpl implements UserDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return users;
 	}
 
 	@Override
 	public void insertUser(User user) {
 		// TODO Auto-generated method stub
+		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
-			Connection conn = DBUtiles.getConnection();
+			conn = DBUtiles.getConnection();
 			String sql = "insert into user(username,psw)values(?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql);
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPsw());
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			DBUtiles.releaseResource(ps, conn);
 		}
 
 	}

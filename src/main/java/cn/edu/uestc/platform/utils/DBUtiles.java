@@ -2,7 +2,10 @@ package cn.edu.uestc.platform.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBUtiles {
 	static String url = "jdbc:mysql://localhost:3306/networksimulation";
@@ -21,5 +24,42 @@ public class DBUtiles {
 
 	public static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, username, password);
+	}
+
+	public static void releaseResource(PreparedStatement ps, Connection conn) {
+		if (null != ps) {
+			try {
+				ps.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+	}
+
+	public static void releaseResource(ResultSet rs, PreparedStatement ps, Connection conn) {
+		if (rs != null)
+			try {
+				rs.close();
+			} catch (Exception e2) {
+			}
+		if (ps != null)
+			try {
+				ps.close();
+			} catch (Exception e2) {
+			}
+		if (conn != null)
+			try {
+				conn.close();
+			} catch (Exception e2) {
+			}
 	}
 }

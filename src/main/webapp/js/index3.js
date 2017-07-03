@@ -44,6 +44,25 @@ $(document).ready(function () {
 
         }
     });
+    //画出链路
+    $.ajax({
+        url: '/NetworkSimulation/getLinkList',
+        data: {
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++){
+
+            }
+        },
+        error: function () {
+
+        }
+    });
 });
 /**
  * 右上角的选中状态
@@ -68,9 +87,43 @@ $("#remove").click(function () {
         for (var i = 0; i < elements.length; i++) {
             if (elements[i] instanceof JTopo.Node) {
                 alert("删除一个节点" + elements[i].text);
+                //从画布删除节点
+                $.ajax({
+                    url: '/NetworkSimulation/deleteNode',
+                    data: {
+                        linkName: elements[i].text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        alert(msg);
+                    },
+                    error: function () {
+
+                    }
+                });
             }
             if (elements[i] instanceof JTopo.Link) {
                 alert("删除一个链路" + elements[i].text);
+                //从画布删除链路
+                $.ajax({
+                    url: '/NetworkSimulation/deleteLink',
+                    data: {
+                        linkName: elements[i].text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        alert(msg);
+                    },
+                    error: function () {
+
+                    }
+                });
             }
             scene.remove(elements[i]);
         }
