@@ -314,6 +314,9 @@ public class NodeDaoImpl implements NodeDao {
 		return flag;
 	}
 
+	/*
+	 * 通过portID拿到节点
+	 */
 	@Override
 	public Node getNodeByPortId(int txPort_id) {
 		// TODO Auto-generated method stub

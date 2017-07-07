@@ -46,6 +46,7 @@ public class NodeService {
 				return true;
 			}
 			System.out.println("IP地址冲突！");
+			return false;
 		}
 		System.out.println("节点名冲突！");
 		return false;

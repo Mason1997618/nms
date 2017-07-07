@@ -1,5 +1,10 @@
 package cn.edu.uestc.platform.service;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.edu.uestc.platform.controller.LinkController;
 import cn.edu.uestc.platform.dao.DeleteDao;
 import cn.edu.uestc.platform.dao.DeleteDaoImpl;
@@ -26,8 +31,8 @@ public class LinkService {
 			NodeDao nodeDao = new NodeDaoImpl();
 			Node fromNode = nodeDao.getNodeByPortId(link.getTxPort_id());
 			Node toNode = nodeDao.getNodeByPortId(link.getRxPort_id());
-			LinkController controller = new LinkController();
-			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
+//			LinkController controller = new LinkController();
+//			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
 
 			// 插入链路
 			linkDao.insertLink(link);
@@ -41,7 +46,9 @@ public class LinkService {
 		return false;
 	}
 
-	public boolean deleteLink(int s_id, String linkName) {
+	@RequestMapping("/deleteLink")
+	@ResponseBody
+	public String deleteLink(int s_id, String linkName) {
 		// TODO Auto-generated method stub
 		// 先删除底层云平台上的链路
 
@@ -51,7 +58,13 @@ public class LinkService {
 		// 拿到link后，调用deleteDao 删除link
 		DeleteDao deleteDao = new DeleteDaoImpl();
 		deleteDao.deleteLink(link);
-		return false;
+		return "删除成功！";
+	}
+
+	public List<Link> getLinkList(int s_id) {
+		// TODO Auto-generated method stub
+		LinkDao dao = new LinkDaoImpl();
+		return dao.getLinkList(s_id);
 	}
 
 }

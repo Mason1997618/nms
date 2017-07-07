@@ -44,7 +44,7 @@ $(document).ready(function () {
 
         }
     });
-    //画出链路
+    //获取所有链路并画出
     $.ajax({
         url: '/NetworkSimulation/getLinkList',
         data: {
@@ -54,16 +54,35 @@ $(document).ready(function () {
         dataType: 'json',
         async: false,
         success: function (data) {
-            var objs = jQuery.parseJSON(data);
-            for (var i = 0; i < objs.length; i++){
-
-            }
+            // alert(data);
+        	var t1 = setTimeout(function () {
+        		var fromNode = undefined;
+                var toNode = undefined;
+                //解析出来link对象
+                var objs = jQuery.parseJSON(data);
+                //获取画布上所有node对象
+                var elements = scene.getDisplayedNodes();
+                for (var i = 0; i < objs.length; i++) {
+                    //对每个link对象找到fromNode和toNode
+                    for (var j = 0; j < elements.length; j++) {
+                        if (objs[i].fromNodeName == elements[j].text) {
+                            fromNode = elements[j];
+                        }
+                        if (objs[i].toNodeName == elements[j].text) {
+                            toNode = elements[j];
+                        }
+                    }              
+                    //画出链路
+                    newLink(fromNode, toNode, objs[i].linkName, "0,0,255");
+                }
+        	}, 1000);
         },
         error: function () {
 
         }
     });
 });
+
 /**
  * 右上角的选中状态
  */
@@ -205,7 +224,7 @@ scene.mouseup(function (e) {
                 dataType: 'json',
                 async: false,
                 success: function (msg) {
-                    alert(msg);
+                    //alert(msg);
                     initFromPortList(msg);
                 },
                 error: function () {
@@ -223,7 +242,7 @@ scene.mouseup(function (e) {
                 dataType: 'json',
                 async: false,
                 success: function (msg) {
-                    alert(msg);
+                    //alert(msg);
                     initToPortList(msg);
                 },
                 error: function () {
@@ -250,8 +269,12 @@ function initFromPortList(data) {
         fromPortId[i] = objs[i].pt_id;
     }
     areaCont = "";
-    for (var i = 0; i < fromPortList.length; i++){
-        areaCont += '<option value="' + fromPortId[i] + '">' + fromPortList[i] + '</option>';
+    for (var i = 0; i < objs.length; i++){
+        if (objs[i].portStatus == 0){
+            areaCont += '<option value="' + fromPortId[i] + '">' + fromPortList[i] + '</option>';
+        } else {
+            areaCont += '<option value="' + fromPortId[i] + '" disabled="disabled">' + fromPortList[i] + '(已占用)' + '</option>';
+        }
     }
     $("#fromPort").html(areaCont);
 }
@@ -268,8 +291,12 @@ function initToPortList(data) {
         toPortId[i] = objs[i].pt_id;
     }
     areaCont = "";
-    for (var i = 0; i < toPortList.length; i++){
-        areaCont += '<option value="' + toPortId[i] + '">' + toPortList[i] + '</option>';
+    for (var i = 0; i < objs.length; i++){
+        if (objs[i].portStatus == 0){
+            areaCont += '<option value="' + toPortId[i] + '">' + toPortList[i] + '</option>';
+        } else {
+            areaCont += '<option value="' + toPortId[i] + '" disabled="disabled">' + toPortList[i] + '(已占用)' + '</option>';
+        }
     }
     $("#toPort").html(areaCont);
 }
@@ -353,25 +380,29 @@ $("#addNode").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+            if (msg == "创建成功") {
+                alert(msg);
+                //在画布上绘制出节点图标
+                var getId = uiOut.draggable[0].id;//jquery获取图片，竟然要加一个[0]，这是什么鬼 (⊙o⊙)
+                if (getId == "weixing1") {
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
+                } else if (getId == "weixing2") {
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
+                } else if (getId == "weixing3") {
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/digui00.png");
+                } else if (getId == "weixing4") {
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/leida00.png");
+                }
+                //关闭模态框
+                $('#myModal').modal('hide');
+            } else {
+                alert(msg);
+            }
         },
         error: function () {
 
         }
     });
-    //在画布上绘制出节点图标
-    var getId = uiOut.draggable[0].id;//jquery获取图片，竟然要加一个[0]，这是什么鬼 (⊙o⊙)
-    if (getId == "weixing1") {
-        createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
-    } else if (getId == "weixing2") {
-        createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
-    } else if (getId == "weixing3") {
-        createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/digui00.png");
-    } else if (getId == "weixing4") {
-        createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/leida00.png");
-    }
-    //关闭模态框
-    $('#myModal').modal('hide');
 });
 
 //链路模态框中的数据
@@ -388,6 +419,8 @@ $("#addLink").click(function () {
             linkType : $("#linkType").val(),
             fromNodeIP : $("#fromNodeIP").val(),
             toNodeIP : $("#toNodeIP").val(),
+            fromNodeName : beginNode.text,
+            toNodeName : endLastNode.text,
             txPort_id : $("#fromPort").val(),
             rxPort_id : $("#toPort").val(),
             linkNoise : $("#channelNoise").val(),
@@ -400,22 +433,27 @@ $("#addLink").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
-            alert(msg);
+            if (msg == "创建成功") {
+                alert(msg);
+                //在画布上绘制出链路
+                if ($("#linkType").val() == 0) {//有线链路
+                    // newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
+                    newLink(beginNode, endLastNode, $("#linkName").val(), "0,0,255");
+                } else if ($("#linkType").val() == 1) {//无线链路
+                    newLink(beginNode, endLastNode, "链路2", "0,0,0");
+                }
+                beginNode = null;
+                scene.remove(link1);
+                //关闭模态框
+                $('#linkModal').modal('hide');
+            } else {
+                alert(msg);
+            }
         },
         error: function () {
 
         }
     });
-    //在画布上绘制出链路
-    if ($("#linkType").val() == 0) {//有线链路
-        newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
-    } else if ($("#linkType").val() == 1) {//无线链路
-        newLink(beginNode, endLastNode, "链路2", "0,0,0");
-    }
-    beginNode = null;
-    scene.remove(link1);
-    //关闭模态框
-    $('#linkModal').modal('hide');
 });
 
 //打开内部编辑器
@@ -424,7 +462,7 @@ $("#openInnerEdit").click = function () {
     if (elements[0] == undefined) {
        alert("请选中节点后在进行下一步操作");
     }else{
-        window.open("innerEdit.html?nodeName="+ elements[0].text);
+        window.open(encodeURI("innerEdit.html?nodeName="+ elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
 };
 

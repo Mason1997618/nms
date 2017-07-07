@@ -19,7 +19,7 @@ pageEncoding="utf-8"%>
             </div>
             <div>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="register.html"  target="_blank"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+                    <li><a href="register.jsp"> <!-- target="_blank" --><span class="glyphicon glyphicon-user"></span> 注册</a></li>
                 </ul>
             </div>
         </div>

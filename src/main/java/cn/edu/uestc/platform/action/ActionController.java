@@ -27,7 +27,6 @@ import cn.edu.uestc.platform.utils.JSoneUtils;
 
 @Controller
 public class ActionController {
-
 	/*
 	 * 用户注册
 	 * 
@@ -143,7 +142,7 @@ public class ActionController {
 		System.out.println(node);
 		boolean flag = service.createNode(node);
 		if (flag == true) {
-			return "创建节点成功！";
+			return "创建成功";
 		}
 		return "创建节点失败！";
 	}
@@ -196,7 +195,7 @@ public class ActionController {
 		if (service.updataProjectName(project) == true) {
 			return "修改工程名成功！";
 		}
-		return "工程名已经存在";
+		return "工程名已经存在或未做任何修改！";
 	}
 
 	/*
@@ -211,7 +210,7 @@ public class ActionController {
 		if (flag == true) {
 			return "修改成功！";
 		}
-		return "修改失败！";
+		return "修改失败,节点名重复或者未进行任何修改！";
 	}
 
 	/*
@@ -221,6 +220,7 @@ public class ActionController {
 	@ResponseBody
 	public String createPort(Port port) {
 		PortService service = new PortService();
+		System.out.println(port);
 		boolean flag = service.createPort(port);
 		return "创建成功";
 	}
@@ -244,6 +244,7 @@ public class ActionController {
 	public String getPortListBynodeName(int s_id, String nodeName) {
 		PortService service = new PortService();
 		List<Port> ports = service.getPortListBynodeName(s_id, nodeName);
+		System.out.println(JSoneUtils.ListToJson(ports).toString());
 		return JSoneUtils.ListToJson(ports).toString();
 	}
 
@@ -253,12 +254,27 @@ public class ActionController {
 	@RequestMapping("/addLink")
 	@ResponseBody
 	public String createLink(Link link, String fromNodeIP, String toNodeIP) {
+		System.out.println(link + fromNodeIP + toNodeIP);
 		LinkService linkService = new LinkService();
 		boolean flag = linkService.createLink(link, fromNodeIP, toNodeIP);
-		if(flag==true){
-			return "创建成功！";
+		if (flag == true) {
+			return "创建成功";
 		}
 		return "创建失败！";
+	}
+
+	/*
+	 * 返回对应场景下的所有链路
+	 */
+
+	@RequestMapping("/getLinkList")
+	@ResponseBody
+	public String getLinkList(int s_id) {
+		System.out.println(s_id+"此函数执行了");
+		LinkService service = new LinkService();
+		List<Link> links = service.getLinkList(s_id);
+		System.out.println(JSoneUtils.ListToJson(links).toString());
+		return JSoneUtils.ListToJson(links).toString();
 	}
 
 }

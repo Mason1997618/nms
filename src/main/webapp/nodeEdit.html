@@ -33,19 +33,19 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">节点编号</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control"  placeholder="0~65535" id="nodeId" disabled>
+                        <input type="text" class="form-control"  placeholder="0~65535" id="nodeId" disabled="disabled">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">管理ip</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="192.168.5.0/24" id="manageIP">
+                        <input type="text" class="form-control" placeholder="192.168.5.0/24" id="manageIP" disabled="disabled">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">节点类型</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="nodeType">
+                        <select class="form-control" id="nodeType" disabled="disabled">
                             <option value="0">简单二层节点（Docker）</option>
                             <option value="1">简单三层节点（Docker）</option>
                             <option value="2">复杂三层节点(VM)</option>
@@ -55,7 +55,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">硬件架构</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="hardwareArchitecture">
+                        <select class="form-control" id="hardwareArchitecture" disabled="disabled">
                             <option value="0">Intel x86 32bit</option>
                             <option value="1">Intel x86 64bit</option>
                             <option value="2">ARM</option>
@@ -66,7 +66,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">操作系统</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="operatingSystem">
+                        <select class="form-control" id="operatingSystem" disabled="disabled">
                             <option value="0">Linux</option>
                             <option value="1">FreeBSD</option>
                             <option value="2">Window</option>
@@ -77,7 +77,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">节点配置</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="nodeConfig">
+                        <select class="form-control" id="nodeConfig" disabled="disabled">
                             <option value="tiny">Tiny</option>
                             <option value="small">Small</option>
                             <option value="big">Big</option>
@@ -87,7 +87,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">节点镜像</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="nodeImage">
+                        <select class="form-control" id="nodeImage" disabled="disabled">
                             <option value="Router">Router</option>
                             <option value="Switch">Switch</option>
                             <option value="Zph/new:11.04">Zph/new:11.04</option>

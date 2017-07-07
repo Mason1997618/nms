@@ -30,11 +30,6 @@ $("#add").click(function () {
    $("#myModal").modal();
 });
 
-//编辑场景
-$("#editScenario").click(function () {
-   window.open("index3.html?scenarioName=" + $("#selectScenario").val());
-});
-
 //预读
 $(document).ready(function(){
     initProject();
@@ -78,7 +73,7 @@ function selectP(i) {
     $("#delScenatio").removeAttr("disabled");
     //打开场景编辑器
     $("#editScenario").click(function () {
-        window.open("index3.html?scenarioId=" + scenarioId[i]);
+        window.open("index3.html?scenarioId=" + scenarioId[i] + "&scenarioName=" + scenarioList[i] + "&projectName=" + $("#projectName").val());
     });
     //删除场景
     $("#delScenatio").click(function () {

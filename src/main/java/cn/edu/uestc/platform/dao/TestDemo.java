@@ -1,10 +1,7 @@
 package cn.edu.uestc.platform.dao;
 
-import java.util.List;
 import org.junit.Test;
-import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
-import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.User;
 
@@ -46,22 +43,23 @@ public class TestDemo {
 	@Test
 	public void demo10() {
 		PortDao dao = new PortDaoImpl();
-//		List<Port> ports = dao.getPortListBynodeName(20, "test5");
-//		for (Port p : ports) {
-//			System.out.println(p);
-//		}
-//		Link link = new Link();
-//		link.setL_id(3);
-//		int arr[] = dao.getPortIdsByLink(link);
-//		for(int i=0;i<arr.length;i++){
-//			System.out.println(arr[i]);
-//		}
+		// List<Port> ports = dao.getPortListBynodeName(20, "test5");
+		// for (Port p : ports) {
+		// System.out.println(p);
+		// }
+		// Link link = new Link();
+		// link.setL_id(3);
+		// int arr[] = dao.getPortIdsByLink(link);
+		// for(int i=0;i<arr.length;i++){
+		// System.out.println(arr[i]);
+		// }
 	}
 
 	@Test
 	public void demo11() {
 		LinkDao dao = new LinkDaoImpl();
-//		System.out.println(dao.getLink(18, "testLInkDemo1"));
-	
+		// System.out.println(dao.getLink(18, "testLInkDemo1"));
+		// System.out.println(dao.getLinkList(13));
 	}
+
 }

@@ -113,8 +113,8 @@ public class DeleteDaoImpl implements DeleteDao {
 	 * 删除节点,删除节点包含的所有端口，给场景表中统计节点的次数减1.
 	 */
 	public void deleteSimpleNode(Node node) {
-		// TODO Auto-generated method stub
 
+		
 	}
 
 }
