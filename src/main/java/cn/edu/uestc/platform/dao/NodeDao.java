@@ -2,6 +2,7 @@ package cn.edu.uestc.platform.dao;
 
 import java.util.List;
 
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 
 public interface NodeDao {
@@ -18,4 +19,5 @@ public interface NodeDao {
 	public boolean updataNode(Node node);
 	public void plusNumberPort(int n_id);
 	public Node getNodeByPortId(int txPort_id);
+	public Node getNodeByLink(Link link);
 }

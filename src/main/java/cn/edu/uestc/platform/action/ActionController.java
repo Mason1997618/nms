@@ -276,5 +276,28 @@ public class ActionController {
 		System.out.println(JSoneUtils.ListToJson(links).toString());
 		return JSoneUtils.ListToJson(links).toString();
 	}
+	
+	/*
+	 * 挂起链路
+	 */
+	@RequestMapping("#")
+	@ResponseBody
+	public String pauseLink(int s_id,String linkName){
+		System.out.println(s_id+"此函数执行了");
+		LinkService service = new LinkService();
+		service.pauseLink(s_id,linkName);
+		return null;
+	}
+	
+	/*
+	 * 恢复链路
+	 */
+	@RequestMapping("#")
+	@ResponseBody
+	public String recoveryLink(int s_id,String linkName){
+		LinkService service = new LinkService();
+		service.recoveryLink(s_id,linkName);
+		return null;
+	}
 
 }

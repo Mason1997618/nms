@@ -16,6 +16,7 @@ import cn.edu.uestc.platform.dao.PortDao;
 import cn.edu.uestc.platform.dao.PortDaoImpl;
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
+import cn.edu.uestc.platform.pojo.Port;
 
 public class LinkService {
 
@@ -31,8 +32,8 @@ public class LinkService {
 			NodeDao nodeDao = new NodeDaoImpl();
 			Node fromNode = nodeDao.getNodeByPortId(link.getTxPort_id());
 			Node toNode = nodeDao.getNodeByPortId(link.getRxPort_id());
-//			LinkController controller = new LinkController();
-//			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
+			LinkController controller = new LinkController();
+			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
 
 			// 插入链路
 			linkDao.insertLink(link);
@@ -46,25 +47,66 @@ public class LinkService {
 		return false;
 	}
 
-	@RequestMapping("/deleteLink")
-	@ResponseBody
-	public String deleteLink(int s_id, String linkName) {
-		// TODO Auto-generated method stub
-		// 先删除底层云平台上的链路
-
-		// 先根据s_id和linkName查找到对应的link
-		LinkDao linkDao = new LinkDaoImpl();
-		Link link = linkDao.getLink(s_id, linkName);
-		// 拿到link后，调用deleteDao 删除link
-		DeleteDao deleteDao = new DeleteDaoImpl();
-		deleteDao.deleteLink(link);
-		return "删除成功！";
-	}
-
+	/*
+	 * 获得当前场景下的所有链路列表
+	 */
 	public List<Link> getLinkList(int s_id) {
 		// TODO Auto-generated method stub
 		LinkDao dao = new LinkDaoImpl();
 		return dao.getLinkList(s_id);
+	}
+
+	/*
+	 * 删除链路
+	 */
+	public boolean deleteLink(int s_id, String linkName) {
+
+		// 先根据s_id和linkName查找到对应的link
+		LinkDao linkDao = new LinkDaoImpl();
+		Link link = linkDao.getLink(s_id, linkName);
+
+		System.out.println("此链路为:" + link);
+		// 根据link拿到link两端的端口IP，以及端口所属的节点。
+		PortDao portDao = new PortDaoImpl();
+		List<Port> ports = portDao.getPortByLink(link);
+		System.out.println("端口号为:" + ports);
+
+		// 根据portId拿到节点
+		NodeDao nodeDao = new NodeDaoImpl();
+		Node fromNode = nodeDao.getNodeByPortId(ports.get(0).getPt_id());
+		Node toNode = nodeDao.getNodeByPortId(ports.get(1).getPt_id());
+
+		// 删除底层云平台上的链路
+		// 删除链路需要链路两端的节点名和两端的端口IP。
+		LinkController controller = new LinkController();
+		System.out.println(fromNode.getNodeName() + "---" + ports.get(0).getPortIp() + "-------" + toNode.getNodeName()
+				+ "------" + ports.get(1).getPortIp());
+		controller.delLinkMTM(fromNode.getNodeName(), ports.get(0).getPortIp(), toNode.getNodeName(),
+				ports.get(1).getPortIp());
+		// 拿到link后，调用deleteDao 删除link
+		DeleteDao deleteDao = new DeleteDaoImpl();
+		deleteDao.deleteLink(link);
+		return true;
+	}
+
+	public void pauseLink(int s_id, String linkName) {
+		// 删除openstack上的链路
+		this.deleteLink(s_id, linkName);
+		LinkDao dao = new LinkDaoImpl();
+		dao.updateLinkStatustoDown(s_id, linkName);
+	}
+
+	public void recoveryLink(int s_id, String linkName) {
+		
+		LinkDao linkDao = new LinkDaoImpl();
+		PortDao portDao = new PortDaoImpl();
+
+		Link link = linkDao.getLink(s_id, linkName);
+		List<Port> ports = portDao.getPortByLink(link);
+		// 先创建openstack上的链路
+		this.createLink(link, ports.get(0).getPortIp(), ports.get(1).getPortIp());
+		//修改数据库中链路的状态
+		linkDao.updateLinkStatusUp(s_id,linkName);
 	}
 
 }

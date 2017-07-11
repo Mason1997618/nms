@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -355,6 +356,13 @@ public class NodeDaoImpl implements NodeDao {
 			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return node;
+	}
+
+	@Override
+	public Node getNodeByLink(Link link) {
+		String sql = "select *from node where ";
+		
+		return null;
 	}
 
 }

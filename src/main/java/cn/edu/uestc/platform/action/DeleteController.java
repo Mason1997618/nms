@@ -1,10 +1,12 @@
 package cn.edu.uestc.platform.action;
 
+import org.junit.Test;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.edu.uestc.platform.service.LinkService;
+import cn.edu.uestc.platform.service.PortService;
 
 @Controller
 public class DeleteController {
@@ -15,16 +17,20 @@ public class DeleteController {
 	@RequestMapping("/deleteLink")
 	@ResponseBody
 	public String deleteLink(int s_id, String linkName) {
+		System.out.println(s_id + "------" + linkName);
 		LinkService service = new LinkService();
-		String flag = service.deleteLink(s_id, linkName);
-		System.out.println(s_id+"------"+linkName);
-		// if(flag ==true){
-		// return "删除成功！";
-		// }
-		// else{
-		// return "删除失败！";
-		// }
-		return "success!";
+		service.deleteLink(s_id, linkName);
+		return "删除成功！";
 	}
 
+	/*
+	 * 删除端口
+	 */
+	@RequestMapping("#")
+	@ResponseBody
+	public String deletePort(int pt_id) {
+		PortService service = new PortService();
+		service.deletePort(pt_id);
+		return "删除成功！";
+	}
 }

@@ -193,14 +193,120 @@ public class PortDaoImpl implements PortDao {
 		return portId;
 	}
 
-	// @Test
-	// public void demo2() {
-	// Port port = new Port();
-	// port.setPt_id(17);
-	// PortDao dao = new PortDaoImpl();
-	// int arr[] = dao.getPortIdsByLink(port);
-	// for(int x=0;x<arr.length;x++){
-	// System.out.println(arr[x]);
-	// }
-	// }
+	@Override
+	public List<Port> getPortByLink(Link link) {
+		String sql = "select *from port where pt_id = ? or pt_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Port> ports = new ArrayList<Port>();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, link.getTxPort_id());
+			ps.setInt(2, link.getRxPort_id());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Port port = new Port();
+				port.setPt_id(rs.getInt(1));
+				port.setPortName(rs.getString(2));
+				port.setAntennaType(rs.getInt(3));
+				port.setPortType(rs.getInt(4));
+				port.setPortStatus(rs.getInt(5));
+				port.setAntennaGain(rs.getDouble(6));
+				port.setTxPower(rs.getDouble(7));
+				port.setModulationScheme(rs.getInt(8));
+				port.setChannelCodingScheme(rs.getInt(9));
+				port.setFrequencyBandwidth(rs.getDouble(10));
+				port.setTxBitRate(rs.getDouble(11));
+				port.setTxPacketLoss(rs.getDouble(12));
+				port.setN_id(rs.getInt(13));
+				port.setPortIp(rs.getString(14));
+				ports.add(port);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ports;
+	}
+
+	@Override
+	public Port getPortByID(int pt_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from port where pt_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Port port = new Port();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, pt_id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				port.setPt_id(rs.getInt(1));
+				port.setPortName(rs.getString(2));
+				port.setAntennaType(rs.getInt(3));
+				port.setPortType(rs.getInt(4));
+				port.setPortStatus(rs.getInt(5));
+				port.setAntennaGain(rs.getDouble(6));
+				port.setTxPower(rs.getDouble(7));
+				port.setModulationScheme(rs.getInt(8));
+				port.setChannelCodingScheme(rs.getInt(9));
+				port.setFrequencyBandwidth(rs.getDouble(10));
+				port.setTxBitRate(rs.getDouble(11));
+				port.setTxPacketLoss(rs.getDouble(12));
+				port.setN_id(rs.getInt(13));
+				port.setPortIp(rs.getString(14));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+
+		return port;
+	}
+
+	@Override
+	public List<Port> getportListByPortIDs(int[] portID) {
+		String sql = "select *from port where pt_id = ? or pt_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Port> ports = new ArrayList<Port>();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, portID[0]);
+			ps.setInt(2, portID[1]);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Port port = new Port();
+				port.setPt_id(rs.getInt(1));
+				port.setPortName(rs.getString(2));
+				port.setAntennaType(rs.getInt(3));
+				port.setPortType(rs.getInt(4));
+				port.setPortStatus(rs.getInt(5));
+				port.setAntennaGain(rs.getDouble(6));
+				port.setTxPower(rs.getDouble(7));
+				port.setModulationScheme(rs.getInt(8));
+				port.setChannelCodingScheme(rs.getInt(9));
+				port.setFrequencyBandwidth(rs.getDouble(10));
+				port.setTxBitRate(rs.getDouble(11));
+				port.setTxPacketLoss(rs.getDouble(12));
+				port.setN_id(rs.getInt(13));
+				port.setPortIp(rs.getString(14));
+				ports.add(port);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ports;
+	}
+
 }

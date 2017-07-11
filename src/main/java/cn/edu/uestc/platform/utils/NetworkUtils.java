@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient.OSClientV2;
 import org.openstack4j.api.OSClient.OSClientV3;
@@ -121,7 +122,8 @@ public class NetworkUtils {
 		for (Server server : servers) {
 			if (server.getName().equals(name)) {
 				Map<String, List<? extends Address>> all = server.getAddresses().getAddresses();
-				List<? extends Address> floatIps = all.get("net");// net为浮动ip所绑定的网段，一定要注意最后要修改这块，否则一直出错
+				List<? extends Address> floatIps = all.get("network1");// net为浮动ip所绑定的网段，一定要注意最后要修改这块，否则一直出错
+				System.out.println(floatIps);
 				for (Address floatIp : floatIps) {
 					if (floatIp.getType().equals("floating")) {
 						return floatIp.getAddr();
@@ -131,6 +133,10 @@ public class NetworkUtils {
 		}
 		return null;
 	}
+//	@Test
+//	public void demo1(){
+//		getFloatIpByNodeName("vm3");
+//	}
 
 	/**
 	 * 给定ip和虚拟机的名称，判断虚拟机是否有这个ip地址

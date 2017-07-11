@@ -28,8 +28,9 @@ public class DynamicFactory {
 	public static void delPort(OSClientV3 os, String nodeName, String portIP) {
 		// 如果名为nodeName的虚拟机有 portIP这个ip地址，则对它进行删除操作
 		if (NetworkUtils.isHaveIP(os, nodeName, portIP)) {
+			System.out.println("准备删除了！");
 			// 进入节点修改配置文件
-			String floatIP = NetworkUtils.getFloatIpByNodeName(nodeName);// 通过虚拟机的名称得到浮动ip的地址
+			String floatIP = NetworkUtils.getFloatIpByNodeName(nodeName);//通过虚拟机的名称得到浮动ip的地址
 			System.out.println("虚拟机 " + nodeName + " 的浮动ip地址为： " + floatIP);
 			// 通过浮动ip进入虚拟机修改配置文件
 			DynamicNetWorkUtils.changeDelQuguaConf(floatIP, portIP);

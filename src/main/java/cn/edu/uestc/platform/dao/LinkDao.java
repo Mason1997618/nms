@@ -13,4 +13,9 @@ public interface LinkDao {
 
 	public List<Link> getLinkList(int s_id);
 
+	public void updateLinkStatustoDown(int s_id, String linkName);
+	public Link getLinkByPortID(int pt_id);
+
+	public void updateLinkStatusUp(int s_id, String linkName);
+
 }

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -158,8 +160,88 @@ public class LinkDaoImpl implements LinkDao {
 		}
 		return links;
 	}
-	
-	
-	
+
+	/*
+	 * 链路挂起
+	 */
+	@Override
+	public void updateLinkStatustoDown(int s_id, String linkName) {
+		String sql = "update link set linkStatus = 1 where scenario_id=? and linkName = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.setString(2, linkName);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+	}
+
+	/*
+	 * 通过portID拿到link
+	 */
+
+	@Override
+	public Link getLinkByPortID(int pt_id) {
+		String sql = "select *from link where txPortID=? or rxPortID = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Link link = new Link();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, pt_id);
+			ps.setInt(2, pt_id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				link.setL_id(rs.getInt(1));
+				link.setLinkName(rs.getString(2));
+				link.setLinkType(rs.getInt(3));
+				link.setLinkLength(rs.getDouble(4));
+				link.setLinkStatus(rs.getInt(5));
+				link.setLinkNoise(rs.getDouble(6));
+				link.setLinkInterference(rs.getDouble(7));
+				link.setChannelModel(rs.getInt(8));
+				link.setScenario_id(rs.getInt(9));
+				link.setTxPort_id(rs.getInt(10));
+				link.setRxPort_id(rs.getInt(11));
+				link.setFromNodeName(rs.getString(12));
+				link.setToNodeName(rs.getString(13));
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+		return link;
+	}
+
+	@Override
+	public void updateLinkStatusUp(int s_id, String linkName) {
+		String sql = "update link set linkStatus = 0 where scenario_id=? and linkName = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.setString(2, linkName);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+	}
 
 }

@@ -1,6 +1,8 @@
 package cn.edu.uestc.platform.dao;
 
 import org.junit.Test;
+
+import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.User;
@@ -43,6 +45,12 @@ public class TestDemo {
 	@Test
 	public void demo10() {
 		PortDao dao = new PortDaoImpl();
+		// System.out.println(dao.getPortByID(43));
+		// Link link = new Link();
+		// link.setTxPort_id(26);
+		// link.setRxPort_id(27);
+		// System.out.println(dao.getPortByLink(link));
+
 		// List<Port> ports = dao.getPortListBynodeName(20, "test5");
 		// for (Port p : ports) {
 		// System.out.println(p);
@@ -58,6 +66,8 @@ public class TestDemo {
 	@Test
 	public void demo11() {
 		LinkDao dao = new LinkDaoImpl();
+		// dao.updateLinkStatustoDown(25, "1232");
+		// System.out.println(dao.getLinkByPortID(45));
 		// System.out.println(dao.getLink(18, "testLInkDemo1"));
 		// System.out.println(dao.getLinkList(13));
 	}

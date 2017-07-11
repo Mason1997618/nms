@@ -36,7 +36,7 @@ $(document).ready(function () {
         success: function (data) {
             var objs = jQuery.parseJSON(data);
             for (var i = 0; i < objs.length; i++){
-                //数据库中未存节点图片，此处还应有判断来判断出节点应是哪个图片。。。气人
+                //数据库中未存节点图片，此处还应有判断来判断出节点应是哪个图片。。。
                 createNode(objs[i].nodeName, objs[i].x, objs[i].y, "img/gaogui00.png");
             }
         },
@@ -62,6 +62,7 @@ $(document).ready(function () {
                 var objs = jQuery.parseJSON(data);
                 //获取画布上所有node对象
                 var elements = scene.getDisplayedNodes();
+                alert(elements.length);
                 for (var i = 0; i < objs.length; i++) {
                     //对每个link对象找到fromNode和toNode
                     for (var j = 0; j < elements.length; j++) {
@@ -202,6 +203,7 @@ $("#addlink04").click(function () {
     link04.style.color = "red";
 });
 
+//新建链路
 scene.mouseup(function (e) {
     if (e.target != null && e.target instanceof JTopo.Node && flag != 0) {
         if (beginNode == null) {
@@ -349,12 +351,61 @@ $("#weixing4").draggable({
 });
 
 var uiOut;//全局数据-->用于传递变量-->将拖动的数据信息保存起来
-
+//新建节点
 $("#canvas").droppable({
     drop: function (event, ui) {
         uiOut = ui;//保存数据
+        //保存已有ip
+        var ips = [];
         //首先弹出模态框
         $("#myModal").modal();
+        //查询已有节点的信息，确保输入的管理ip不会重复
+        $.ajax({
+            url: '/NetworkSimulation/selectNodeList',
+            data: {
+                s_id : $.getUrlParam("scenarioId")
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                var objs = jQuery.parseJSON(data);
+                for (var i = 0; i < objs.length; i++){
+                    ips[i] = objs[i].manageIp;
+                }
+            },
+            error: function () {
+
+            }
+        });
+        //判断输入管理ip的合法性
+        $("#manageIP").blur(function () {
+            var ip = $("#manageIP").val();
+            //先检查合法性
+            var reSpaceCheck = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+            if (reSpaceCheck.test(ip)) {
+                ip.match(reSpaceCheck);
+                if (RegExp.$1 == 192 && RegExp.$2 == 168 && RegExp.$3 == 5
+                    && RegExp.$4<=255 && RegExp.$4>=0)
+                {
+                    return true;
+                }else
+                {
+                    alert("输入的网段不合法，请重新输入！");
+                    return false;
+                }
+            } else {
+                alert("输入的ip地址不合法，请重新输入！");
+                return false;
+            }
+            //再检查是否有重复
+            for (var i = 0; i < ips.length; i++){
+                if (ip == ips[i]){
+                    alert("输入的ip又已有节点的管理ip重复，请重新输入");
+                    return false;
+                }
+            }
+        });
     }
 });
 
