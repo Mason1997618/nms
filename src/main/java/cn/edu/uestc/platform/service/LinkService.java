@@ -27,7 +27,8 @@ public class LinkService {
 	public boolean createLink(Link link, String fromNodeIP, String toNodeIP) {
 
 		LinkDao linkDao = new LinkDaoImpl();
-		if (linkDao.ishaveLinkName(link) == false) {
+		// 当使用||时，||前面的条件如果已经为真的话，之后的条件则不会进行判断,所以不用担心之后的link会空指针异常
+		if (linkDao.ishaveLinkName(link) == false || link.getLinkStatus() == 1) {
 			// 在云平台创建一条链路,通过port来获取到fronNodeName和toNodeName
 			NodeDao nodeDao = new NodeDaoImpl();
 			Node fromNode = nodeDao.getNodeByPortId(link.getTxPort_id());
@@ -35,14 +36,17 @@ public class LinkService {
 			LinkController controller = new LinkController();
 			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
 
-			// 插入链路
-			linkDao.insertLink(link);
-			// 更新port表的ip地址,以及链路状态
-			PortDao portDao = new PortDaoImpl();
-			portDao.updatePortIP(link.getTxPort_id(), fromNodeIP);
-			portDao.updatePortIP(link.getRxPort_id(), toNodeIP);
+			// 新建的链路linkStatus的状态都是0， 可插入链路，如果链路已经存在，数据库中无需再插入链路了。
+			if (link.getLinkStatus() == 0) {
+				linkDao.insertLink(link);
+				// 更新port表的ip地址,以及链路状态
+				PortDao portDao = new PortDaoImpl();
+				portDao.updatePortIP(link.getTxPort_id(), fromNodeIP);
+				portDao.updatePortIP(link.getRxPort_id(), toNodeIP);
+			}
 			return true;
 		}
+
 		System.out.println("此场景下的链路名已经存在！");
 		return false;
 	}
@@ -57,7 +61,8 @@ public class LinkService {
 	}
 
 	/*
-	 * 删除链路
+	 * 删除链路，删除链路函数用于删除链路状态为0的链路，挂起链路 状态为0的链路
+	 * 一切删除，状态为1的链路调用此函数仅用于删除Openstack上的链路而不操作数据库。
 	 */
 	public boolean deleteLink(int s_id, String linkName) {
 
@@ -75,29 +80,29 @@ public class LinkService {
 		NodeDao nodeDao = new NodeDaoImpl();
 		Node fromNode = nodeDao.getNodeByPortId(ports.get(0).getPt_id());
 		Node toNode = nodeDao.getNodeByPortId(ports.get(1).getPt_id());
-
+		// 拿到link后，调用deleteDao 删除link,只有非挂起状态的link才能删除数据库
 		// 删除底层云平台上的链路
 		// 删除链路需要链路两端的节点名和两端的端口IP。
 		LinkController controller = new LinkController();
-		System.out.println(fromNode.getNodeName() + "---" + ports.get(0).getPortIp() + "-------" + toNode.getNodeName()
-				+ "------" + ports.get(1).getPortIp());
 		controller.delLinkMTM(fromNode.getNodeName(), ports.get(0).getPortIp(), toNode.getNodeName(),
 				ports.get(1).getPortIp());
-		// 拿到link后，调用deleteDao 删除link
-		DeleteDao deleteDao = new DeleteDaoImpl();
-		deleteDao.deleteLink(link);
+		if (link.getLinkStatus() == 0) {
+			DeleteDao deleteDao = new DeleteDaoImpl();
+			deleteDao.deleteLink(link);
+		}
 		return true;
 	}
 
 	public void pauseLink(int s_id, String linkName) {
-		// 删除openstack上的链路
-		this.deleteLink(s_id, linkName);
+		// 将link设置为挂起态
 		LinkDao dao = new LinkDaoImpl();
 		dao.updateLinkStatustoDown(s_id, linkName);
+		// 删除openstack上的链路
+		this.deleteLink(s_id, linkName);
 	}
 
 	public void recoveryLink(int s_id, String linkName) {
-		
+
 		LinkDao linkDao = new LinkDaoImpl();
 		PortDao portDao = new PortDaoImpl();
 
@@ -105,8 +110,8 @@ public class LinkService {
 		List<Port> ports = portDao.getPortByLink(link);
 		// 先创建openstack上的链路
 		this.createLink(link, ports.get(0).getPortIp(), ports.get(1).getPortIp());
-		//修改数据库中链路的状态
-		linkDao.updateLinkStatusUp(s_id,linkName);
+		// 修改数据库中链路的状态
+		linkDao.updateLinkStatusUp(s_id, linkName);
 	}
 
 }

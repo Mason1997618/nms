@@ -26,6 +26,7 @@ public class NodeController {
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public ResponseEntity<String> createNode(String name, String ip, String zone) {
 		OSClientV3 os = OSClientFactory.authenticate("zph", "123456", Constants.ZPH_PROJECT_ID);
+		System.out.println(os);
 		if(zone.equals("vm")){
 			System.out.println("生成虚拟机节点");
 			ServerFactory.createServer(os, name, ip);

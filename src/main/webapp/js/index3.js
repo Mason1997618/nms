@@ -19,8 +19,16 @@ window.onload = window.onresize = function () {
 var stage = new JTopo.Stage(canvas); // 创建一个舞台对象
 var scene = new JTopo.Scene(stage); // 创建一个场景对象
 
+// 定义获取和更新时间的函数
+function showTime() {
+    var curTime = new Date();
+    $("#systemTime").html(curTime.toLocaleString());
+    setTimeout("showTime()", 1000);
+}
+
 //预读
 $(document).ready(function () {
+    showTime();
     //显示工程名和场景名
     $("#projectName").html($.getUrlParam("projectName"));
     $("#scenarioName").html($.getUrlParam("scenarioName"));
@@ -54,15 +62,13 @@ $(document).ready(function () {
         dataType: 'json',
         async: false,
         success: function (data) {
-            // alert(data);
-        	var t1 = setTimeout(function () {
+        	setTimeout(function () {
         		var fromNode = undefined;
                 var toNode = undefined;
                 //解析出来link对象
                 var objs = jQuery.parseJSON(data);
                 //获取画布上所有node对象
                 var elements = scene.getDisplayedNodes();
-                alert(elements.length);
                 for (var i = 0; i < objs.length; i++) {
                     //对每个link对象找到fromNode和toNode
                     for (var j = 0; j < elements.length; j++) {
@@ -74,7 +80,14 @@ $(document).ready(function () {
                         }
                     }              
                     //画出链路
-                    newLink(fromNode, toNode, objs[i].linkName, "0,0,255");
+                    if (objs[i].linkStatus == 1 ) {
+                        //断开的链路
+                        newLink(fromNode, toNode, objs[i].linkName, "255,0,0");
+                    }
+                    if (objs[i].linkStatus == 0) {
+                        //接通的链路
+                        newLink(fromNode, toNode, objs[i].linkName, "0,0,255");
+                    }
                 }
         	}, 1000);
         },
@@ -87,13 +100,12 @@ $(document).ready(function () {
 /**
  * 右上角的选中状态
  */
-var selectEle = document.getElementById("selectEle");
 scene.click(function () {
     var elements = scene.selectedElements;
     if (elements[0] == undefined) {
-        selectEle.innerHTML = "none";
+        $("#selectEle").html("none");
     }
-    selectEle.innerHTML = elements[0].text;
+    $("#selectEle").html(elements[0].text);
 });
 
 /**
@@ -119,6 +131,9 @@ $("#remove").click(function () {
                     async: false,
                     success: function (msg) {
                         alert(msg);
+                        if (msg == "删除成功") {
+                            scene.remove(elements[i]);
+                        }
                     },
                     error: function () {
 
@@ -126,26 +141,33 @@ $("#remove").click(function () {
                 });
             }
             if (elements[i] instanceof JTopo.Link) {
-                alert("删除一个链路" + elements[i].text);
-                //从画布删除链路
-                $.ajax({
-                    url: '/NetworkSimulation/deleteLink',
-                    data: {
-                        linkName: elements[i].text,
-                        s_id : $.getUrlParam("scenarioId")
-                    },
-                    type: 'post',
-                    dataType: 'json',
-                    async: false,
-                    success: function (msg) {
-                        alert(msg);
-                    },
-                    error: function () {
+                if (elements[i].strokeColor = "255,0,0") {
+                    //如果是断开的链路
+                    alert("无法删除断开的链路！");
+                } else {
+                    alert("删除一个链路" + elements[i].text);
+                    //从画布删除链路
+                    $.ajax({
+                        url: '/NetworkSimulation/deleteLink',
+                        data: {
+                            linkName: elements[i].text,
+                            s_id : $.getUrlParam("scenarioId")
+                        },
+                        type: 'post',
+                        dataType: 'json',
+                        async: false,
+                        success: function (msg) {
+                            alert(msg);
+                            if (msg == "删除成功") {
+                                scene.remove(elements[i]);
+                            }
+                        },
+                        error: function () {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
-            scene.remove(elements[i]);
         }
     }
 });
@@ -203,7 +225,14 @@ $("#addlink04").click(function () {
     link04.style.color = "red";
 });
 
-//新建链路
+//判断ip是否合法的正则
+function isValidIP(ip)
+{
+    var reg =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+    return reg.test(ip);
+}
+
+//新建链路——模态框
 scene.mouseup(function (e) {
     if (e.target != null && e.target instanceof JTopo.Node && flag != 0) {
         if (beginNode == null) {
@@ -249,6 +278,74 @@ scene.mouseup(function (e) {
                 },
                 error: function () {
 
+                }
+            });
+            //查询已有链路的地址
+            var ips = [];
+            $.ajax({
+                url: '/NetworkSimulation/getLinkList',
+                data: {
+                    s_id : $.getUrlParam("scenarioId")
+                },
+                type: 'post',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    var objs = jQuery.parseJSON(data);
+                    for (var i = 0; i < objs.length; i++){
+                        //存已有ip地址的前三位
+                        ips[i] = objs[i].fromNodeIP.substring(0,objs[i].fromNodeIP.lastIndexOf("."));
+                    }
+                },
+                error: function () {
+
+                }
+            });
+            //判断输入的ip与已存在的ip不属于同网段
+            $("#fromNodeIP").blur(function () {
+                var ip = $("#fromNodeIP").val();
+                if (isValidIP(ip)) {
+                    //再判断是否重复
+                    for (var i = 0; i < ips.length; i++){
+                        if (ip.match(ips[i]) != null){
+                            $("#fromNodeIpErrorInfo").attr("hidden", "hidden");
+                            return true;
+                        } else {
+                            //alert("输入的地址网段与已有的重复，请重新输入！");
+                            $("#fromNodeIpErrorInfo").removeAttr("hidden");
+                            $("#fromNodeIpErrorInfo").html("输入的地址网段与已有的重复，请重新输入！");
+                            $("#fromNodeIP").val("");
+                            return false;
+                        }
+                    }
+                } else {
+                    $("#fromNodeIpErrorInfo").removeAttr("hidden");
+                    $("#fromNodeIpErrorInfo").html("输入的ip地址不合法，请重新输入！");
+                    $("#fromNodeIP").val("");
+                    return false;
+                }
+            });
+            $("#toNodeIP").blur(function () {
+                var ip = $("#toNodeIP").val();
+                if (isValidIP(ip)) {
+                    //再判断是否重复
+                    for (var i = 0; i < ips.length; i++){
+                        if (ip.match(ips[i]) != null){
+                            $("#toNodeIpErrorInfo").attr("hidden", "hidden");
+                            return true;
+                        } else {
+                            //alert("输入的地址网段与已有的重复，请重新输入！");
+                            $("#toNodeIpErrorInfo").removeAttr("hidden");
+                            $("#toNodeIpErrorInfo").html("输入的地址网段与已有的重复，请重新输入！");
+                            $("#toNodeIP").val("");
+                            return false;
+                        }
+                    }
+                } else {
+                    $("#toNodeIpErrorInfo").removeAttr("hidden");
+                    $("#toNodeIpErrorInfo").html("输入的ip地址不合法，请重新输入！");
+                    $("#toNodeIP").val("");
+                    return false;
                 }
             });
         } else {
@@ -385,25 +482,36 @@ $("#canvas").droppable({
             var reSpaceCheck = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
             if (reSpaceCheck.test(ip)) {
                 ip.match(reSpaceCheck);
-                if (RegExp.$1 == 192 && RegExp.$2 == 168 && RegExp.$3 == 5
-                    && RegExp.$4<=255 && RegExp.$4>=0)
-                {
+                if (RegExp.$1 == 192 && RegExp.$2 == 168 && RegExp.$3 == 10
+                    && RegExp.$4<=255 && RegExp.$4>=0) {
+                    //再检查是否有重复
+                    for (var i = 0; i < ips.length; i++){
+                        if (ip == ips[i]){
+                            //alert("输入的ip又已有节点的管理ip重复，请重新输入！");
+                            $("#nodeIpErrorInfo").removeAttr("hidden");
+                            $("#nodeIpErrorInfo").html("输入的ip又已有节点的管理ip重复，请重新输入！");
+                            //清空输入框的值
+                            $("#manageIP").val("");
+                            return false;
+                        }
+                    }
+                    $("#nodeIpErrorInfo").attr("hidden", "hidden");
                     return true;
-                }else
-                {
-                    alert("输入的网段不合法，请重新输入！");
+                }else {
+                    //alert("输入的网段不合法，请重新输入！");
+                    $("#nodeIpErrorInfo").removeAttr("hidden");
+                    $("#nodeIpErrorInfo").html("输入的网段不合法，请重新输入！");
+                    //清空输入框的值
+                    $("#manageIP").val("");
                     return false;
                 }
             } else {
-                alert("输入的ip地址不合法，请重新输入！");
+                //alert("输入的ip地址不合法，请重新输入！");
+                $("#nodeIpErrorInfo").removeAttr("hidden");
+                $("#nodeIpErrorInfo").html("输入的ip地址不合法，请重新输入！");
+                //清空输入框的值
+                $("#manageIP").val("");
                 return false;
-            }
-            //再检查是否有重复
-            for (var i = 0; i < ips.length; i++){
-                if (ip == ips[i]){
-                    alert("输入的ip又已有节点的管理ip重复，请重新输入");
-                    return false;
-                }
             }
         });
     }
@@ -423,7 +531,7 @@ $("#addNode").click(function () {
             operatingSystem : $("#operatingSystem").val(),
             flavorType : $("#nodeConfig").val(),
             imageName : $("#nodeImage").val(),
-            x : uiOut.offset.left - document.getElementById("slider").offsetWidth,
+            x : uiOut.offset.left - document.getElementById("slider_1").offsetWidth,
             y : uiOut.offset.top - 102,
             s_id : $.getUrlParam("scenarioId")
         },
@@ -436,13 +544,13 @@ $("#addNode").click(function () {
                 //在画布上绘制出节点图标
                 var getId = uiOut.draggable[0].id;//jquery获取图片，竟然要加一个[0]，这是什么鬼 (⊙o⊙)
                 if (getId == "weixing1") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
                 } else if (getId == "weixing2") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
                 } else if (getId == "weixing3") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/digui00.png");
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/digui00.png");
                 } else if (getId == "weixing4") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider").offsetWidth, uiOut.offset.top - 102, "img/leida00.png");
+                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/leida00.png");
                 }
                 //关闭模态框
                 $('#myModal').modal('hide');
@@ -456,11 +564,7 @@ $("#addNode").click(function () {
     });
 });
 
-//链路模态框中的数据
-var fromNodeIP = document.getElementById("fromNodeIP");
-var toNodeIP = document.getElementById("toNodeIP");
-
-//链路模态框
+//链路模态框中请求的发送
 $("#addLink").click(function () {
     //发送执行ajax的请求
     $.ajax({
@@ -508,21 +612,86 @@ $("#addLink").click(function () {
 });
 
 //打开内部编辑器
-$("#openInnerEdit").click = function () {
+$("#openInnerEdit").click(function () {
     var elements = scene.selectedElements;
-    if (elements[0] == undefined) {
-       alert("请选中节点后在进行下一步操作");
-    }else{
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link){
+        alert("请选中节点后在进行下一步操作");
+    } else {
         window.open(encodeURI("innerEdit.html?nodeName="+ elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
-};
+});
 
 //打开节点编辑器
 $("#editNode").click(function () {
     var elements = scene.selectedElements;
-    if (elements[0] == undefined){
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link){
         alert("请选中节点后在进行下一步操作");
-    }else {
+    } else {
         window.open(encodeURI("nodeEdit.html?nodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
+    }
+});
+
+//设置链路定时断开
+$("#cutLink").click(function () {
+   var elements = scene.selectedElements;
+   if (elements[0] == undefined || elements[0] instanceof JTopo.Node){
+       alert("请选中链路后在进行下一步操作");
+   } else {
+       //弹出模态框
+       $("#cutLinkModal").modal();
+       //点击提交操作
+       $("#cutLinkSubmit").click(function () {
+           //关闭模态框
+           $("#cutLinkModal").hide();
+           setTimeout(function () {
+               $.ajax({
+                   url: '/NetworkSimulation/cutLink',
+                   data: {
+                       linkName : elements[0].text,
+                       scenario_id : $.getUrlParam("scenarioId")
+                   },
+                   type: 'post',
+                   dataType: 'json',
+                   async: false,
+                   success: function (msg) {
+                       alert(msg);
+                       if (msg == "断开成功") {
+                           //变化链路为红色虚线
+                           changeLinkToRed(elements[0]);
+                       }
+                   },
+                   error: function () {
+
+                   }
+               });
+           }, $("#cutLinkTime").val() * 1000);
+       });
+   }
+});
+
+//接通链路
+$("#connectLink").click(function () {
+    var elements = scene.selectedElements;
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Node){
+        alert("请选中链路后在进行下一步操作");
+    } else {
+        $.ajax({
+            url: '/NetworkSimulation/connectLink',
+            data: {
+                linkName : elements[0].text,
+                scenario_id : $.getUrlParam("scenarioId")
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+            },
+            error: function () {
+
+            }
+        });
+        //变化链路为蓝色
+        changeLinkToBlue(elements[0]);
     }
 });

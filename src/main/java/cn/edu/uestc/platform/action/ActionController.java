@@ -280,23 +280,23 @@ public class ActionController {
 	/*
 	 * 挂起链路
 	 */
-	@RequestMapping("#")
+	@RequestMapping("/cutLink")
 	@ResponseBody
-	public String pauseLink(int s_id,String linkName){
-		System.out.println(s_id+"此函数执行了");
+	public String pauseLink(int scenario_id,String linkName){
+		System.out.println(scenario_id+"此函数执行了");
 		LinkService service = new LinkService();
-		service.pauseLink(s_id,linkName);
-		return null;
+		service.pauseLink(scenario_id,linkName);
+		return "断开成功";
 	}
 	
 	/*
 	 * 恢复链路
 	 */
-	@RequestMapping("#")
+	@RequestMapping("/connectLink")
 	@ResponseBody
-	public String recoveryLink(int s_id,String linkName){
+	public String recoveryLink(int scenario_id,String linkName){
 		LinkService service = new LinkService();
-		service.recoveryLink(s_id,linkName);
+		service.recoveryLink(scenario_id,linkName);
 		return null;
 	}
 
