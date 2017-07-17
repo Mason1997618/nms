@@ -51,9 +51,10 @@ public class DeleteDaoImpl implements DeleteDao {
 	}
 
 	// 删除端口时，同时需要删除端口对应的链路，同时将链路的另一端的端口ip清0并让其状态为0，并且让节点的numberPort减1
+	@SuppressWarnings("resource")
 	// 此函数的两个id参数，是通过查一条链路的两端port得到的。
 	@Override
-	public void deletePort(Port port, int portID1, int PortID2) {
+	public void deletePortIncludeLink(Port port, int portID1, int PortID2) {
 
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -113,8 +114,21 @@ public class DeleteDaoImpl implements DeleteDao {
 	 * 删除节点,删除节点包含的所有端口，给场景表中统计节点的次数减1.
 	 */
 	public void deleteSimpleNode(Node node) {
+		String sql = "delete from node where n_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, node.getN_id());
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
 
-		
 	}
 
 }

@@ -20,4 +20,7 @@ public interface NodeDao {
 	public void plusNumberPort(int n_id);
 	public Node getNodeByPortId(int txPort_id);
 	public Node getNodeByLink(Link link);
+	public void minusNumberComplexNode(int s_id);
+	public void minusNumberSimpleNode(int s_id);
+	public void deleteNode(int n_id);
 }

@@ -51,7 +51,7 @@ public class ActionController {
 	 */
 	@RequestMapping("/login.action")
 	public String userLogin(Model model, User user, HttpSession session) {
-
+		System.out.println("denglu!!!!");
 		UserService service = new UserService();
 		// System.out.println(service.userLogin(user));
 
@@ -144,7 +144,7 @@ public class ActionController {
 		if (flag == true) {
 			return "创建成功";
 		}
-		return "创建节点失败！";
+		return "节点名重复！";
 	}
 
 	/*
@@ -270,34 +270,34 @@ public class ActionController {
 	@RequestMapping("/getLinkList")
 	@ResponseBody
 	public String getLinkList(int s_id) {
-		System.out.println(s_id+"此函数执行了");
+		System.out.println(s_id + "此函数执行了");
 		LinkService service = new LinkService();
 		List<Link> links = service.getLinkList(s_id);
 		System.out.println(JSoneUtils.ListToJson(links).toString());
 		return JSoneUtils.ListToJson(links).toString();
 	}
-	
+
 	/*
 	 * 挂起链路
 	 */
 	@RequestMapping("/cutLink")
 	@ResponseBody
-	public String pauseLink(int scenario_id,String linkName){
-		System.out.println(scenario_id+"此函数执行了");
+	public String pauseLink(int scenario_id, String linkName) {
+		System.out.println(scenario_id + "此函数执行了");
 		LinkService service = new LinkService();
-		service.pauseLink(scenario_id,linkName);
+		service.pauseLink(scenario_id, linkName);
 		return "断开成功";
 	}
-	
+
 	/*
 	 * 恢复链路
 	 */
 	@RequestMapping("/connectLink")
 	@ResponseBody
-	public String recoveryLink(int scenario_id,String linkName){
+	public String recoveryLink(int scenario_id, String linkName) {
 		LinkService service = new LinkService();
-		service.recoveryLink(scenario_id,linkName);
-		return null;
+		service.recoveryLink(scenario_id, linkName);
+		return "恢复成功";
 	}
 
 }

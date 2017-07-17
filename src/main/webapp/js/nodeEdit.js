@@ -74,7 +74,7 @@ function prasePortList(data) {
     var objs = jQuery.parseJSON(data);
     for (var i = 0; i < objs.length; i++){
         portList[i] = objs[i].portName;
-        portId[i] = objs[i].p_id;
+        portId[i] = objs[i].pt_id;
     }
 }
 
@@ -100,13 +100,14 @@ function selectP(i) {
         $.ajax({
             url: '/NetworkSimulation/deletePort',
             data: {
-                p_id : portId[i]
+                pt_id : portId[i]
             },
             type: 'post',
             dataType: 'json',
             async: false,
             success: function (msg) {
                 alert(msg);
+                window.location.reload();
             },
             error: function () {
 

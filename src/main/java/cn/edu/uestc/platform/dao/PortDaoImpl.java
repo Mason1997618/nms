@@ -164,7 +164,7 @@ public class PortDaoImpl implements PortDao {
 	}
 
 	/*
-	 * 通过链路查链路两端的portID,返回一个长度为2的整型数组。
+	 * 通过链路查链路两端的portID,返回一个长度为2的整型数组。若无链路，则返回{0,0}
 	 */
 	@Override
 	public int[] getPortIdsOnSameLinkByPort(Port port) {

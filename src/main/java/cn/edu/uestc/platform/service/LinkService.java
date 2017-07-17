@@ -46,7 +46,6 @@ public class LinkService {
 			}
 			return true;
 		}
-
 		System.out.println("此场景下的链路名已经存在！");
 		return false;
 	}

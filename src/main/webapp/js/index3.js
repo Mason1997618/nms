@@ -123,7 +123,7 @@ $("#remove").click(function () {
                 $.ajax({
                     url: '/NetworkSimulation/deleteNode',
                     data: {
-                        linkName: elements[i].text,
+                        nodeName: elements[i].text,
                         s_id : $.getUrlParam("scenarioId")
                     },
                     type: 'post',
@@ -639,34 +639,35 @@ $("#cutLink").click(function () {
    } else {
        //弹出模态框
        $("#cutLinkModal").modal();
-       //点击提交操作
-       $("#cutLinkSubmit").click(function () {
-           //关闭模态框
-           $("#cutLinkModal").hide();
-           setTimeout(function () {
-               $.ajax({
-                   url: '/NetworkSimulation/cutLink',
-                   data: {
-                       linkName : elements[0].text,
-                       scenario_id : $.getUrlParam("scenarioId")
-                   },
-                   type: 'post',
-                   dataType: 'json',
-                   async: false,
-                   success: function (msg) {
-                       alert(msg);
-                       if (msg == "断开成功") {
-                           //变化链路为红色虚线
-                           changeLinkToRed(elements[0]);
-                       }
-                   },
-                   error: function () {
-
-                   }
-               });
-           }, $("#cutLinkTime").val() * 1000);
-       });
    }
+});
+
+//设置链路定时断开提交
+$("#cutLinkSubmit").click(function () {
+    //关闭模态框
+    $("#cutLinkModal").modal('hide');
+    setTimeout(function () {
+        $.ajax({
+            url: '/NetworkSimulation/cutLink',
+            data: {
+                linkName : elements[0].text,
+                scenario_id : $.getUrlParam("scenarioId")
+            },
+            type: 'post',
+            dataType: 'json',
+            async: true,
+            success: function (msg) {
+                alert(msg);
+                if (msg == "断开成功") {
+                    //变化链路为红色虚线
+                    changeLinkToRed(elements[0]);
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }, $("#cutLinkTime").val() * 1000);
 });
 
 //接通链路
@@ -686,12 +687,167 @@ $("#connectLink").click(function () {
             async: false,
             success: function (msg) {
                 alert(msg);
+                if (msg == "恢复成功") {
+                    //变化链路为蓝色
+                    changeLinkToBlue(elements[0]);
+                }
             },
             error: function () {
 
             }
         });
-        //变化链路为蓝色
-        changeLinkToBlue(elements[0]);
+    }
+});
+
+//options
+var linkListHtml ='';
+//status
+var statusMap = [];
+//设置链路通段时间
+$("#setLinkTime").click(function () {
+    //弹出模态框
+    $("#setLinkTimeModal").modal();
+    $.ajax({
+        url: '/NetworkSimulation/getLinkList',
+        data: {
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++) {
+                linkListHtml += '<option value="' + objs[i].linkName + '" >' + objs[i].linkName + '</option>';
+                statusMap[objs[i].linkName] = objs[i].linkStatus;
+            }
+            $("#selectLink_0").html(linkListHtml);
+        },
+        error: function () {
+
+        }
+    });
+});
+
+//判断链路状态来决定是否能选择连通或断开
+function selectConnction(i) {
+    alert($('[id = "selectLink_' + i + '"]').val());
+    //如果是断开的那一行
+    if (statusMap[$('[id = "selectLink_' + i + '"]').val()] == 1) {
+        $('[id = "switch_' + i + '"]').children().last().attr("disabled", "disabled");
+        $('[id = "switch_' + i + '"]').children().first().removeAttr("disabled", "disabled");
+    }
+    //如果是连通的一行
+    if (statusMap[$('[id = "selectLink_' + i + '"]').val()] == 0) {
+        $('[id = "switch_' + i + '"]').children().first().attr("disabled", "disabled");
+        $('[id = "switch_' + i + '"]').children().last().removeAttr("disabled", "disabled");
+    }
+}
+
+//用于记录第几行的数据的标记,默认已经有第0行
+var flag_1 = 0;
+//点击增加一行
+$("#addOneControl").click(function () {
+    ++flag_1;
+    var htmlString1 = '<div class="form-group">\
+            <label class="col-sm-2 control-label">时刻</label>\
+            <div class="col-sm-2">\
+            <input type="text" class="form-control" placeholder="X秒" id="moment_' + flag_1 + '">\
+            </div>\
+            <div class="col-sm-4">\
+            <select class="form-control" id="selectLink_' + flag_1 + '" onchange="selectConnction(' + flag_1 + ');">';
+    var htmlString2 = '</select>\
+            </div>\
+            <div class="col-sm-4">\
+            <select class="form-control" id="switch_' + flag_1 + '">\
+            <option value="0" >连通</option>\
+            <option value="1" >断开</option>\
+            </select>\
+            </div>\
+            </div>';
+    var htmlString = $("#setLinkTimeForm").html() + htmlString1 + linkListHtml + htmlString2;
+    $("#setLinkTimeForm").html(htmlString);
+});
+
+//点击删除一行
+$("#minusOneControl").click(function () {
+    if (flag_1 > 0) {
+        //flag最小回归为0
+        --flag_1;
+    }
+    $("#setLinkTimeForm").children().last().remove();
+});
+
+//设置链路通断时间点击提交
+$("#setLinkTimeSubmit").click(function () {
+    if ($("#totalTime").val() == '') {
+        alert("请输入总仿真时间！");
+        return false;
+    }
+    //关闭模态框
+    $("#setLinkTimeModal").modal('hide');
+    var elements = scene.getDisplayedElements();
+    //遍历每行定时任务
+    for (var i = 0; i < flag_1; i++) {
+        if ($('[id = "switch_' + flag_1 + '"]').val() == 0) {
+            //定时发送接通链路的指令
+            setTimeout(function () {
+                $.ajax({
+                    url: '/NetworkSimulation/connectLink',
+                    data: {
+                        linkName : $('[id = "selectLink_' + flag_1 + '"]').val(),
+                        scenario_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: true,
+                    success: function (msg) {
+                        alert(msg);
+                        if (msg == "恢复成功") {
+                            //变化链路为蓝色
+                            for (var i = 0; i < elements.length; i++) {
+                                //在画布上找到该链路对象
+                                if (elements[i] instanceof JTopo.Link && elements[i].text == $('[id = "selectLink_' + flag_1 + '"]').val()) {
+                                    changeLinkToBlue(elements[i]);
+                                }
+                            }
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            }, $('[id = "moment_' + flag_1 + '"]').val() * 1000);
+        }
+        if ($('[id = "switch_' + flag_1 + '"]').val() == 1) {
+            //定时发送断开链路指令
+            setTimeout(function () {
+                $.ajax({
+                    url: '/NetworkSimulation/cutLink',
+                    data: {
+                        linkName : $('[id = "selectLink_' + flag_1 + '"]').val(),
+                        scenario_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: true,
+                    success: function (msg) {
+                        alert(msg);
+                        if (msg == "断开成功") {
+                            //变化链路为红色虚线
+                            for (var i = 0; i < elements.length; i++) {
+                                //在画布上找到该链路对象
+                                if (elements[i] instanceof JTopo.Link && elements[i].text == $('[id = "selectLink_' + flag_1 + '"]').val()) {
+                                    changeLinkToRed(elements[i]);
+                                }
+                            }
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            }, $('[id = "moment_' + flag_1 + '"]').val() * 1000);
+        }
     }
 });

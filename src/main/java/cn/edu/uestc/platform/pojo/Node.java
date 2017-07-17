@@ -17,6 +17,15 @@ public class Node {
 	private int s_id;
 	private float x;
 	private float y;
+	private String uuid;
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 
 	public int getN_id() {
 		return n_id;
@@ -144,7 +153,10 @@ public class Node {
 				+ ", hardwareArchitecture=" + hardwareArchitecture + ", operatingSystem=" + operatingSystem
 				+ ", numberPort=" + numberPort + ", numberInternalModule=" + numberInternalModule
 				+ ", numberInternalLink=" + numberInternalLink + ", nodeStatus=" + nodeStatus + ", flavorType="
-				+ flavorType + ", imageName=" + imageName + ", s_id=" + s_id + ", x=" + x + ", y=" + y + "]";
+				+ flavorType + ", imageName=" + imageName + ", s_id=" + s_id + ", x=" + x + ", y=" + y + ", uuid="
+				+ uuid + "]";
 	}
+
+	
 
 }

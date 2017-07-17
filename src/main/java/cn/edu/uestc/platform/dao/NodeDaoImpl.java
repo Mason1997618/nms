@@ -17,7 +17,7 @@ public class NodeDaoImpl implements NodeDao {
 	 * 判断节点存在否,当前场景下的节点名不能重复
 	 */
 	public boolean haveNodeName(Node node) {
-		String sql = "select *from node as n where n.nodeName=? and n.scenario_id=?";
+		String sql = "select *from node as n where n.nodeName=?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -25,8 +25,7 @@ public class NodeDaoImpl implements NodeDao {
 			conn = DBUtiles.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, node.getNodeName());
-			ps.setInt(2, node.getS_id());
-			 rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			if (rs.next() == false) {
 				return false;
 			}
@@ -45,8 +44,8 @@ public class NodeDaoImpl implements NodeDao {
 	public void insertNode(Node node) {
 		// TODO Auto-generated method stub
 		String sql = "insert into node(nodeName,manageIp,nodeType,hardwareArchitecture,"
-				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType,uuid) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -66,6 +65,7 @@ public class NodeDaoImpl implements NodeDao {
 			ps.setFloat(12, node.getX());
 			ps.setFloat(13, node.getY());
 			ps.setString(14, node.getFlavorType());
+			ps.setString(15, node.getUuid());
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -256,6 +256,7 @@ public class NodeDaoImpl implements NodeDao {
 				node.setX(rs.getFloat(13));
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
+				node.setUuid(rs.getString(16));
 			}
 		} catch (SQLException e) {
 
@@ -284,7 +285,7 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		} finally {
 			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return true;
@@ -309,7 +310,7 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		} finally {
 			DBUtiles.releaseResource(ps, conn);
 		}
 		return flag;
@@ -361,8 +362,66 @@ public class NodeDaoImpl implements NodeDao {
 	@Override
 	public Node getNodeByLink(Link link) {
 		String sql = "select *from node where ";
-		
+
 		return null;
+	}
+
+	@Override
+	public void minusNumberComplexNode(int s_id) {
+		String sql = "update scenario set numberNode = numberNode - 1,numberComplexNode"
+				+ " = numberComplexNode - 1 where s_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	@Override
+	public void minusNumberSimpleNode(int s_id) {
+		String sql = "update scenario set numberNode = numberNode-1,numberSimpleNode"
+				+ " = numberSimpleNode-1 where s_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	@Override
+	public void deleteNode(int n_id) {
+		// TODO Auto-generated method stub
+		String sql="delete from node where n_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn=DBUtiles.getConnection();
+			ps=conn.prepareStatement(sql);
+			ps.setInt(1,n_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			DBUtiles.releaseResource(ps, conn);
+		}
+		
 	}
 
 }

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" href="css/index1.css"/>
     <link rel="stylesheet" href="lib/jquery-ui-1.11.4/jquery-ui.css"/>
+    <link rel="stylesheet" href="lib/jquery/jquery-confirm.min.css"/>
     <!--<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-slider.css"/>-->
 </head>
 <body>
@@ -137,6 +138,7 @@
             <button class="btn btn-danger" id="remove">删除</button>
             <button class="btn btn-info" id="editNode">编辑节点属性</button>
             <button class="btn btn-info" id="openInnerEdit">编辑内部场景</button>
+            <button class="btn btn-info" id="setLinkTime">设置链路通断时间</button>
             <button class="btn btn-primary" id="connectLink">连通链路</button>
             <button class="btn btn-danger" id="cutLink">断开链路</button>
             <button class="btn btn-primary" id="startMove">开始动态变化</button>
@@ -343,9 +345,64 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal -->
     </div>
+
+    <!--设置链路通段时间模态框-->
+    <div class="modal fade" id="setLinkTimeModal" tabindex="-1" role="dialog" aria-labelledby="setLinkTimeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="setLinkTimeModalLabel">请设置链路通断时间</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">仿真总时间</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" placeholder="X秒" id="totalTime">
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="button" class="btn btn-default form-control" id="addOneControl">
+                                    <span class="glyphicon glyphicon-plus"></span> 添加一行
+                                </button>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="button" class="btn btn-default form-control" id="minusOneControl">
+                                    <span class="glyphicon glyphicon-minus"></span> 删除一行
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="setLinkTimeForm">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">时刻</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" placeholder="X秒" id="moment_0">
+                                </div>
+                                <div class="col-sm-4">
+                                    <select class="form-control" id="selectLink_0" onchange="selectConnction(0);"></select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select class="form-control" id="switch_0">
+                                        <option value="0" >连通</option>
+                                        <option value="1" >断开</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="closeSetLinkTimeModal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="setLinkTimeSubmit">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
 </div>
 
 <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/jquery/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="lib/jquery-ui-1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>
 <!--<script type="text/javascript" src="lib/bootstrap/js/bootstrap-slider.js"></script>-->
