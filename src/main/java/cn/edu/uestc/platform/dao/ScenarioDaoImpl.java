@@ -40,7 +40,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	@Override
 	public boolean insertScenario(Scenario scenario) {
 
-		String sql = "insert into scenario(scenarioName,scenarioType,project_id,numberNode,numberSimpleNode,numberComplexNode)values(?,?,?,?,?,?)";
+		String sql = "insert into scenario(scenarioName,scenarioType,project_id,numberNode,numberSimpleNode,numberComplexNode,scenarioStatus)values(?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 
@@ -53,6 +53,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
 			ps.setInt(4, scenario.getNumberNode());
 			ps.setInt(5, scenario.getNumberSimpleNode());
 			ps.setInt(6, scenario.getNumberComplexNode());
+			ps.setInt(7, scenario.getScenarioStatus());
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -100,6 +101,9 @@ public class ScenarioDaoImpl implements ScenarioDao {
 		return new Scenario();
 	}
 
+	/*
+	 * 返回项目下的所有场景列表
+	 */
 	@Override
 	public List<Scenario> findAllScenarioByProjectId(int p_id) {
 		String sql = "select * from scenario as s where s.project_id=?";
@@ -132,6 +136,78 @@ public class ScenarioDaoImpl implements ScenarioDao {
 			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return scenarios;
+	}
+
+	/*
+	 * 删除场景
+	 */
+	@Override
+	public void deletescenario(int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "delete from scenario where s_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	/*
+	 * 更新场景状态toDown
+	 * 
+	 * @see cn.edu.uestc.platform.dao.ScenarioDao#updateScenarioStatus(int)
+	 */
+	@Override
+	public void updateScenarioStatusToDown(int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "update scenario set scenarioStatus = 1 where s_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	/*
+	 * 更新场景状态toUp
+	 * 
+	 * @see cn.edu.uestc.platform.dao.ScenarioDao#updateScenarioStatusToUp(int)
+	 */
+	@Override
+	public void updateScenarioStatusToUp(int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "update scenario set scenarioStatus = 0 where s_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package cn.edu.uestc.platform.action;
 
+import org.junit.Test;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.edu.uestc.platform.service.LinkService;
 import cn.edu.uestc.platform.service.NodeService;
 import cn.edu.uestc.platform.service.PortService;
+import cn.edu.uestc.platform.service.ScenarioService;
 
 @Controller
 public class DeleteController {
@@ -44,6 +46,25 @@ public class DeleteController {
 	public String deleteNode(int s_id,String nodeName){
 		NodeService service = new NodeService();
 		service.deleteNode(s_id,nodeName);
+		return "删除成功";
+	}
+	
+	/*
+	 * 删除场景
+	 */
+	@RequestMapping("/deleteScenario")
+	@ResponseBody
+	public String deleteScenario(int s_id){
+		ScenarioService scenarioservice = new ScenarioService();
+//		scenarioservice.deleteScenariosOnlyOpenstack(s_id);
+		scenarioservice.deleteScenarioAll(s_id);
 		return null;
+	}
+	
+	@Test
+	public void deleteScenario(){
+		ScenarioService scenarioservice = new ScenarioService();
+		scenarioservice.deleteScenariosOnlyOpenstack(29);
+//		scenarioservice.deleteScenarioAll(s_id);
 	}
 }

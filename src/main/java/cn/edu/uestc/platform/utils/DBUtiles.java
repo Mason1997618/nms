@@ -6,16 +6,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
+import cn.edu.uestc.platform.action.ActionController;
 
 public class DBUtiles {
 	static String url = "jdbc:mysql://localhost:3306/networksimulation";
 	static String username = "root";
 	static String password = "root";
-
+	private static Logger logger = Logger.getLogger(DBUtiles.class);
 	static {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("成功加载MySQL驱动！");
+			logger.info("[加载Mysql驱动]  执行时间: " + new Date());
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.utils.DBUtiles;
@@ -80,7 +82,7 @@ public class NodeDaoImpl implements NodeDao {
 	@Override
 	public List<Node> findAllNodeByScenarioId(int s_id) {
 		// TODO Auto-generated method stub
-		String sql = "select * from Node as n where n.scenario_id=?";
+		String sql = "select * from node as n where n.scenario_id=?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -108,6 +110,7 @@ public class NodeDaoImpl implements NodeDao {
 				node.setX(rs.getFloat(13));
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
+				node.setUuid(rs.getString(16));
 				nodes.add(node);
 			}
 
@@ -214,6 +217,7 @@ public class NodeDaoImpl implements NodeDao {
 				node.setX(rs.getFloat(13));
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
+				node.setUuid(rs.getString(16));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -349,6 +353,7 @@ public class NodeDaoImpl implements NodeDao {
 				node.setX(rs.getFloat(13));
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
+				node.setUuid(rs.getString(16));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -407,13 +412,34 @@ public class NodeDaoImpl implements NodeDao {
 	@Override
 	public void deleteNode(int n_id) {
 		// TODO Auto-generated method stub
-		String sql="delete from node where n_id = ?";
+		String sql = "delete from node where n_id = ?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			conn=DBUtiles.getConnection();
-			ps=conn.prepareStatement(sql);
-			ps.setInt(1,n_id);
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, n_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	@Override
+	public void updataNodeUuid(String uuid, int n_id) {
+		// TODO Auto-generated method stub
+		String sql = "update node set uuid = ? where n_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, uuid);
+			ps.setInt(2, n_id);
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -421,7 +447,7 @@ public class NodeDaoImpl implements NodeDao {
 		}finally{
 			DBUtiles.releaseResource(ps, conn);
 		}
-		
 	}
+
 
 }

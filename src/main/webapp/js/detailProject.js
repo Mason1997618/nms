@@ -5,6 +5,7 @@ var projectId = [];
 //二级分类
 var city = [];
 var scenarioId = [];
+var scenarioStatus = [];
 //三级分类
 var node = [];
 var nodeId = [];
@@ -29,10 +30,12 @@ function praseProjectList(data) {
 function praseScenarioList(data) {
     city = [];
     scenarioId = [];
+    scenarioStatus = [];
     var objs = jQuery.parseJSON(data);
     for (var i = 0; i < objs.length; i++){
         city[i] = objs[i].scenarioName;
         scenarioId[i] = objs[i].s_id;
+        scenarioStatus[i] = objs[i].scenarioStatus;
     }
 }
 
@@ -104,7 +107,13 @@ function selectP(p) {
     //显示出场景列表
 	areaCont = "";
 	for (var i = 0; i < city.length; i++) {
-		areaCont += '<li onClick="selectC(' + i + ');"><a href="javascript:void(0)">' + city[i] + '</a></li>';
+	    if (scenarioStatus[i] == 0) {
+	        //运行的场景
+            areaCont += '<li onClick="selectC(' + i + ');"><a href="javascript:void(0)">' + city[i] + '</a></li>';
+        } else {
+	        //挂起的场景
+            areaCont += '<li onClick="selectC(' + i + ');"><a href="javascript:void(0)">' + city[i] + "（挂起/不能进入编辑器/需要先恢复）" + '</a></li>';
+        }
 	}
 	$("#sort2").html(areaCont).show();
 	$("#sort3").hide();
@@ -113,8 +122,7 @@ function selectP(p) {
 	$("#selectedSort").html(expressP);
 	$("#releaseBtn").removeAttr("disabled");
 	//打开工程编辑器
-	document.getElementById("releaseBtn").onclick =  function () {
-        //location.href="projectEdit.html";
+    document.getElementById("releaseBtn").onclick = function () {
         window.open(encodeURI("projectEdit.html?projectId=" + projectId[p] + "&projectName=" + expressP));
     };
 	//删除工程
@@ -169,31 +177,36 @@ function selectC(p) {
 	expressC = city[p];
 	s_id = scenarioId[p];
 	$("#selectedSort").html(expressC);
-	//打开场景编辑器
-    document.getElementById("releaseBtn").onclick =  function () {
-        //location.href="index3.html";
-        window.open(encodeURI("index3.html?scenarioId=" + s_id + "&scenarioName=" + city[p] + "&projectName=" + expressP));
-    };
-    //删除场景
-    $("#delete").click(function () {
-        $.ajax({
-            url: '/NetworkSimulation/deleteScenario',
-            data: {
-                scenarioId : scenarioId[p]
-            },
-            type: 'post',
-            dataType: 'json',
-            async: false,
-            success: function (msg) {
-                alert(msg);
-                //刷新页面
-                window.location.reload();
-            },
-            error: function () {
-
-            }
-        });
-    });
+	if (scenarioStatus[p] == 1) {
+	    //如果是挂起的场景
+        $("#releaseBtn").attr("disabled", "disabled");
+    } else {
+	    $("#releaseBtn").removeAttr("disabled");
+        //打开场景编辑器
+        document.getElementById("releaseBtn").onclick = function () {
+            window.open(encodeURI("index3.html?scenarioId=" + s_id + "&scenarioName=" + city[p] + "&projectName=" + expressP));
+        };
+    }
+    // //删除场景
+    // $("#delete").click(function () {
+    //     $.ajax({
+    //         url: '/NetworkSimulation/deleteScenario',
+    //         data: {
+    //             scenarioId : scenarioId[p]
+    //         },
+    //         type: 'post',
+    //         dataType: 'json',
+    //         async: false,
+    //         success: function (msg) {
+    //             alert(msg);
+    //             //刷新页面
+    //             window.location.reload();
+    //         },
+    //         error: function () {
+    //
+    //         }
+    //     });
+    // });
 }
 
 /*选择三级目录*/
@@ -202,29 +215,29 @@ function selectD(p) {
 	expressD = node[p];
 	$("#selectedSort").html(expressD);
 	//打开节点编辑器
-    document.getElementById("releaseBtn").onclick =  function () {
+    document.getElementById("releaseBtn").onclick = function () {
         window.open(encodeURI("nodeEdit.html?nodeName=" + expressD + "&scenarioId=" + s_id));
     };
-    //删除节点
-    $("#delete").click(function () {
-        $.ajax({
-            url: '/NetworkSimulation/deleteNode',
-            data: {
-                nodeId : nodeId[p]
-            },
-            type: 'post',
-            dataType: 'json',
-            async: false,
-            success: function (msg) {
-                alert(msg);
-                //刷新页面
-                window.location.reload();
-            },
-            error: function () {
-
-            }
-        });
-    });
+    // //删除节点
+    // $("#delete").click(function () {
+    //     $.ajax({
+    //         url: '/NetworkSimulation/deleteNode',
+    //         data: {
+    //             nodeId : nodeId[p]
+    //         },
+    //         type: 'post',
+    //         dataType: 'json',
+    //         async: false,
+    //         success: function (msg) {
+    //             alert(msg);
+    //             //刷新页面
+    //             window.location.reload();
+    //         },
+    //         error: function () {
+    //
+    //         }
+    //     });
+    // });
 }
 
 /*编辑工程*/

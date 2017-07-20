@@ -1,14 +1,18 @@
 package cn.edu.uestc.platform.action;
 
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.edu.uestc.platform.controller.LinkController;
+import cn.edu.uestc.platform.controller.ThreadController;
 import cn.edu.uestc.platform.dao.LinkDao;
 import cn.edu.uestc.platform.dao.LinkDaoImpl;
 import cn.edu.uestc.platform.pojo.Link;
@@ -27,19 +31,22 @@ import cn.edu.uestc.platform.utils.JSoneUtils;
 
 @Controller
 public class ActionController {
+	private static Logger logger = Logger.getLogger(ActionController.class);
+
 	/*
 	 * 用户注册
 	 * 
 	 */
 	@RequestMapping("/register.action")
 	public String userRegister(Model model, User user) {
+		logger.info("[用户注册]   userName:" + user.getUsername() + " 注册时间: " + new Date());
 		UserService userservice = new UserService();
 		if (userservice.userRegister(user) == false) {
 			System.out.println("用户名已经存在");
 			model.addAttribute("message", "用户名已经存在");
 			return "##跳转到错误信息提示页面";
 		}
-		System.out.println("success!");
+		logger.info("[用户注册]:" + user.getUsername() + "   注册成功，注册时间: " + new Date());
 		model.addAttribute("message", "注册成功");
 		return "/login"; // 提示信息后 跳转到用户登录界面
 
@@ -51,7 +58,7 @@ public class ActionController {
 	 */
 	@RequestMapping("/login.action")
 	public String userLogin(Model model, User user, HttpSession session) {
-		System.out.println("denglu!!!!");
+		logger.info("[用户登录]   userName:" + user.getUsername() + " 登录时间: " + new Date());
 		UserService service = new UserService();
 		// System.out.println(service.userLogin(user));
 
@@ -77,13 +84,12 @@ public class ActionController {
 	@ResponseBody
 	@RequestMapping("/creatProject")
 	public String createProject(Model model, Project project, HttpSession session) {
-
+		logger.info("[新建工程]   projectName:" + project.getProjectName() + " 操作时间: " + new Date());
 		User user = (User) session.getAttribute("user");
-		System.out.println(user);
 		project.setUser_id(user.getU_id());// 将当前用户uid给要创建的工程
 		ProjectService service = new ProjectService();
 		if (service.createProject(project) == true) {
-			System.out.println("创建成功！");
+			logger.info("[新建工程]:新建工程成功！   projectName:" + project.getProjectName() + "，操作时间: " + new Date());
 			return "创建成功!";
 		} else {
 			System.out.println("创建失败！");
@@ -111,6 +117,7 @@ public class ActionController {
 	@RequestMapping("/createScenario")
 	@ResponseBody
 	public String createScenario(Model model, Scenario scenario, int p_id) {
+		logger.info("[新建场景]   scenarioName:" + scenario.getScenarioName() + " 操作时间: " + new Date());
 		ScenarioService service = new ScenarioService();
 		// 现在假设能从前端拿到场景所属的工程id号。
 		scenario.setProject_id(p_id);
@@ -138,8 +145,8 @@ public class ActionController {
 	@RequestMapping("/addNode")
 	@ResponseBody
 	public String createNode(Node node) {
+		logger.info("[新建节点]   nodeName:" + node.getNodeName() + " 操作时间: " + new Date());
 		NodeService service = new NodeService();
-		System.out.println(node);
 		boolean flag = service.createNode(node);
 		if (flag == true) {
 			return "创建成功";
@@ -183,13 +190,13 @@ public class ActionController {
 	}
 
 	/*
-	 * 编辑工程名
+	 * 编辑工程名，此处之后需要从前端传入u_id，以便用户长时间操作 造成session中无user，发生空指针异常。
 	 */
 	@RequestMapping("/editProject")
 	@ResponseBody
 	public String updateProjectName(Project project, HttpSession session) {
+		logger.info("[编辑工程]  ProjectName:" + project.getProjectName() + "，	操作时间: " + new Date());
 		ProjectService service = new ProjectService();
-		System.out.println("编辑工程" + project);
 		User user = (User) session.getAttribute("user");
 		project.setUser_id(user.getU_id());
 		if (service.updataProjectName(project) == true) {
@@ -205,6 +212,7 @@ public class ActionController {
 	@RequestMapping("/editNode")
 	@ResponseBody
 	public String editNode(Node node) {
+		logger.info("[编辑节点]   ProjectName:" + node.getNodeName() + " 操作时间: " + new Date());
 		NodeService service = new NodeService();
 		boolean flag = service.editNode(node);
 		if (flag == true) {
@@ -219,8 +227,8 @@ public class ActionController {
 	@RequestMapping("/addPort")
 	@ResponseBody
 	public String createPort(Port port) {
+		logger.info("[新建端口]   PortName:" + port.getPortName() + " 操作时间: " + new Date());
 		PortService service = new PortService();
-		System.out.println(port);
 		boolean flag = service.createPort(port);
 		return "创建成功";
 	}
@@ -253,10 +261,10 @@ public class ActionController {
 	 */
 	@RequestMapping("/addLink")
 	@ResponseBody
-	public String createLink(Link link, String fromNodeIP, String toNodeIP) {
-		System.out.println(link + fromNodeIP + toNodeIP);
+	public String createLink(Link link) {
+		logger.info("[新建链路]   linkName:" + link.getLinkName() + " 操作时间: " + new Date());
 		LinkService linkService = new LinkService();
-		boolean flag = linkService.createLink(link, fromNodeIP, toNodeIP);
+		boolean flag = linkService.createLink(link);
 		if (flag == true) {
 			return "创建成功";
 		}
@@ -270,10 +278,8 @@ public class ActionController {
 	@RequestMapping("/getLinkList")
 	@ResponseBody
 	public String getLinkList(int s_id) {
-		System.out.println(s_id + "此函数执行了");
 		LinkService service = new LinkService();
 		List<Link> links = service.getLinkList(s_id);
-		System.out.println(JSoneUtils.ListToJson(links).toString());
 		return JSoneUtils.ListToJson(links).toString();
 	}
 
@@ -282,8 +288,10 @@ public class ActionController {
 	 */
 	@RequestMapping("/cutLink")
 	@ResponseBody
-	public String pauseLink(int scenario_id, String linkName) {
-		System.out.println(scenario_id + "此函数执行了");
+	public String pauseLink(int scenario_id, String linkName, int delayTime) {
+		logger.info("[挂起链路]   linkName:" + linkName + " 操作时间: " + new Date());
+		ThreadController threadController = new ThreadController();
+		threadController.run(linkName, delayTime);
 		LinkService service = new LinkService();
 		service.pauseLink(scenario_id, linkName);
 		return "断开成功";
@@ -295,8 +303,34 @@ public class ActionController {
 	@RequestMapping("/connectLink")
 	@ResponseBody
 	public String recoveryLink(int scenario_id, String linkName) {
+		logger.info("[恢复链路]   linkName:" + linkName + " 操作时间: " + new Date());
 		LinkService service = new LinkService();
 		service.recoveryLink(scenario_id, linkName);
+		return "恢复成功";
+	}
+
+	/*
+	 * 挂起场景
+	 */
+	@RequestMapping("/keepScenario")
+	@ResponseBody
+	public String pauseScenario(int s_id) {
+		logger.info("[挂起场景]   ScenarioID:" + s_id + " 操作时间: " + new Date());
+		ScenarioService scenarioService = new ScenarioService();
+		scenarioService.deleteScenariosOnlyOpenstack(s_id);
+		return "挂起成功";
+	}
+
+	/*
+	 * 恢复场景
+	 */
+	@RequestMapping("/recoverScenario")
+	@ResponseBody
+	public String recoveryScenario(int s_id) {
+		logger.info("[恢复场景]   ScenarioID:" + s_id + " 操作时间: " + new Date());
+
+		ScenarioService scenarioService = new ScenarioService();
+		scenarioService.recoveryScenario(s_id);
 		return "恢复成功";
 	}
 

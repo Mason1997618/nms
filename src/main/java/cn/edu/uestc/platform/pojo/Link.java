@@ -15,6 +15,24 @@ public class Link {
 	private double linkLength;
 	private double linkNoise;
 	private double linkInterference;
+	private String fromNodeIP;
+	private String toNodeIP;
+
+	public String getFromNodeIP() {
+		return fromNodeIP;
+	}
+
+	public void setFromNodeIP(String fromNodeIP) {
+		this.fromNodeIP = fromNodeIP;
+	}
+
+	public String getToNodeIP() {
+		return toNodeIP;
+	}
+
+	public void setToNodeIP(String toNodeIP) {
+		this.toNodeIP = toNodeIP;
+	}
 
 	public int getL_id() {
 		return l_id;
@@ -126,7 +144,7 @@ public class Link {
 				+ channelModel + ", scenario_id=" + scenario_id + ", txPort_id=" + txPort_id + ", rxPort_id="
 				+ rxPort_id + ", fromNodeName=" + fromNodeName + ", toNodeName=" + toNodeName + ", linkName=" + linkName
 				+ ", linkLength=" + linkLength + ", linkNoise=" + linkNoise + ", linkInterference=" + linkInterference
-				+ "]";
+				+ ", fromNodeIP=" + fromNodeIP + ", toNodeIP=" + toNodeIP + "]";
 	}
 
 }

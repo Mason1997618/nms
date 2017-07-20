@@ -24,7 +24,7 @@ public class LinkService {
 	 * 创建链路 先在openstack上成功创建了链路 再将信息插入数据库。 需要更新port表的ip 需要调用沛华的创建链路函数在云平台创建链路
 	 * 从link中拿到两个port的id号 txPort_id对应于fromIp,rxPort_id对应于toIp
 	 */
-	public boolean createLink(Link link, String fromNodeIP, String toNodeIP) {
+	public boolean createLink(Link link) {
 
 		LinkDao linkDao = new LinkDaoImpl();
 		// 当使用||时，||前面的条件如果已经为真的话，之后的条件则不会进行判断,所以不用担心之后的link会空指针异常
@@ -34,15 +34,16 @@ public class LinkService {
 			Node fromNode = nodeDao.getNodeByPortId(link.getTxPort_id());
 			Node toNode = nodeDao.getNodeByPortId(link.getRxPort_id());
 			LinkController controller = new LinkController();
-			controller.createLinkMTM(fromNode.getNodeName(), fromNodeIP, toNode.getNodeName(), toNodeIP);
+			controller.createLinkMTM(link.getFromNodeName(), link.getFromNodeIP(), link.getToNodeName(),
+					link.getToNodeIP());
 
 			// 新建的链路linkStatus的状态都是0， 可插入链路，如果链路已经存在，数据库中无需再插入链路了。
 			if (link.getLinkStatus() == 0) {
 				linkDao.insertLink(link);
 				// 更新port表的ip地址,以及链路状态
 				PortDao portDao = new PortDaoImpl();
-				portDao.updatePortIP(link.getTxPort_id(), fromNodeIP);
-				portDao.updatePortIP(link.getRxPort_id(), toNodeIP);
+				portDao.updatePortIP(link.getTxPort_id(), link.getFromNodeIP());
+				portDao.updatePortIP(link.getRxPort_id(), link.getToNodeIP());
 			}
 			return true;
 		}
@@ -98,17 +99,18 @@ public class LinkService {
 		dao.updateLinkStatustoDown(s_id, linkName);
 		// 删除openstack上的链路
 		this.deleteLink(s_id, linkName);
+		System.out.println("挂起链路成功！");
 	}
 
+	/*
+	 * 恢复链路
+	 */
 	public void recoveryLink(int s_id, String linkName) {
-
 		LinkDao linkDao = new LinkDaoImpl();
 		PortDao portDao = new PortDaoImpl();
-
 		Link link = linkDao.getLink(s_id, linkName);
-		List<Port> ports = portDao.getPortByLink(link);
 		// 先创建openstack上的链路
-		this.createLink(link, ports.get(0).getPortIp(), ports.get(1).getPortIp());
+		this.createLink(link);
 		// 修改数据库中链路的状态
 		linkDao.updateLinkStatusUp(s_id, linkName);
 	}

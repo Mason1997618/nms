@@ -15,5 +15,11 @@ public interface ScenarioDao {
 
 	public List<Scenario> findAllScenarioByProjectId(int s_id);
 
+	public void deletescenario(int s_id);
+
+	public void updateScenarioStatusToDown(int s_id);
+	
+	public void updateScenarioStatusToUp(int s_id);
+
 
 }

@@ -1,5 +1,7 @@
 package cn.edu.uestc.platform.pojo;
 
+import java.util.List;
+
 public class Node {
 
 	private int n_id;
@@ -18,6 +20,15 @@ public class Node {
 	private float x;
 	private float y;
 	private String uuid;
+	private List<Port> ports;
+
+	public List<Port> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(List<Port> ports) {
+		this.ports = ports;
+	}
 
 	public String getUuid() {
 		return uuid;

@@ -20,6 +20,8 @@ public class TestController {
 		logger.info("This is info message.");
 		// 记录error级别的信息
 		logger.error("This is error message.");
+		
+		
 
 		try {
 			return ResponseEntity.ok("返回json成功");
@@ -28,6 +30,8 @@ public class TestController {
 		}
 		// 500
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		
+		
 	}
 
 }

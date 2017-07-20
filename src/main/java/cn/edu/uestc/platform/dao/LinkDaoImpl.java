@@ -21,8 +21,8 @@ public class LinkDaoImpl implements LinkDao {
 	public void insertLink(Link link) {
 		// TODO Auto-generated method stub
 		String sql = "insert into link(linkName,linkType,linkLength,linkStatus,linkNoise,"
-				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName,fromNodeIP,toNodeIP) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 
@@ -41,6 +41,8 @@ public class LinkDaoImpl implements LinkDao {
 			ps.setInt(10, link.getRxPort_id());
 			ps.setString(11, link.getFromNodeName());
 			ps.setString(12, link.getToNodeName());
+			ps.setString(13, link.getFromNodeIP());
+			ps.setString(14, link.getToNodeIP());
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -80,6 +82,10 @@ public class LinkDaoImpl implements LinkDao {
 				link.setScenario_id(rs.getInt(9));
 				link.setTxPort_id(rs.getInt(10));
 				link.setRxPort_id(rs.getInt(11));
+				link.setFromNodeName(rs.getString(12));
+				link.setToNodeName(rs.getString(13));
+				link.setFromNodeIP(rs.getString(14));
+				link.setToNodeIP(rs.getString(15));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -91,13 +97,12 @@ public class LinkDaoImpl implements LinkDao {
 	}
 
 	/*
-	 * 同一场景下的链路名是否存在
+	 * 链路名是否存在
 	 */
 	@Override
 	public boolean ishaveLinkName(Link link) {
 		// TODO Auto-generated method stub
-
-		String sql = "select *from link as l where l.linkName = ? and l.scenario_id = ?";
+		String sql = "select *from link where linkName = ?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -105,8 +110,8 @@ public class LinkDaoImpl implements LinkDao {
 			conn = DBUtiles.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, link.getLinkName());
-			ps.setInt(2, link.getScenario_id());
 			rs = ps.executeQuery();
+			System.out.println("执行了");
 			if (rs.next() == false) {
 				return false;
 			}
@@ -150,6 +155,8 @@ public class LinkDaoImpl implements LinkDao {
 				link.setRxPort_id(rs.getInt(11));
 				link.setFromNodeName(rs.getString(12));
 				link.setToNodeName(rs.getString(13));
+				link.setFromNodeIP(rs.getString(14));
+				link.setToNodeIP(rs.getString(15));
 				links.add(link);
 			}
 		} catch (SQLException e) {
@@ -214,6 +221,8 @@ public class LinkDaoImpl implements LinkDao {
 				link.setRxPort_id(rs.getInt(11));
 				link.setFromNodeName(rs.getString(12));
 				link.setToNodeName(rs.getString(13));
+				link.setFromNodeIP(rs.getString(14));
+				link.setToNodeIP(rs.getString(15));
 			}
 
 		} catch (SQLException e) {

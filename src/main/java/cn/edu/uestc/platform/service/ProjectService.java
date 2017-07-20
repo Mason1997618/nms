@@ -1,17 +1,21 @@
 package cn.edu.uestc.platform.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import cn.edu.uestc.platform.action.ActionController;
 import cn.edu.uestc.platform.dao.ProjectDao;
 import cn.edu.uestc.platform.dao.ProjectDaoImpl;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.User;
 
 public class ProjectService {
+	private static Logger logger = Logger.getLogger(ProjectService.class);
 	/*
 	 * 新建工程
 	 */
-
 	public boolean createProject(Project project) {
 
 		ProjectDaoImpl projectdao = new ProjectDaoImpl();
@@ -21,9 +25,10 @@ public class ProjectService {
 			project.setProjectStatus(1);
 			projectdao.insertProject(project);
 			System.out.println("插入工程成功");
+			logger.info("插入工程成功"  + project.getProjectName() + "   注册成功，注册时间: " + new Date());
 			return true;
 		} else {
-			System.out.println("工程名已经存在");
+			logger.info("工程名:"+project.getProjectName()+"已存在");
 			return false;
 		}
 	}

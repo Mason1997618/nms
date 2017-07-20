@@ -106,27 +106,48 @@ public class NodeService {
 
 		// 调用portservice 删除port(包括port上的链路)
 		PortService portService = new PortService();
-		System.out.println("开始删除该节点中所有端口"+new Date());
+		System.out.println("开始删除该节点中所有端口" + new Date());
 		for (Port port : ports) {
 			portService.deletePort(port.getPt_id());
 		}
-		System.out.println("删除端口结束"+new Date());
+		System.out.println("删除端口结束" + new Date());
 		// 在Openstack上删除节点
-		System.out.println("开始删除Openstack层上的节点"+new Date());
-		 NodeController nodeController = new NodeController();
-		 System.out.println(node.getUuid());
-		 nodeController.deleteNode(node.getUuid());
-		 System.out.println("删除Openstack层上的节点结束"+new Date());
+		System.out.println("开始删除Openstack层上的节点" + new Date());
+		NodeController nodeController = new NodeController();
+		System.out.println(node.getUuid());
+		nodeController.deleteNode(node.getUuid());
+		System.out.println("删除Openstack层上的节点结束" + new Date());
 		// 更新节点所属场景的节点数量信息
 		if (node.getNodeType() == 2) {
 			nodeDao.minusNumberComplexNode(s_id);
 		} else {
 			nodeDao.minusNumberSimpleNode(s_id);
 		}
-		
 		// 在数据库中删除节点
 		DeleteDao deleteDao = new DeleteDaoImpl();
 		deleteDao.deleteSimpleNode(node);
+	}
+
+	public void deleteNodeOnlyOpenstack(int s_id, String nodeName) {
+		// 拿到属于该节点的所有port
+		PortDao portDao = new PortDaoImpl();
+		List<Port> ports = portDao.getPortListBynodeName(s_id, nodeName);
+		NodeDao nodeDao = new NodeDaoImpl();
+		Node node = nodeDao.getNodeBynodeName(nodeName, s_id);
+
+		// 调用portservice 删除port(包括port上的链路)
+		PortService portService = new PortService();
+		System.out.println("开始删除该节点中所有端口" + new Date());
+		for (Port port : ports) {
+			portService.deletePortOnlyOpenstack(port.getPt_id());
+		}
+		System.out.println("删除端口结束" + new Date());
+		// 在Openstack上删除节点
+		System.out.println("开始删除Openstack层上的节点" + new Date());
+		NodeController nodeController = new NodeController();
+		System.out.println(node.getUuid());
+		nodeController.deleteNode(node.getUuid());
+		System.out.println("删除Openstack层上的节点结束" + new Date());
 
 	}
 }

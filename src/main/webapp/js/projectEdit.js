@@ -13,15 +13,18 @@
 
 var scenarioList = [];
 var scenarioId = [];
+var scenarioStatus = [];
 
 //解析场景对象列表的json
 function praseScenarioList(data) {
     scenarioList = [];
     scenarioId = [];
+    scenarioStatus = [];
     var objs = jQuery.parseJSON(data);
     for (var i = 0; i < objs.length; i++){
         scenarioList[i] = objs[i].scenarioName;
         scenarioId[i] = objs[i].s_id;
+        scenarioStatus[i] = objs[i].scenarioStatus;
     }
 }
 
@@ -69,16 +72,28 @@ function initScenarioList() {
 
 //选中场景后
 function selectP(i) {
-    $("#editScenario").removeAttr("disabled");
-    $("#delScenatio").removeAttr("disabled");
+    if (scenarioStatus[i] == 0) {
+        //如果是运行状态的场景
+        $("#delScenatio").removeAttr("disabled");
+        $("#editScenario").removeAttr("disabled");
+        $("#suspendScenatio").removeAttr("disabled");
+        $("#recoverScenatio").attr("disabled", "disabled");
+    }
+    if (scenarioStatus[i] == 1) {
+        //挂起状态的
+        $("#recoverScenatio").removeAttr("disabled");
+        $("#delScenatio").attr("disabled", "disabled");
+        $("#editScenario").attr("disabled", "disabled");
+        $("#suspendScenatio").attr("disabled", "disabled");
+    }
     //打开场景编辑器
     $("#editScenario").click(function () {
-        window.open("index3.html?scenarioId=" + scenarioId[i] + "&scenarioName=" + scenarioList[i] + "&projectName=" + $("#projectName").val());
+        window.open(encodeURI("index3.html?scenarioId=" + scenarioId[i] + "&scenarioName=" + scenarioList[i] + "&projectName=" + $("#projectName").val()));
     });
-    //删除场景
-    $("#delScenatio").click(function () {
+    //挂起场景
+    $("#suspendScenatio").click(function () {
         $.ajax({
-            url: '/NetworkSimulation/deleteScenario',
+            url: '/NetworkSimulation/keepScenario',
             data: {
                 s_id : scenarioId[i]
             },
@@ -89,9 +104,90 @@ function selectP(i) {
                 alert(msg);
                 //刷新当前页面
                 window.location.reload();
+                opener.location.reload();
             },
             error: function () {
 
+            }
+        });
+    });
+    //恢复场景
+    $("#recoverScenatio").click(function () {
+        $.ajax({
+            url: '/NetworkSimulation/recoverScenario',
+            data: {
+                s_id : scenarioId[i]
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                alert(msg);
+                //刷新当前页面
+                window.location.reload();
+                opener.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+    });
+    //删除场景
+    $("#delScenatio").click(function () {
+        $.confirm({
+            title: '请确认！',
+            content: '是否完全删除场景？',
+            buttons: {
+                yes: {
+                    text: '是',
+                    btnClass: 'btn-red',
+                    action: function(){
+                        $.alert('完全删除云平台中的场景及数据');
+                        $.ajax({
+                            url: '/NetworkSimulation/deleteScenario',
+                            data: {
+                                s_id : scenarioId[i]
+                            },
+                            type: 'post',
+                            dataType: 'json',
+                            async: false,
+                            success: function (msg) {
+                                alert(msg);
+                                //刷新当前页面
+                                window.location.reload();
+                                opener.location.reload();
+                            },
+                            error: function () {
+
+                            }
+                        });
+                    }
+                },
+                no: {
+                    text: '否',
+                    btnClass: 'btn-blue',
+                    action: function(){
+                        $.alert('保留数据库中场景数据');
+                        $.ajax({
+                            url: '/NetworkSimulation/keepScenario',
+                            data: {
+                                s_id : scenarioId[i]
+                            },
+                            type: 'post',
+                            dataType: 'json',
+                            async: false,
+                            success: function (msg) {
+                                alert(msg);
+                                //刷新当前页面
+                                window.location.reload();
+                                opener.location.reload();
+                            },
+                            error: function () {
+
+                            }
+                        });
+                    }
+                }
             }
         });
     });
@@ -135,29 +231,6 @@ $("#addScenario").click(function () {
             alert(msg);
             //刷新当前页面
             $("#myModal").hide();
-            window.location.reload();
-            // opener.location.reload()刷新父窗口对象（用于单开窗口）
-        },
-        error: function () {
-
-        }
-    });
-});
-
-//用场景名删除场景
-$("#delScenatio").click(function () {
-    $.ajax({
-        url: 'project/delScenario',
-        data: {
-            projectId : $.getUrlParam("p_id"),
-            scenarioName : $("#selectScenario").val()
-        },
-        type: 'post',
-        dataType: 'json',
-        async: false,
-        success: function (msg) {
-            alert(msg);
-            //刷新当前页面
             window.location.reload();
             // opener.location.reload()刷新父窗口对象（用于单开窗口）
         },

@@ -193,6 +193,29 @@ public class PortDaoImpl implements PortDao {
 		return portId;
 	}
 
+	/*
+	 * 
+	 * 通过链路拿到链路两端的port
+	 * 
+	 *      //+----------+----------+--------------+-----------------+
+//			| l_id | txPortID | rxPortID | fromNodeName | toNodeName |
+//			+------+----------+----------+------------+------------+-
+//			|   50 |    106   |      107 | node1        | node2      |
+//			|   51 |    108   |      109 | node3        | node4      |
+//			+------+----------+----------+------------+------------+--
+ * 
+ * 根据链路表如上图，txPortID对应 fromNodeName  rxPortID对应toNodeName
+ * 在mysql数据库中 select *from port where pt_id = ? or pt_id = ?"; 查出来的数据是按如下排列的
+				 * +-------+----------+----
+				| pt_id || portIP       |
+				+-------+----------+------
+				|   106 | | 192.168.7.4 |
+				|   107 | | 192.168.7.6 |
+				+-------+----------+------
+	查出来的PortId永远是先
+ * 
+ * 
+	 */
 	@Override
 	public List<Port> getPortByLink(Link link) {
 		String sql = "select *from port where pt_id = ? or pt_id = ?";
