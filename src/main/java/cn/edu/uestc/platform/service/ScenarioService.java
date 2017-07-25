@@ -82,7 +82,7 @@ public class ScenarioService {
 	}
 
 	/*
-	 * 删除此场景下的所有节点(同时删除节点包含的端口和端口关联的链路)
+	 * 删除此场景下一切
 	 */
 	public void deleteScenarioAll(int s_id) {
 		// TODO Auto-generated method stub
@@ -128,8 +128,10 @@ public class ScenarioService {
 		List<Link> links = linkDao.getLinkList(s_id);
 		LinkController linkController = new LinkController();
 		for (Link link : links) {
+			if(link.getLinkStatus()==0){
 			linkController.createLinkMTM(link.getFromNodeName(), link.getFromNodeIP(), link.getToNodeName(),
 					link.getToNodeIP());
+			}
 		}
 		logger.info("创建Openstack上的链路结束 ，操作时间:" + new Date());
 		logger.info("更新场景状态，操作时间:" + new Date());

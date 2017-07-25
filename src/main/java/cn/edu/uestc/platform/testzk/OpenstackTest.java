@@ -1,23 +1,42 @@
 package cn.edu.uestc.platform.testzk;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
+import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.common.Identifier;
+import org.openstack4j.model.compute.Address;
 import org.openstack4j.model.compute.FloatingIP;
 import org.openstack4j.model.compute.Server;
+import org.openstack4j.model.network.IPVersionType;
 import org.openstack4j.model.network.NetFloatingIP;
+import org.openstack4j.model.network.Network;
+import org.openstack4j.model.network.Subnet;
 import org.openstack4j.openstack.OSFactory;
+
+import cn.edu.uestc.platform.winter.openstack.ServerUtils;
 
 public class OpenstackTest {
 
+	
+	
+	@Test
+	public void demo2(){
+		Server server = ServerUtils.getServer("zk1");
+		Map<String, List<? extends Address>> map = server.getAddresses().getAddresses();
+		Collection<List<? extends Address>> values = map.values();
+		System.out.println(values);
+//		isHaveIP(demo1(), "zk", ip);
+	}
 	/*
 	 * 启动一个实例并且把他挂在对应的网段上
 	 */
 	@Test
-	public void demo1() {
+	public OSClientV3 demo1() {
 		// OSClientV3 os = OSFactory.builderV3()
 		// .endpoint("http://10.0.0.11:5000/v3")
 		// .credentials("zk", "123456", Identifier.byName("default"))
@@ -26,9 +45,21 @@ public class OpenstackTest {
 		OSClientV3 os = OSFactory.builderV3().endpoint("http://10.0.0.11:5000/v3")
 				.credentials("zph", "123456", Identifier.byName("default"))
 				.scopeToProject(Identifier.byId("7e0ba2f4b7e74f0eb21fec7642d42544")).authenticate();
+		return os;
+		// Network network = os.networking().network()
+		// .create(Builders.network().name("fuckyou").tenantId("7e0ba2f4b7e74f0eb21fec7642d42544").build());
+//		Subnet subnet = os.networking().subnet()
+//				.create(Builders.subnet().name("Subnet").networkId("31eb0027-aa82-4b2a-8501-29d8bc71d370")
+//						.tenantId("7e0ba2f4b7e74f0eb21fec7642d42544").ipVersion(IPVersionType.V4)
+//						.cidr("192.168.31.0/24").build());
 
-		FloatingIP ip = os.compute().floatingIps().allocateIP("ext_zwn");
-//		System.out.println(ip);
+		// List<? extends Network> networks = os.networking().network().list();
+		//
+		// for(Network network : networks){
+		// network = os.networking().network().get("networkId");
+		// }
+		// FloatingIP ip = os.compute().floatingIps().allocateIP("ext_zwn");
+		// System.out.println(ip);
 		//
 		// ActionResponse r = os.compute().floatingIps().addFloatingIP(
 		// os.compute().servers().get("11e44f47-d802-425c-8f6e-825eb751d070"),
@@ -36,10 +67,13 @@ public class OpenstackTest {
 		// ip.getFloatingIpAddress());
 		// System.out.println(r);
 
-//		NetFloatingIP netFloatingIP = os.networking().floatingip().get(ip.getId());
-//		Server server = os.compute().servers().get("11e44f47-d802-425c-8f6e-825eb751d070");
-//		ActionResponse r = os.compute().floatingIps().addFloatingIP(server, netFloatingIP.getFloatingIpAddress());
-//		System.out.println(r);
+		// NetFloatingIP netFloatingIP =
+		// os.networking().floatingip().get(ip.getId());
+		// Server server =
+		// os.compute().servers().get("11e44f47-d802-425c-8f6e-825eb751d070");
+		// ActionResponse r = os.compute().floatingIps().addFloatingIP(server,
+		// netFloatingIP.getFloatingIpAddress());
+		// System.out.println(r);
 		// List<? extends Server> servers = os.compute().servers().list();
 		// // os.networking().
 		// NetFloatingIPService floatIP = os.networking().floatingip();
@@ -149,8 +183,28 @@ public class OpenstackTest {
 	//
 	// }
 
-}
+//	public static boolean isHaveIP(OSClientV3 os, String name, String ip) {
+//		// Server server = os.compute().servers().get("");// 查找到一个名称所对应的虚拟机
+//		// 查api 应该含有通过名字 最后得到ServerID的函数 从而去掉一层循环
+//		// 暂时用ServerUtils中的方法。本质还是三重循环，但去掉了if判断
+//		Server server = ServerUtils.getServer(name);
+//		Map<String, List<? extends Address>> map = server.getAddresses().getAddresses();
+//		Collection<List<? extends Address>> values = map.values();
+//		for (List<? extends Address> list : values) {
+//			for (Address address : list) {
+//				if (address.getAddr().equals(ip)) {
+//					// logger.info("虚拟机 " + name + " 有此 " + ip);
+//					return true;
+//				}
+//			}
+//		}
 
+		// logger.info("虚拟机 " + name + " 没有此 " + ip);
+//		return false;
+//	}
+	
+
+}
 // }
 
 // /*

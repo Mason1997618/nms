@@ -180,12 +180,14 @@ public class NetworkUtils {
 		try {
 			System.out.println(
 					"source zph-openrc.sh\nneutron port-create " + getNameByIp(ip) + " --fixed-ip ip_address=" + ip);
+			//相当于给Openstack上的云上添加端口
 			match = ssh.exec("source zph-openrc.sh\nneutron port-create " + getNameByIp(ip) + " --fixed-ip ip_address="
 					+ ip + "\n");
 			// 该命令行输出为固定格式
 			String id = match.substring(match.indexOf(" id                    | ") + 25,
 					match.indexOf(" id                    | ") + 25 + 36);
 			logger.info("成功为虚拟机 " + nodeName + " 分配了id为 " + id + " 的 ip: " + ip);
+			//相当于给Openstack上的实例连接上上面创建的端口(把虚拟机挂在云上)
 			System.out.println("source zph-openrc.sh\nnova interface-attach --port-id " + id + " " + nodeName);
 			ssh.exec("source zph-openrc.sh\nnova interface-attach --port-id " + id + " " + nodeName + "\n");
 		} catch (Exception e) {
