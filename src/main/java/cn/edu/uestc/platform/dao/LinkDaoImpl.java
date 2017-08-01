@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -21,8 +19,8 @@ public class LinkDaoImpl implements LinkDao {
 	public void insertLink(Link link) {
 		// TODO Auto-generated method stub
 		String sql = "insert into link(linkName,linkType,linkLength,linkStatus,linkNoise,"
-				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName,fromNodeIP,toNodeIP) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName,fromNodeIP,toNodeIP,cn_id) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 
@@ -43,6 +41,7 @@ public class LinkDaoImpl implements LinkDao {
 			ps.setString(12, link.getToNodeName());
 			ps.setString(13, link.getFromNodeIP());
 			ps.setString(14, link.getToNodeIP());
+			ps.setInt(15, link.getCn_id());
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -86,6 +85,7 @@ public class LinkDaoImpl implements LinkDao {
 				link.setToNodeName(rs.getString(13));
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
+				link.setCn_id(rs.getInt(16));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -157,6 +157,7 @@ public class LinkDaoImpl implements LinkDao {
 				link.setToNodeName(rs.getString(13));
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
+				link.setCn_id(rs.getInt(16));
 				links.add(link);
 			}
 		} catch (SQLException e) {
@@ -223,6 +224,7 @@ public class LinkDaoImpl implements LinkDao {
 				link.setToNodeName(rs.getString(13));
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
+				link.setCn_id(rs.getInt(16));
 			}
 
 		} catch (SQLException e) {

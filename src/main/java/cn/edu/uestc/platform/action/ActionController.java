@@ -409,4 +409,18 @@ public class ActionController {
 		List<Node> nodes = nodeservice.getInnerNodeList(s_id,complexNodeName);
 		return JSoneUtils.ListToJson(nodes).toString();
 	}
+	
+	
+	@RequestMapping("/addInnerLink")
+	@ResponseBody
+	public String addInnerLink(Link link,String complexNodeName){
+		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
+		link.setCn_id(complexNodeDao.getComplexNodeBys_idAndComplexNodeName(link.getScenario_id(), complexNodeName).getCn_id());
+		LinkService linkService = new LinkService();
+		boolean flag = linkService.createLink(link);
+		if (flag == true) {
+			return "创建成功";
+		}
+		return "创建失败！";
+	}
 }

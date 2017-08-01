@@ -17,14 +17,14 @@ public class Link {
 	private double linkInterference;
 	private String fromNodeIP;
 	private String toNodeIP;
-	private int InnerLink;
+	private int cn_id;
 
-	public int getInnerLink() {
-		return InnerLink;
+	public int getCn_id() {
+		return cn_id;
 	}
 
-	public void setInnerLink(int innerLink) {
-		InnerLink = innerLink;
+	public void setCn_id(int cn_id) {
+		this.cn_id = cn_id;
 	}
 
 	public String getFromNodeIP() {
@@ -153,7 +153,7 @@ public class Link {
 				+ channelModel + ", scenario_id=" + scenario_id + ", txPort_id=" + txPort_id + ", rxPort_id="
 				+ rxPort_id + ", fromNodeName=" + fromNodeName + ", toNodeName=" + toNodeName + ", linkName=" + linkName
 				+ ", linkLength=" + linkLength + ", linkNoise=" + linkNoise + ", linkInterference=" + linkInterference
-				+ ", fromNodeIP=" + fromNodeIP + ", toNodeIP=" + toNodeIP + ", InnerLink=" + InnerLink + "]";
+				+ ", fromNodeIP=" + fromNodeIP + ", toNodeIP=" + toNodeIP + ", cn_id=" + cn_id + "]";
 	}
 
 }
