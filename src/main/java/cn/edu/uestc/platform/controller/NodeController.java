@@ -31,6 +31,7 @@ public class NodeController {
 		if (zone.equals("vm")) {
 			System.out.println("生成虚拟机节点");
 			Server server = ServerFactory.createServer(os, name, ip);
+			
 			return server.getId();
 		} else if (zone.equals("docker")) {
 			Server server = ServerFactory.createDockerServer(os, name, ip);

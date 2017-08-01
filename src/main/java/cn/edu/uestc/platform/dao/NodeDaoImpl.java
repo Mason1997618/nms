@@ -46,8 +46,8 @@ public class NodeDaoImpl implements NodeDao {
 	public void insertNode(Node node) {
 		// TODO Auto-generated method stub
 		String sql = "insert into node(nodeName,manageIp,nodeType,hardwareArchitecture,"
-				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType,uuid) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "operatingSystem,numberPort,numberInternalModule,numberInternalLink,imageName,nodeStatus,scenario_id,x,y,flavorType,uuid,iconUrl,cn_id) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -68,6 +68,8 @@ public class NodeDaoImpl implements NodeDao {
 			ps.setFloat(13, node.getY());
 			ps.setString(14, node.getFlavorType());
 			ps.setString(15, node.getUuid());
+			ps.setString(16, node.getIconUrl());
+			ps.setInt(17, node.getCn_id());
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -111,6 +113,8 @@ public class NodeDaoImpl implements NodeDao {
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
 				node.setUuid(rs.getString(16));
+				node.setIconUrl(rs.getString(17));
+				node.setCn_id(rs.getInt(18));
 				nodes.add(node);
 			}
 
@@ -218,6 +222,8 @@ public class NodeDaoImpl implements NodeDao {
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
 				node.setUuid(rs.getString(16));
+				node.setIconUrl(rs.getString(17));
+				node.setCn_id(rs.getInt(18));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -261,6 +267,8 @@ public class NodeDaoImpl implements NodeDao {
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
 				node.setUuid(rs.getString(16));
+				node.setIconUrl(rs.getString(17));
+				node.setCn_id(rs.getInt(18));
 			}
 		} catch (SQLException e) {
 
@@ -354,6 +362,8 @@ public class NodeDaoImpl implements NodeDao {
 				node.setY(rs.getFloat(14));
 				node.setFlavorType(rs.getString(15));
 				node.setUuid(rs.getString(16));
+				node.setIconUrl(rs.getString(17));
+				node.setCn_id(rs.getInt(18));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -444,10 +454,53 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		} finally {
 			DBUtiles.releaseResource(ps, conn);
 		}
 	}
 
-
+	@Override
+	public List<Node> getNodeListByCnid(int cn_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from node where cn_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Node> nodes = new ArrayList<Node>();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, cn_id);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				Node node = new Node();
+				node.setN_id(rs.getInt(1));
+				node.setNodeName(rs.getString(2));
+				node.setManageIp(rs.getString(3));
+				node.setNodeType(rs.getInt(4));
+				node.setHardwareArchitecture(rs.getInt(5));
+				node.setOperatingSystem(rs.getInt(6));
+				node.setNumberPort(rs.getInt(7));
+				node.setNumberInternalModule(rs.getInt(8));
+				node.setNumberInternalLink(rs.getInt(9));
+				node.setImageName(rs.getString(10));
+				node.setNodeStatus(rs.getInt(11));
+				node.setS_id(rs.getInt(12));
+				node.setX(rs.getFloat(13));
+				node.setY(rs.getFloat(14));
+				node.setFlavorType(rs.getString(15));
+				node.setUuid(rs.getString(16));
+				node.setIconUrl(rs.getString(17));
+				node.setCn_id(rs.getInt(18));
+				nodes.add(node);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+		return nodes;
+	}
 }

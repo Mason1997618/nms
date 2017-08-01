@@ -6,6 +6,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.openstack4j.model.compute.VNCConsole;
+import org.openstack4j.openstack.compute.domain.NovaVNCConsole;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,14 +15,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.edu.uestc.platform.controller.LinkController;
 import cn.edu.uestc.platform.controller.ThreadController;
+import cn.edu.uestc.platform.dao.ComplexNodeDao;
+import cn.edu.uestc.platform.dao.ComplexNodeDaoImpl;
 import cn.edu.uestc.platform.dao.LinkDao;
 import cn.edu.uestc.platform.dao.LinkDaoImpl;
+import cn.edu.uestc.platform.dao.NodeDaoImpl;
+import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.pojo.User;
+import cn.edu.uestc.platform.service.ComplexNodeService;
 import cn.edu.uestc.platform.service.LinkService;
 import cn.edu.uestc.platform.service.NodeService;
 import cn.edu.uestc.platform.service.PortService;
@@ -147,8 +154,10 @@ public class ActionController {
 	public String createNode(Node node) {
 		logger.info("[新建节点]   nodeName:" + node.getNodeName() + " 操作时间: " + new Date());
 		NodeService service = new NodeService();
+		System.out.println(node.getCn_id());
 		boolean flag = service.createNode(node);
 		if (flag == true) {
+			System.out.println("返回成功");
 			return "创建成功";
 		}
 		return "节点名重复！";
@@ -334,4 +343,70 @@ public class ActionController {
 		return "恢复成功";
 	}
 
+	/*
+	 * 创建复杂节点
+	 */
+	@RequestMapping("/addComplexNode")
+	@ResponseBody
+	public String createComplexNode(ComplexNode complexNode) {
+		logger.info("[创建复杂节点]   complexNodeID:" + complexNode.getCn_id() + " 操作时间: " + new Date());
+		ComplexNodeService complexNodeService = new ComplexNodeService();
+		boolean flag = complexNodeService.createComplexNode(complexNode);
+		if (flag == true) {
+			return "创建成功";
+		}
+		return "复杂节点名重复";
+	}
+
+	/*
+	 * 查询复杂节点
+	 */
+	@RequestMapping("/selectComplexNodeList")
+	@ResponseBody
+	public String selectComplexNodeList(int s_id) {
+		ComplexNodeService complexNodeService = new ComplexNodeService();
+		List<ComplexNode> complexNodes = complexNodeService.selectComplexNodeList(s_id);
+		return JSoneUtils.ListToJson(complexNodes).toString();
+	}
+
+	/*
+	 * 根据s_id和complexNodeName查找节点
+	 */
+	@RequestMapping("/getComplexNodeBynodeName")
+	@ResponseBody
+	public String getComplexNodeBynodeName(int s_id, String complexNodeName) {
+		ComplexNodeService complexNodeService = new ComplexNodeService();
+		ComplexNode complexNode = complexNodeService.getCompleNode(s_id, complexNodeName);
+		return JSoneUtils.ObjToJson(complexNode).toString();
+	}
+
+	/*
+	 * 仅作为给Node的Cn_id字段赋值
+	 */
+	@RequestMapping("/addInnerNode")
+	@ResponseBody
+	public String addInnerNode(Node node, String complexNodeName) {
+		System.out.println(node.getS_id() + "   " + complexNodeName);
+		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
+		node.setCn_id(
+				complexNodeDao.getComplexNodeBys_idAndComplexNodeName(node.getS_id(), complexNodeName).getCn_id());
+		NodeService service = new NodeService();
+		System.out.println(node.getCn_id());
+		boolean flag = service.createNode(node);
+		if (flag == true) {
+			return "创建成功";
+		}
+		return "节点名重复！";
+	}
+	
+	/*
+	 * selectInnerNodeList 查询所有属于该复杂节点的节点
+	 */
+	@RequestMapping("/selectInnerNodeList")
+	@ResponseBody
+	public String selectInnerNodeList(int s_id,String complexNodeName){
+		NodeService nodeservice = new NodeService();
+		List<Node> nodes = nodeservice.getInnerNodeList(s_id,complexNodeName);
+		return JSoneUtils.ListToJson(nodes).toString();
+	}
 }

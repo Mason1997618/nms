@@ -43,6 +43,12 @@
 	<mvc:resources mapping="/nodeEdit.html" location="/nodeEdit.html" />
 	<mvc:resources mapping="/linkEdit.html" location="/linkEdit.html" />
 	<mvc:resources mapping="/register.html" location="/register.html" />
+	<mvc:resources mapping="/innerEdit.html" location="/innerEdit.html" />
+	<mvc:resources mapping="/complexNodeEdit.html" location="/complexNodeEdit.html" />
+	
+	
+	
+	
 
 
 	<!-- 视图解析器 解析jsp解析，默认使用jstl标签，classpath下的得有jstl的包 -->

@@ -9,6 +9,8 @@ var scenarioStatus = [];
 //三级分类
 var node = [];
 var nodeId = [];
+var complexNode = [];
+var complexNodeId = [];
 
 //测试用工程对象列表的json
 //var json = '[{"p_id":1,"projectName":"wohaoniubi","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":2,"projectName":"worinidaye","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":3,"projectName":"worinimdaye","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":4,"projectName":"模式数","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":5,"projectName":"牛逼","projectStatus":0,"scenarios":[],"user_id":1},{"p_id":7,"projectName":"我日你大爷","projectStatus":0,"scenarios":[],"user_id":1}]';
@@ -47,6 +49,17 @@ function praseNodeList(data) {
     for (var i = 0; i < objs.length; i++){
         node[i] = objs[i].nodeName;
         nodeId[i] = objs[i].n_id;
+    }
+}
+
+//解析复杂节点列表json
+function praseCompleNodeList(data) {
+    complexNode = [];
+    complexNodeId = [];
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++){
+        complexNode[i] = objs[i].complexNodeName;
+        complexNodeId[i] = objs[i].cn_id;
     }
 }
 
@@ -159,8 +172,25 @@ function selectC(p) {
         dataType: 'json',
         async: false,
         success: function (data) {
-          //  alert(data);
             praseNodeList(data);
+        },
+        error: function () {
+
+        }
+    });
+    //查询复杂节点
+    $.ajax({
+        url: '/NetworkSimulation/selectComplexNodeList',
+        data: {
+            s_id : scenarioId[p]
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            console.log("成功返回复杂节点json");
+            praseCompleNodeList(data);
+            console.log("已经初始化复杂节点列表");
         },
         error: function () {
 
@@ -172,6 +202,9 @@ function selectC(p) {
 	for (var i = 0; i < node.length; i++) {
 		areaCont += '<li onClick="selectD(' + i + ');"><a href="javascript:void(0)">' + node[i] + '</a></li>';
 	}
+	for (var j = 0; j < complexNode.length; j++) {
+	    areaCont += '<li onClick="selectE(' + j + ');"><a href="javascript:void(0)">' + complexNode[j] + '</a></li>';
+    }
 	$("#sort3").html(areaCont).show();
 	$("#sort2 li").eq(p).addClass("active").siblings("li").removeClass("active");
 	expressC = city[p];
@@ -187,26 +220,6 @@ function selectC(p) {
             window.open(encodeURI("index3.html?scenarioId=" + s_id + "&scenarioName=" + city[p] + "&projectName=" + expressP));
         };
     }
-    // //删除场景
-    // $("#delete").click(function () {
-    //     $.ajax({
-    //         url: '/NetworkSimulation/deleteScenario',
-    //         data: {
-    //             scenarioId : scenarioId[p]
-    //         },
-    //         type: 'post',
-    //         dataType: 'json',
-    //         async: false,
-    //         success: function (msg) {
-    //             alert(msg);
-    //             //刷新页面
-    //             window.location.reload();
-    //         },
-    //         error: function () {
-    //
-    //         }
-    //     });
-    // });
 }
 
 /*选择三级目录*/
@@ -218,26 +231,15 @@ function selectD(p) {
     document.getElementById("releaseBtn").onclick = function () {
         window.open(encodeURI("nodeEdit.html?nodeName=" + expressD + "&scenarioId=" + s_id));
     };
-    // //删除节点
-    // $("#delete").click(function () {
-    //     $.ajax({
-    //         url: '/NetworkSimulation/deleteNode',
-    //         data: {
-    //             nodeId : nodeId[p]
-    //         },
-    //         type: 'post',
-    //         dataType: 'json',
-    //         async: false,
-    //         success: function (msg) {
-    //             alert(msg);
-    //             //刷新页面
-    //             window.location.reload();
-    //         },
-    //         error: function () {
-    //
-    //         }
-    //     });
-    // });
+}
+function selectE(p) {
+    $("#sort3 li").eq(p + node.length).addClass("active").siblings("li").removeClass("active");
+    expressD = complexNode[p];
+    $("#selectedSort").html(expressD);
+    //打开复杂节点编辑器
+    document.getElementById("releaseBtn").onclick = function () {
+        window.open(encodeURI("complexNodeEdit.html?complexNodeName=" + expressD + "&scenarioId=" + s_id));
+    };
 }
 
 /*编辑工程*/

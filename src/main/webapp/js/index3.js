@@ -32,7 +32,7 @@ $(document).ready(function () {
     //显示工程名和场景名
     $("#projectName").html($.getUrlParam("projectName"));
     $("#scenarioName").html($.getUrlParam("scenarioName"));
-    //画出已有节点
+    //画出已有节点，简单节点
     $.ajax({
         url: '/NetworkSimulation/selectNodeList',
         data: {
@@ -44,8 +44,29 @@ $(document).ready(function () {
         success: function (data) {
             var objs = jQuery.parseJSON(data);
             for (var i = 0; i < objs.length; i++){
-                //数据库中未存节点图片，此处还应有判断来判断出节点应是哪个图片。。。
-                createNode(objs[i].nodeName, objs[i].x, objs[i].y, "img/gaogui00.png");
+                if (objs[i].cn_id == 0) {
+                    //画出节点
+                    createNode(objs[i].nodeName, objs[i].x, objs[i].y, objs[i].iconUrl);
+                }
+            }
+        },
+        error: function () {
+
+        }
+    });
+    //画出三层复杂节点
+    $.ajax({
+        url: '/NetworkSimulation/selectComplexNodeList',
+        data: {
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++){
+                createComplexNode(objs[i].complexNodeName, objs[i].x, objs[i].y, "img/zhonggui00.png");
             }
         },
         error: function () {
@@ -235,6 +256,88 @@ function isValidIP(ip)
     return reg.test(ip);
 }
 
+//初始化复杂节点间链路模态框中的数据，分别是选择内部节点和端口的选择框
+function initFromNode(data, k) {
+    var html = '';
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++) {
+        html += '<option onclick="getFromPort(' + k + ');" value="' + objs[i].nodeName + '">' + objs[i].nodeName + '</option>';
+    }
+    $('[id = "selectFromNode_' + k + '"]').html(html);
+}
+function getFromPort(k) {
+    $.ajax({
+        url: '/NetworkSimulation/getPortBynodeName',
+        data: {
+            nodeName: $('[id = "selectFromNode_' + k + '"]').val(),
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            var html = '';
+            var objs = jQuery.parseJSON(msg);
+            for (var i = 0; i < objs.length; i++) {
+                html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+            }
+            $('[id = "selectToPort_' + k + '"]').html(html);
+        },
+        error: function () {
+
+        }
+    });
+}
+function initToNode(data, k) {
+    var html = '';
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs.length; i++) {
+        html += '<option onclick="getToPort(' + k + ');" value="' + objs[i].nodeName + '">' + objs[i].nodeName + '</option>';
+    }
+    $('[id = "selectToNode_' + k + '"]').html(html);
+}
+function getToPort(k) {
+    $.ajax({
+        url: '/NetworkSimulation/getPortBynodeName',
+        data: {
+            nodeName: $('[id = "selectToNode_' + k + '"]').val(),
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            var html = '';
+            var objs = jQuery.parseJSON(msg);
+            for (var i = 0; i < objs.length; i++) {
+                html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+            }
+            $('[id = "selectToPort_' + k + '"]').html(html);
+        },
+        error: function () {
+
+        }
+    });
+}
+
+//初始化复杂节点链路模态框中选择简单节点的端口
+function initFromPort(data, k) {
+    var html = '';
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs,length; i++) {
+        html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+    }
+    $('[id = "fromPort_' + k + '"]').html(html);
+}
+function initToPort(data, k) {
+    var html = '';
+    var objs = jQuery.parseJSON(data);
+    for (var i = 0; i < objs,length; i++) {
+        html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+    }
+    $('[id = "toPort_' + k + '"]').html(html);
+}
+
 //新建链路——模态框
 var link_ips = [];
 scene.mouseup(function (e) {
@@ -246,64 +349,158 @@ scene.mouseup(function (e) {
             tempNodeZ.setLocation(e.x, e.y);
         } else if (beginNode !== e.target) {
             endLastNode = e.target;
-            //首先弹出模态框
-            $("#linkModal").modal();
-            //发送ajax查询from端口
-            $.ajax({
-                url: '/NetworkSimulation/getPortBynodeName',
-                data: {
-                    nodeName: beginNode.text,
-                    s_id : $.getUrlParam("scenarioId")
-                },
-                type: 'post',
-                dataType: 'json',
-                async: false,
-                success: function (msg) {
-                    initFromPortList(msg);
-                },
-                error: function () {
+            getExitLinkIps();
+            //判断选择的节点中是否有复杂节点，弹出相应的模态框
+            if (beginNode.fontColor == "255,0,0" && endLastNode.fontColor == "255,0,0") {
+                //复杂——复杂
+                $("#complexNodeLinkModal_0").modal();
+                //发送ajax查询fromNode的内部节点对象列表的json
+                $.ajax({
+                    url: '/NetworkSimulation/selectInnerNodeList',
+                    data: {
+                        complexNodeName: beginNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initFromNode(msg, 0);
+                    },
+                    error: function () {
 
-                }
-            });
-            //发送ajax查询to端口
-            $.ajax({
-                url: '/NetworkSimulation/getPortBynodeName',
-                data: {
-                    nodeName: endLastNode.text,
-                    s_id : $.getUrlParam("scenarioId")
-                },
-                type: 'post',
-                dataType: 'json',
-                async: false,
-                success: function (msg) {
-                    initToPortList(msg);
-                },
-                error: function () {
-
-                }
-            });
-            //查询已有链路的地址
-            $.ajax({
-                url: '/NetworkSimulation/getLinkList',
-                data: {
-                    s_id : $.getUrlParam("scenarioId")
-                },
-                type: 'post',
-                dataType: 'json',
-                async: false,
-                success: function (data) {
-                    var objs = jQuery.parseJSON(data);
-                    for (var i = 0; i < objs.length; i++){
-                        //存已有ip地址的前三位
-                        link_ips[i] = objs[i].fromNodeIP.substring(0,objs[i].fromNodeIP.lastIndexOf("."));
                     }
-                    console.log("已读取存在的网段");
-                },
-                error: function () {
+                });
+                //发送ajax查询toNode的内部节点对象列表的json
+                $.ajax({
+                    url: '/NetworkSimulation/selectInnerNodeList',
+                    data: {
+                        complexNodeName: endLastNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initToNode(msg, 0);
+                    },
+                    error: function () {
 
-                }
-            });
+                    }
+                });
+            } else if (beginNode.fontColor == "255,0,0" && endLastNode.fontColor == "0,0,0") {
+                //复杂——简单
+                $("#complexNodeLinkModal_2").modal();
+                //发送ajax查询fromNode的内部节点对象列表的json
+                $.ajax({
+                    url: '/NetworkSimulation/selectInnerNodeList',
+                    data: {
+                        complexNodeName: beginNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initFromNode(msg, 2);
+                    },
+                    error: function () {
 
+                    }
+                });
+                //发送ajax查询to端口
+                $.ajax({
+                    url: '/NetworkSimulation/getPortBynodeName',
+                    data: {
+                        nodeName: endLastNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initToPort(msg, 2);
+                    },
+                    error: function () {
+
+                    }
+                });
+            } else if (beginNode.fontColor == "0,0,0" && endLastNode.fontColor == "255,0,0") {
+                //简单——复杂
+                $("#complexNodeLinkModal_1").modal();
+                //发送ajax查询from端口
+                $.ajax({
+                    url: '/NetworkSimulation/getPortBynodeName',
+                    data: {
+                        nodeName: beginNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initFromPort(msg, 1);
+                    },
+                    error: function () {
+
+                    }
+                });
+                //发送ajax查询toNode的内部节点对象列表的json
+                $.ajax({
+                    url: '/NetworkSimulation/selectInnerNodeList',
+                    data: {
+                        complexNodeName: endLastNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        console.log("已读取内部节点");
+                        initToNode(msg, 1);
+                    },
+                    error: function () {
+
+                    }
+                });
+            } else {
+                //简单——简单
+                $("#linkModal").modal();
+                //发送ajax查询from端口
+                $.ajax({
+                    url: '/NetworkSimulation/getPortBynodeName',
+                    data: {
+                        nodeName: beginNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initFromPortList(msg);
+                    },
+                    error: function () {
+
+                    }
+                });
+                //发送ajax查询to端口
+                $.ajax({
+                    url: '/NetworkSimulation/getPortBynodeName',
+                    data: {
+                        nodeName: endLastNode.text,
+                        s_id : $.getUrlParam("scenarioId")
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (msg) {
+                        initToPortList(msg);
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
         } else {
             beginNode = null;
         }
@@ -311,6 +508,30 @@ scene.mouseup(function (e) {
         scene.remove(link1);
     }
 });
+
+//查询已有链路的地址
+function getExitLinkIps() {
+    $.ajax({
+        url: '/NetworkSimulation/getLinkList',
+        data: {
+            s_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++){
+                //存已有ip地址的前三位
+                link_ips[i] = objs[i].fromNodeIP.substring(0,objs[i].fromNodeIP.lastIndexOf("."));
+            }
+            console.log("已读取存在的网段");
+        },
+        error: function () {
+
+        }
+    });
+}
 
 //判断输入的ip与已存在的ip不属于同网段
 $("#fromNodeIP").blur(function () {
@@ -336,7 +557,6 @@ $("#fromNodeIP").blur(function () {
         return false;
     }
 });
-
 $("#toNodeIP").blur(function () {
     var ip = $("#toNodeIP").val();
     if (isValidIP(ip)) {
@@ -359,6 +579,141 @@ $("#toNodeIP").blur(function () {
     }
 });
 
+$("#fromNodeIP_0").blur(function () {
+    var ip = $("#fromNodeIP_0").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                //匹配到不空，说明有重复的网段，显示出错误信息
+                $("#fromNodeIpErrorInfo_0").removeAttr("hidden");
+                $("#fromNodeIpErrorInfo_0").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#fromNodeIP_0").val("");
+                return false;
+            }
+        }
+        //匹配到都是null，说明没有重复的网段
+        $("#fromNodeIpErrorInfo_0").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#fromNodeIpErrorInfo_0").removeAttr("hidden");
+        $("#fromNodeIpErrorInfo_0").html("输入的ip地址不合法，请重新输入！");
+        $("#fromNodeIP_0").val("");
+        return false;
+    }
+});
+$("#toNodeIP_0").blur(function () {
+    var ip = $("#toNodeIP_0").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                $("#toNodeIpErrorInfo_0").removeAttr("hidden");
+                $("#toNodeIpErrorInfo_0").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#toNodeIP_0").val("");
+                return false;
+            }
+        }
+        $("#toNodeIpErrorInfo_0").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#toNodeIpErrorInfo_0").removeAttr("hidden");
+        $("#toNodeIpErrorInfo_0").html("输入的ip地址不合法，请重新输入！");
+        $("#toNodeIP_0").val("");
+        return false;
+    }
+});
+
+$("#fromNodeIP_1").blur(function () {
+    var ip = $("#fromNodeIP_1").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                //匹配到不空，说明有重复的网段，显示出错误信息
+                $("#fromNodeIpErrorInfo_1").removeAttr("hidden");
+                $("#fromNodeIpErrorInfo_1").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#fromNodeIP_1").val("");
+                return false;
+            }
+        }
+        //匹配到都是null，说明没有重复的网段
+        $("#fromNodeIpErrorInfo_1").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#fromNodeIpErrorInfo_1").removeAttr("hidden");
+        $("#fromNodeIpErrorInfo_1").html("输入的ip地址不合法，请重新输入！");
+        $("#fromNodeIP_1").val("");
+        return false;
+    }
+});
+$("#toNodeIP_1").blur(function () {
+    var ip = $("#toNodeIP_1").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                $("#toNodeIpErrorInfo_1").removeAttr("hidden");
+                $("#toNodeIpErrorInfo_1").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#toNodeIP_1").val("");
+                return false;
+            }
+        }
+        $("#toNodeIpErrorInfo_1").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#toNodeIpErrorInfo_1").removeAttr("hidden");
+        $("#toNodeIpErrorInfo_1").html("输入的ip地址不合法，请重新输入！");
+        $("#toNodeIP_1").val("");
+        return false;
+    }
+});
+
+$("#fromNodeIP_2").blur(function () {
+    var ip = $("#fromNodeIP_2").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                //匹配到不空，说明有重复的网段，显示出错误信息
+                $("#fromNodeIpErrorInfo_2").removeAttr("hidden");
+                $("#fromNodeIpErrorInfo_2").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#fromNodeIP_2").val("");
+                return false;
+            }
+        }
+        //匹配到都是null，说明没有重复的网段
+        $("#fromNodeIpErrorInfo_2").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#fromNodeIpErrorInfo_2").removeAttr("hidden");
+        $("#fromNodeIpErrorInfo_2").html("输入的ip地址不合法，请重新输入！");
+        $("#fromNodeIP_2").val("");
+        return false;
+    }
+});
+$("#toNodeIP_2").blur(function () {
+    var ip = $("#toNodeIP_2").val();
+    if (isValidIP(ip)) {
+        //再判断是否重复
+        for (var i = 0; i < link_ips.length; i++){
+            if (ip.match(link_ips[i]) != null){
+                $("#toNodeIpErrorInfo_2").removeAttr("hidden");
+                $("#toNodeIpErrorInfo_2").html("输入的地址网段与已有的重复，请重新输入！");
+                $("#toNodeIP_2").val("");
+                return false;
+            }
+        }
+        $("#toNodeIpErrorInfo_2").attr("hidden", "hidden");
+        return true;
+    } else {
+        $("#toNodeIpErrorInfo_2").removeAttr("hidden");
+        $("#toNodeIpErrorInfo_2").html("输入的ip地址不合法，请重新输入！");
+        $("#toNodeIP_2").val("");
+        return false;
+    }
+});
+
 var fromPortList = [];
 var fromPortId = [];
 //初始化from端口下拉框
@@ -370,7 +725,7 @@ function initFromPortList(data) {
         fromPortList[i] = objs[i].portName;
         fromPortId[i] = objs[i].pt_id;
     }
-    areaCont = "";
+    var areaCont = "";
     for (var i = 0; i < objs.length; i++){
         if (objs[i].portStatus == 0){
             areaCont += '<option value="' + fromPortId[i] + '">' + fromPortList[i] + '</option>';
@@ -392,7 +747,7 @@ function initToPortList(data) {
         toPortList[i] = objs[i].portName;
         toPortId[i] = objs[i].pt_id;
     }
-    areaCont = "";
+    var areaCont = "";
     for (var i = 0; i < objs.length; i++){
         if (objs[i].portStatus == 0){
             areaCont += '<option value="' + toPortId[i] + '">' + toPortList[i] + '</option>';
@@ -418,6 +773,14 @@ function createNode(name, X, Y, pic) {
     var node = new JTopo.Node(name);
     node.setLocation(X, Y);
     node.fontColor = "0,0,0";
+    node.setImage(pic, true);
+    scene.add(node);
+}
+
+function createComplexNode(name, X, Y, pic) {
+    var node = new JTopo.Node(name);
+    node.setLocation(X, Y);
+    node.fontColor = "255,0,0";
     node.setImage(pic, true);
     scene.add(node);
 }
@@ -451,33 +814,42 @@ $("#weixing4").draggable({
 });
 
 var uiOut;//全局数据-->用于传递变量-->将拖动的数据信息保存起来
+//保存已有的管理ip
+var node_ips = [];
 //新建节点
 $("#canvas").droppable({
     drop: function (event, ui) {
         uiOut = ui;//保存数据
-        //保存已有ip
-        var node_ips = [];
-        //首先弹出模态框
-        $("#myModal").modal();
-        //查询已有节点的信息，确保输入的管理ip不会重复
-        $.ajax({
-            url: '/NetworkSimulation/selectNodeList',
-            data: {
-                s_id : $.getUrlParam("scenarioId")
-            },
-            type: 'post',
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-                var objs = jQuery.parseJSON(data);
-                for (var i = 0; i < objs.length; i++){
-                    node_ips[i] = objs[i].manageIp;
-                }
-            },
-            error: function () {
+        var getId = uiOut.draggable[0].id;
+        node_ips = [];
+        //如果拖拽的是简单节点
+        if (getId == "weixing1") {
+            //首先弹出模态框
+            $("#myModal").modal();
+            //查询已有节点的信息，确保输入的管理ip不会重复
+            $.ajax({
+                url: '/NetworkSimulation/selectNodeList',
+                data: {
+                    s_id : $.getUrlParam("scenarioId")
+                },
+                type: 'post',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    var objs = jQuery.parseJSON(data);
+                    for (var i = 0; i < objs.length; i++){
+                        node_ips[i] = objs[i].manageIp;
+                    }
+                },
+                error: function () {
 
-            }
-        });
+                }
+            });
+        }
+        //如果拖拽的是复杂节点
+        if (getId == "weixing2") {
+            $("#complexNodeModal").modal();
+        }
     }
 });
 
@@ -521,7 +893,6 @@ $("#manageIP").blur(function () {
 var weixingName = document.getElementById("nodeName");
 //创建节点模态框中的提交
 $("#addNode").click(function () {
-    //发送执行ajax的请求
     $.ajax({
         url: '/NetworkSimulation/addNode',
         data: {
@@ -534,35 +905,56 @@ $("#addNode").click(function () {
             imageName : $("#nodeImage").val(),
             x : uiOut.offset.left - document.getElementById("slider_1").offsetWidth,
             y : uiOut.offset.top - 102,
-            s_id : $.getUrlParam("scenarioId")
+            s_id : $.getUrlParam("scenarioId"),
+            iconUrl : "img/gaogui00.png"
         },
         type: 'post',
         dataType: 'json',
         async: false,
         success: function (msg) {
+            $.alert(msg);
             if (msg == "创建成功") {
-                $.alert(msg);
                 //在画布上绘制出节点图标
-                var getId = uiOut.draggable[0].id;//jquery获取图片，竟然要加一个[0]，这是什么鬼 (⊙o⊙)
-                if (getId == "weixing1") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
-                } else if (getId == "weixing2") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
-                } else if (getId == "weixing3") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/digui00.png");
-                } else if (getId == "weixing4") {
-                    createNode(weixingName.value, uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/leida00.png");
-                }
+                createNode($("#nodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
                 //关闭模态框
                 $('#myModal').modal('hide');
-            } else {
-                $.alert(msg);
             }
         },
         error: function () {
 
         }
     });
+});
+
+//新建复杂节点提交
+$("#addComplexNode").click(function () {
+    //发送执行ajax的请求
+    $.ajax({
+        url: '/NetworkSimulation/addComplexNode',
+        data: {
+            complexNodeName : $("#complexNodeName").val(),
+            x : uiOut.offset.left - document.getElementById("slider_1").offsetWidth,
+            y : uiOut.offset.top - 102,
+            s_id : $.getUrlParam("scenarioId"),
+            iconUrl : "img/zhonggui00.png"
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            $.alert(msg);
+            if (msg == "创建成功") {
+
+            }
+        },
+        error: function () {
+
+        }
+    });
+    //在画布上绘制出节点图标
+    createComplexNode($("#complexNodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
+    //关闭模态框
+    $('#complexNodeModal').modal('hide');
 });
 
 //链路模态框中请求的发送
@@ -589,8 +981,8 @@ $("#addLink").click(function () {
         dataType: 'json',
         async: false,
         success: function (msg) {
+            $.alert(msg);
             if (msg == "创建成功") {
-                $.alert(msg);
                 //在画布上绘制出链路
                 if ($("#linkType").val() == 0) {//有线链路
                     // newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
@@ -602,8 +994,6 @@ $("#addLink").click(function () {
                 scene.remove(link1);
                 //关闭模态框
                 $('#linkModal').modal('hide');
-            } else {
-                $.alert(msg);
             }
         },
         error: function () {
@@ -615,8 +1005,8 @@ $("#addLink").click(function () {
 //打开内部编辑器
 $("#openInnerEdit").click(function () {
     var elements = scene.selectedElements;
-    if (elements[0] == undefined || elements[0] instanceof JTopo.Link){
-        $.alert("请选中节点后在进行下一步操作");
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor != "255,0,0"){
+        $.alert("请选中三层复杂节点后在进行下一步操作");
     } else {
         window.open(encodeURI("innerEdit.html?nodeName="+ elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
@@ -625,10 +1015,20 @@ $("#openInnerEdit").click(function () {
 //打开节点编辑器
 $("#editNode").click(function () {
     var elements = scene.selectedElements;
-    if (elements[0] == undefined || elements[0] instanceof JTopo.Link){
-        $.alert("请选中节点后在进行下一步操作");
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "255,0,0"){
+        $.alert("请选中简单节点后在进行下一步操作");
     } else {
         window.open(encodeURI("nodeEdit.html?nodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
+    }
+});
+
+//打开复杂节点编辑器
+$("#editNode").click(function () {
+    var elements = scene.selectedElements;
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "0,0,0"){
+        $.alert("请选中复杂节点后在进行下一步操作");
+    } else {
+        window.open(encodeURI("complexNodeEdit.html?complexNodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
 });
 

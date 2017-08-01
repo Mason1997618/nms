@@ -65,6 +65,7 @@ function initNodeAttr(data) {
     $("#operatingSystem").val(objs.operatingSystem);
     $("#nodeConfig").val(objs.flavorType);
     $("#nodeImage").val(objs.imageName);
+    $("#portCount").val(objs.length);
 }
 
 //解析网口列表json
@@ -153,9 +154,9 @@ $("#submitPort").click(function () {
 });
 
 //打开节点内部编辑器
-$("#editInnerScenario").click(function () {
-    window.open(encodeURI("innerEdit.html?nodeId=" + $("#nodeId").val()));
-});
+// $("#editInnerScenario").click(function () {
+//     window.open(encodeURI("innerEdit.html?nodeId=" + $("#nodeId").val()));
+// });
 
 //编辑节点属性提交
 $("#editNode").click(function () {

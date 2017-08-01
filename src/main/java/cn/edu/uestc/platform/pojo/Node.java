@@ -21,6 +21,24 @@ public class Node {
 	private float y;
 	private String uuid;
 	private List<Port> ports;
+	private String iconUrl;
+	private int cn_id;
+
+	public String getIconUrl() {
+		return iconUrl;
+	}
+
+	public void setIconUrl(String iconUrl) {
+		this.iconUrl = iconUrl;
+	}
+
+	public int getCn_id() {
+		return cn_id;
+	}
+
+	public void setCn_id(int cn_id) {
+		this.cn_id = cn_id;
+	}
 
 	public List<Port> getPorts() {
 		return ports;
@@ -165,9 +183,7 @@ public class Node {
 				+ ", numberPort=" + numberPort + ", numberInternalModule=" + numberInternalModule
 				+ ", numberInternalLink=" + numberInternalLink + ", nodeStatus=" + nodeStatus + ", flavorType="
 				+ flavorType + ", imageName=" + imageName + ", s_id=" + s_id + ", x=" + x + ", y=" + y + ", uuid="
-				+ uuid + "]";
+				+ uuid + ", ports=" + ports + ", iconUrl=" + iconUrl + ", cn_id=" + cn_id + "]";
 	}
-
-	
 
 }

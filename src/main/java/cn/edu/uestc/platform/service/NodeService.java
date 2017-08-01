@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 
 import cn.edu.uestc.platform.controller.NodeController;
+import cn.edu.uestc.platform.dao.ComplexNodeDaoImpl;
 import cn.edu.uestc.platform.dao.DeleteDao;
 import cn.edu.uestc.platform.dao.DeleteDaoImpl;
 import cn.edu.uestc.platform.dao.NodeDao;
@@ -32,24 +33,26 @@ public class NodeService {
 		NodeDao nodeDao = new NodeDaoImpl();
 		NodeController nodecontroller = new NodeController();
 		String uuid = null;
-		// 判断同一场景下的节点名称是否重复
+		// 判断节点名称是否重复
 		if (nodeDao.haveNodeName(node) == false) {
-			// 判断节点的ip地址是否已经存在
+			// 判断节点的管理网段ip地址是否已经存在
 			if (nodeDao.isHaveIp(node) == false) {
 				// 判断节点类型,根据类型对节点所属场景表的节点计数字段进行自增。
-				if (node.getNodeType() == 2) { // 若为复杂节点则启动“vm”(0,1均代表简单节点docker，2代表复杂节点vm)
+				if (node.getNodeType() == 1) { // 若为复杂节点则启动“vm”(0,1均代表简单节点docker，2代表复杂节点vm)
 					// 如果在此处出现错误咋办？(例如用户输入的ip地址已经存在)
-					uuid = nodecontroller.createNode(node.getNodeName(), node.getManageIp(), "vm");
+					// uuid = nodecontroller.createNode(node.getNodeName(),
+					// node.getManageIp(), "vm");
 					// 更新此节点对应场景的节点数量
-					nodeDao.plusNumberComplexNode(node.getS_id());
+					nodeDao.plusNumberSimpleNode(node.getS_id());
 					// 此处需要把数据库的回滚加进去，判断节点类型
 					System.out.println("启动vm虚拟机成功！");
-				} else {
-					uuid = nodecontroller.createNode(node.getNodeName(), node.getManageIp(), "docker");
+				} else if (node.getNodeType() == 0) {
+					// uuid = nodecontroller.createNode(node.getNodeName(),
+					// node.getManageIp(), "docker");
 					System.out.println("启动docker成功！");
 					nodeDao.plusNumberSimpleNode(node.getS_id());
 				}
-				node.setUuid(uuid);
+				// node.setUuid(uuid);
 				nodeDao.insertNode(node);
 				return true;
 			}
@@ -149,5 +152,13 @@ public class NodeService {
 		nodeController.deleteNode(node.getUuid());
 		System.out.println("删除Openstack层上的节点结束" + new Date());
 
+	}
+
+	
+	public List<Node> getInnerNodeList(int s_id, String complexNodeName) {
+		// TODO Auto-generated method stub
+		NodeDao nodedao = new NodeDaoImpl();
+		return nodedao.getNodeListByCnid(
+				new ComplexNodeDaoImpl().getComplexNodeBys_idAndComplexNodeName(s_id, complexNodeName).getCn_id());
 	}
 }
