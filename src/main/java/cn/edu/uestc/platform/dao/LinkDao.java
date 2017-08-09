@@ -1,6 +1,7 @@
 package cn.edu.uestc.platform.dao;
 import java.util.List;
 
+import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
 
 public interface LinkDao {
@@ -17,5 +18,11 @@ public interface LinkDao {
 	public Link getLinkByPortID(int pt_id);
 
 	public void updateLinkStatusUp(int s_id, String linkName);
+
+	public List<Link> getInnerLink(int cn_id);
+	
+	public void deleteLinkOnComplexNode(ComplexNode complexNode);
+	
+	public List<Link> getLinkOnComplexNode(ComplexNode complexNode);
 
 }

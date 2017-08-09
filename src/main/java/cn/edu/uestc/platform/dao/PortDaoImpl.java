@@ -197,24 +197,19 @@ public class PortDaoImpl implements PortDao {
 	 * 
 	 * 通过链路拿到链路两端的port
 	 * 
-	 *      //+----------+----------+--------------+-----------------+
-//			| l_id | txPortID | rxPortID | fromNodeName | toNodeName |
-//			+------+----------+----------+------------+------------+-
-//			|   50 |    106   |      107 | node1        | node2      |
-//			|   51 |    108   |      109 | node3        | node4      |
-//			+------+----------+----------+------------+------------+--
- * 
- * 根据链路表如上图，txPortID对应 fromNodeName  rxPortID对应toNodeName
- * 在mysql数据库中 select *from port where pt_id = ? or pt_id = ?"; 查出来的数据是按如下排列的
-				 * +-------+----------+----
-				| pt_id || portIP       |
-				+-------+----------+------
-				|   106 | | 192.168.7.4 |
-				|   107 | | 192.168.7.6 |
-				+-------+----------+------
-	查出来的PortId永远是先
- * 
- * 
+	 * //+----------+----------+--------------+-----------------+ // | l_id |
+	 * txPortID | rxPortID | fromNodeName | toNodeName | //
+	 * +------+----------+----------+------------+------------+- // | 50 | 106 |
+	 * 107 | node1 | node2 | // | 51 | 108 | 109 | node3 | node4 | //
+	 * +------+----------+----------+------------+------------+--
+	 * 
+	 * 根据链路表如上图，txPortID对应 fromNodeName rxPortID对应toNodeName 在mysql数据库中 select
+	 * *from port where pt_id = ? or pt_id = ?"; 查出来的数据是按如下排列的
+	 * +-------+----------+---- | pt_id || portIP | +-------+----------+------ |
+	 * 106 | | 192.168.7.4 | | 107 | | 192.168.7.6 | +-------+----------+------
+	 * 查出来的PortId永远是先
+	 * 
+	 * 
 	 */
 	@Override
 	public List<Port> getPortByLink(Link link) {
@@ -330,6 +325,26 @@ public class PortDaoImpl implements PortDao {
 			e.printStackTrace();
 		}
 		return ports;
+	}
+
+	@Override
+	public void deletePort(Port port) {
+		// TODO Auto-generated method stub
+		String sql = "delete from port where pt_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, port.getPt_id());
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
 	}
 
 }

@@ -10,5 +10,6 @@ public interface ComplexNodeDao {
 	public void insertComplexNode(ComplexNode complexNode);
 	public List<ComplexNode> selectComplexNodeList(int s_id);
 	public ComplexNode getComplexNodeBys_idAndComplexNodeName(int s_id, String complexNodeName);
+	public void deleteComplexNode(ComplexNode complexNode);
 	
 }

@@ -15,5 +15,6 @@ public interface PortDao {
 	public List<Port> getPortByLink(Link link);
 	public Port getPortByID(int pt_id);
 	public List<Port> getportListByPortIDs(int[] portID);
+	public void deletePort(Port port);
 
 }

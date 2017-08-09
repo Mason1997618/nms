@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -19,8 +22,8 @@ public class LinkDaoImpl implements LinkDao {
 	public void insertLink(Link link) {
 		// TODO Auto-generated method stub
 		String sql = "insert into link(linkName,linkType,linkLength,linkStatus,linkNoise,"
-				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName,fromNodeIP,toNodeIP,cn_id) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "linkInterference,channelModel,scenario_id,txPortID,rxPortID,fromNodeName,toNodeName,fromNodeIP,toNodeIP,cn_id,logicalFromNodeName,logicalToNodeName) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 
@@ -42,6 +45,8 @@ public class LinkDaoImpl implements LinkDao {
 			ps.setString(13, link.getFromNodeIP());
 			ps.setString(14, link.getToNodeIP());
 			ps.setInt(15, link.getCn_id());
+			ps.setString(16, link.getLogicalFromNodeName());
+			ps.setString(17, link.getLogicalToNodeName());
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -86,6 +91,8 @@ public class LinkDaoImpl implements LinkDao {
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
 				link.setCn_id(rs.getInt(16));
+				link.setLogicalFromNodeName(rs.getString(17));
+				link.setLogicalToNodeName(rs.getString(18));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -158,6 +165,8 @@ public class LinkDaoImpl implements LinkDao {
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
 				link.setCn_id(rs.getInt(16));
+				link.setLogicalFromNodeName(rs.getString(17));
+				link.setLogicalToNodeName(rs.getString(18));
 				links.add(link);
 			}
 		} catch (SQLException e) {
@@ -225,6 +234,8 @@ public class LinkDaoImpl implements LinkDao {
 				link.setFromNodeIP(rs.getString(14));
 				link.setToNodeIP(rs.getString(15));
 				link.setCn_id(rs.getInt(16));
+				link.setLogicalFromNodeName(rs.getString(17));
+				link.setLogicalToNodeName(rs.getString(18));
 			}
 
 		} catch (SQLException e) {
@@ -255,4 +266,97 @@ public class LinkDaoImpl implements LinkDao {
 		}
 	}
 
+	@Override
+	public List<Link> getInnerLink(int cn_id) {
+		// TODO Auto-generated method stub
+		String sql = "select *from link where cn_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Link> links = new ArrayList<>();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, cn_id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Link link = new Link();
+				link.setL_id(rs.getInt(1));
+				link.setLinkName(rs.getString(2));
+				link.setLinkType(rs.getInt(3));
+				link.setLinkLength(rs.getDouble(4));
+				link.setLinkStatus(rs.getInt(5));
+				link.setLinkNoise(rs.getDouble(6));
+				link.setLinkInterference(rs.getDouble(7));
+				link.setChannelModel(rs.getInt(8));
+				link.setScenario_id(rs.getInt(9));
+				link.setTxPort_id(rs.getInt(10));
+				link.setRxPort_id(rs.getInt(11));
+				link.setFromNodeName(rs.getString(12));
+				link.setToNodeName(rs.getString(13));
+				link.setFromNodeIP(rs.getString(14));
+				link.setToNodeIP(rs.getString(15));
+				link.setCn_id(rs.getInt(16));
+				link.setLogicalFromNodeName(rs.getString(17));
+				link.setLogicalToNodeName(rs.getString(18));
+				links.add(link);
+
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+
+		return links;
+	}
+
+	@Override
+	public void deleteLinkOnComplexNode(ComplexNode complexNode) {
+
+	}
+
+	@Override
+	public List<Link> getLinkOnComplexNode(ComplexNode complexNode) {
+		// TODO Auto-generated method stub
+		String sql = "select *from link where logicalFromNodeName = ? or logicalToNodeName = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Link> links = new ArrayList<>();
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, complexNode.getComplexNodeName());
+			ps.setString(2, complexNode.getComplexNodeName());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Link link = new Link();
+				link.setL_id(rs.getInt(1));
+				link.setLinkName(rs.getString(2));
+				link.setLinkType(rs.getInt(3));
+				link.setLinkLength(rs.getDouble(4));
+				link.setLinkStatus(rs.getInt(5));
+				link.setLinkNoise(rs.getDouble(6));
+				link.setLinkInterference(rs.getDouble(7));
+				link.setChannelModel(rs.getInt(8));
+				link.setScenario_id(rs.getInt(9));
+				link.setTxPort_id(rs.getInt(10));
+				link.setRxPort_id(rs.getInt(11));
+				link.setFromNodeName(rs.getString(12));
+				link.setToNodeName(rs.getString(13));
+				link.setFromNodeIP(rs.getString(14));
+				link.setToNodeIP(rs.getString(15));
+				link.setCn_id(rs.getInt(16));
+				link.setLogicalFromNodeName(rs.getString(17));
+				link.setLogicalToNodeName(rs.getString(18));
+				links.add(link);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return links;
+	}
 }

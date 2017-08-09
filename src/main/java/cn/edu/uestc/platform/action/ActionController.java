@@ -35,6 +35,7 @@ import cn.edu.uestc.platform.service.ProjectService;
 import cn.edu.uestc.platform.service.ScenarioService;
 import cn.edu.uestc.platform.service.UserService;
 import cn.edu.uestc.platform.utils.JSoneUtils;
+import cn.edu.uestc.platform.utils.VNCUtils;
 
 @Controller
 public class ActionController {
@@ -273,6 +274,7 @@ public class ActionController {
 	public String createLink(Link link) {
 		logger.info("[新建链路]   linkName:" + link.getLinkName() + " 操作时间: " + new Date());
 		LinkService linkService = new LinkService();
+		System.out.println(link.getLogicalFromNodeName() + "---" + link.getLogicalToNodeName());
 		boolean flag = linkService.createLink(link);
 		if (flag == true) {
 			return "创建成功";
@@ -398,24 +400,24 @@ public class ActionController {
 		}
 		return "节点名重复！";
 	}
-	
+
 	/*
 	 * selectInnerNodeList 查询所有属于该复杂节点的节点
 	 */
 	@RequestMapping("/selectInnerNodeList")
 	@ResponseBody
-	public String selectInnerNodeList(int s_id,String complexNodeName){
+	public String selectInnerNodeList(int s_id, String complexNodeName) {
 		NodeService nodeservice = new NodeService();
-		List<Node> nodes = nodeservice.getInnerNodeList(s_id,complexNodeName);
+		List<Node> nodes = nodeservice.getInnerNodeList(s_id, complexNodeName);
 		return JSoneUtils.ListToJson(nodes).toString();
 	}
-	
-	
+
 	@RequestMapping("/addInnerLink")
 	@ResponseBody
-	public String addInnerLink(Link link,String complexNodeName){
+	public String addInnerLink(Link link, String complexNodeName) {
 		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
-		link.setCn_id(complexNodeDao.getComplexNodeBys_idAndComplexNodeName(link.getScenario_id(), complexNodeName).getCn_id());
+		link.setCn_id(complexNodeDao.getComplexNodeBys_idAndComplexNodeName(link.getScenario_id(), complexNodeName)
+				.getCn_id());
 		LinkService linkService = new LinkService();
 		boolean flag = linkService.createLink(link);
 		if (flag == true) {
@@ -423,4 +425,60 @@ public class ActionController {
 		}
 		return "创建失败！";
 	}
+
+	/*
+	 * 获取复杂节点ID
+	 */
+	@RequestMapping("/getComplexNodeId")
+	@ResponseBody
+	public int getComplexNodeId(int s_id, String complexNodeName) {
+		ComplexNodeService cplxNodeservice = new ComplexNodeService();
+		System.out.println("拿到了cnid" + cplxNodeservice.getCompleNode(s_id, complexNodeName).getCn_id());
+		return cplxNodeservice.getCompleNode(s_id, complexNodeName).getCn_id();
+	}
+
+	/*
+	 * 获取内部链路
+	 */
+	@ResponseBody
+	@RequestMapping("/getInnerLinkList")
+	public String getInnerLink(int cn_id) {
+		LinkService linkService = new LinkService();
+		List<Link> links = linkService.getInnerLink(cn_id);
+		return JSoneUtils.ListToJson(links).toString();
+	}
+
+	/*
+	 * 打开控制台
+	 */
+	@RequestMapping("/openConsole")
+	public String OpenConsole(String nodeName, int s_id) {
+		// 查出节点的UUID
+		System.out.println("执行了VNC");
+		System.out.println(nodeName + s_id);
+		NodeService nodeService = new NodeService();
+		Node node = nodeService.getNodeBynodeName(nodeName, s_id);
+		System.out.println(node);
+		return VNCUtils.getVNCURL(node.getUuid());
+	}
+
+	/*
+	 * 删除复杂节点，删除所有链路，删除所有节点cn_id，删除数据库所有数据
+	 */
+	@RequestMapping("/deleteComplexNode")
+	@ResponseBody
+	public String deleteComplexNode(ComplexNode complexNode) {
+		ComplexNodeService complexNodeService = new ComplexNodeService();
+		boolean flag = complexNodeService.deleteComplexNodeService(complexNode);
+		return "删除成功";
+	}
+	
+	@Test
+	public void demo1(){
+		ComplexNode complexNode = new ComplexNode();
+		complexNode.setCn_id(8);
+		complexNode.setComplexNodeName("complexnode1");
+		deleteComplexNode(complexNode);
+	}
+	
 }

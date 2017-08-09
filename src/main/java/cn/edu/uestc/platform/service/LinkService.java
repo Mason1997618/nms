@@ -31,8 +31,9 @@ public class LinkService {
 		if (linkDao.ishaveLinkName(link) == false || link.getLinkStatus() == 1) {
 			// 在云平台创建一条链路,通过port来获取到fronNodeName和toNodeName
 			LinkController controller = new LinkController();
-//			controller.createLinkMTM(link.getFromNodeName(), link.getFromNodeIP(), link.getToNodeName(),
-//					link.getToNodeIP());
+			// controller.createLinkMTM(link.getFromNodeName(),
+			// link.getFromNodeIP(), link.getToNodeName(),
+			// link.getToNodeIP());
 
 			// 新建的链路linkStatus的状态都是0， 可插入链路，如果链路已经存在，数据库中无需再插入链路了。
 			if (link.getLinkStatus() == 0) {
@@ -110,6 +111,12 @@ public class LinkService {
 		this.createLink(link);
 		// 修改数据库中链路的状态
 		linkDao.updateLinkStatusUp(s_id, linkName);
+	}
+
+	public List<Link> getInnerLink(int cn_id) {
+		// TODO Auto-generated method stub
+		LinkDao linkDao = new LinkDaoImpl();
+		return linkDao.getInnerLink(cn_id);
 	}
 
 }

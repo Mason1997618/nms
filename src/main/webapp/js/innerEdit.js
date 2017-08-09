@@ -32,11 +32,11 @@ function showTime() {
     setTimeout("showTime()", 1000);
 }
 
-$(document).ready(function () {
-    showTime();
-    //画出已有内部节点，获取内部节点的对象列表
+//获得复杂节点id并保存
+var complexNodeId = 0;
+function getComplexNodeId() {
     $.ajax({
-        url: '/NetworkSimulation/selectInnerNodeList',
+        url: '/NetworkSimulation/getComplexNodeId',
         data: {
             s_id : $.getUrlParam("scenarioId"),
             complexNodeName : $.getUrlParam("nodeName")
@@ -45,21 +45,21 @@ $(document).ready(function () {
         dataType: 'json',
         async: false,
         success: function (data) {
-            var objs = jQuery.parseJSON(data);
-            for (var i = 0; i < objs.length; i++) {
-                createNode(objs[i].nodeName, objs[i].x, objs[i].y, objs[i].iconUrl);
-            }
+            complexNodeId = data;
+            console.log("已经取得复杂节点id");
         },
         error: function () {
 
         }
     });
-    //获取所有链路并画出，获取内部链路对象的列表
+}
+
+//获取内部链路对象的列表并画出来
+function initLinkOnCanvas() {
     $.ajax({
         url: '/NetworkSimulation/getInnerLinkList',
         data: {
-            s_id : $.getUrlParam("scenarioId"),
-            complexNodeName : $.getUrlParam("nodeName")
+            cn_id : complexNodeId
         },
         type: 'post',
         dataType: 'json',
@@ -75,19 +75,19 @@ $(document).ready(function () {
                 for (var i = 0; i < objs.length; i++) {
                     //对每个link对象找到fromNode和toNode
                     for (var j = 0; j < elements.length; j++) {
-                        if (objs[i].fromNodeName == elements[j].text) {
+                        if (objs[i].logicalFromNodeName == elements[j].text) {
                             fromNode = elements[j];
                         }
-                        if (objs[i].toNodeName == elements[j].text) {
+                        if (objs[i].logicalToNodeName == elements[j].text) {
                             toNode = elements[j];
                         }
                     }
                     //画出链路
-                    if (objs[i].linkStatus == 1 ) {
+                    if (objs[i].linkStatus == 1 && objs[i].cn_id == complexNodeId) {
                         //断开的链路，红色
                         newLink(fromNode, toNode, objs[i].linkName, "255,0,0");
                     }
-                    if (objs[i].linkStatus == 0) {
+                    if (objs[i].linkStatus == 0 && objs[i].cn_id == complexNodeId) {
                         //接通的链路，蓝色
                         newLink(fromNode, toNode, objs[i].linkName, "0,0,255");
                     }
@@ -98,6 +98,34 @@ $(document).ready(function () {
 
         }
     });
+}
+
+$(document).ready(function () {
+    getComplexNodeId();
+    showTime();
+    //画出已有内部节点，获取内部节点的对象列表
+    $.ajax({
+        url: '/NetworkSimulation/selectInnerNodeList',
+        data: {
+            s_id : $.getUrlParam("scenarioId"),
+            complexNodeName : $.getUrlParam("nodeName")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            var objs = jQuery.parseJSON(data);
+            for (var i = 0; i < objs.length; i++) {
+                if (objs[i].cn_id == complexNodeId) {
+                    createNode(objs[i].nodeName, objs[i].x, objs[i].y, objs[i].iconUrl);
+                }
+            }
+        },
+        error: function () {
+
+        }
+    });
+    setTimeout("initLinkOnCanvas()", 500);
 });
 
 /**
@@ -557,6 +585,8 @@ $("#addLink").click(function () {
             toNodeIP : $("#toNodeIP").val(),
             fromNodeName : beginNode.text,
             toNodeName : endLastNode.text,
+            logicalFromNodeName : beginNode.text,
+            logicalToNodeName : endLastNode.text,
             txPort_id : $("#fromPort").val(),
             rxPort_id : $("#toPort").val(),
             linkNoise : $("#channelNoise").val(),
@@ -591,13 +621,39 @@ $("#addLink").click(function () {
     });
 });
 
+//打开控制台页面
+$("#openCli").click(function () {
+    var elements = scene.selectedElements;
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "255,0,0"){
+        $.alert("请选中简单节点后在进行下一步操作");
+    } else {
+        $.ajax({
+            url: '/NetworkSimulation/openConsole',
+            data: {
+                nodeName: elements[0].text,
+                s_id : $.getUrlParam("scenarioId")
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                console.log(msg);
+                window.open(encodeURI(msg));
+            },
+            error: function () {
+
+            }
+        });
+    }
+});
+
 //打开节点编辑器
 $("#editNode").click(function () {
     var elements = scene.selectedElements;
     if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "255,0,0"){
         $.alert("请选中简单节点后在进行下一步操作");
     } else {
-        window.open(encodeURI("nodeEdit.html?nodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
+        window.open(encodeURI("nodeEdit.html?nodeName="+ elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
 });
 

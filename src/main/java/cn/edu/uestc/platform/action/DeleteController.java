@@ -65,6 +65,5 @@ public class DeleteController {
 	public void deleteScenario(){
 		ScenarioService scenarioservice = new ScenarioService();
 		scenarioservice.deleteScenariosOnlyOpenstack(29);
-//		scenarioservice.deleteScenarioAll(s_id);
 	}
 }

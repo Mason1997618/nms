@@ -130,6 +130,25 @@ public class ComplexNodeDaoImpl implements ComplexNodeDao {
 		return complexNode;
 	}
 
-	
-	
+	@Override
+	public void deleteComplexNode(ComplexNode complexNode) {
+		// TODO Auto-generated method stub
+
+		String sql = "delete from complexnode where cn_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, complexNode.getCn_id());
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
 }

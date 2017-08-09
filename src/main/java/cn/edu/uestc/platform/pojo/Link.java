@@ -18,6 +18,24 @@ public class Link {
 	private String fromNodeIP;
 	private String toNodeIP;
 	private int cn_id;
+	private String logicalFromNodeName;
+	private String logicalToNodeName;
+
+	public String getLogicalFromNodeName() {
+		return logicalFromNodeName;
+	}
+
+	public void setLogicalFromNodeName(String logicalFromNodeName) {
+		this.logicalFromNodeName = logicalFromNodeName;
+	}
+
+	public String getLogicalToNodeName() {
+		return logicalToNodeName;
+	}
+
+	public void setLogicalToNodeName(String logicalToNodeName) {
+		this.logicalToNodeName = logicalToNodeName;
+	}
 
 	public int getCn_id() {
 		return cn_id;
@@ -153,7 +171,8 @@ public class Link {
 				+ channelModel + ", scenario_id=" + scenario_id + ", txPort_id=" + txPort_id + ", rxPort_id="
 				+ rxPort_id + ", fromNodeName=" + fromNodeName + ", toNodeName=" + toNodeName + ", linkName=" + linkName
 				+ ", linkLength=" + linkLength + ", linkNoise=" + linkNoise + ", linkInterference=" + linkInterference
-				+ ", fromNodeIP=" + fromNodeIP + ", toNodeIP=" + toNodeIP + ", cn_id=" + cn_id + "]";
+				+ ", fromNodeIP=" + fromNodeIP + ", toNodeIP=" + toNodeIP + ", cn_id=" + cn_id
+				+ ", logicalFromNodeName=" + logicalFromNodeName + ", logicalToNodeName=" + logicalToNodeName + "]";
 	}
 
 }

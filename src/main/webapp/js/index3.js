@@ -93,19 +93,19 @@ $(document).ready(function () {
                 for (var i = 0; i < objs.length; i++) {
                     //对每个link对象找到fromNode和toNode
                     for (var j = 0; j < elements.length; j++) {
-                        if (objs[i].fromNodeName == elements[j].text) {
+                        if (objs[i].logicalFromNodeName == elements[j].text) {
                             fromNode = elements[j];
                         }
-                        if (objs[i].toNodeName == elements[j].text) {
+                        if (objs[i].logicalToNodeName == elements[j].text) {
                             toNode = elements[j];
                         }
                     }              
                     //画出链路
-                    if (objs[i].linkStatus == 1 ) {
+                    if (objs[i].linkStatus == 1 && objs[i].cn_id == 0) {
                         //断开的链路，红色
                         newLink(fromNode, toNode, objs[i].linkName, "255,0,0");
                     }
-                    if (objs[i].linkStatus == 0) {
+                    if (objs[i].linkStatus == 0 && objs[i].cn_id == 0) {
                         //接通的链路，蓝色
                         newLink(fromNode, toNode, objs[i].linkName, "0,0,255");
                     }
@@ -260,9 +260,11 @@ function isValidIP(ip)
 function initFromNode(data, k) {
     var html = '';
     var objs = jQuery.parseJSON(data);
+    console.log("已解析复杂节点json：");
     for (var i = 0; i < objs.length; i++) {
         html += '<option onclick="getFromPort(' + k + ');" value="' + objs[i].nodeName + '">' + objs[i].nodeName + '</option>';
     }
+    console.log("html：" + html);
     $('[id = "selectFromNode_' + k + '"]').html(html);
 }
 function getFromPort(k) {
@@ -279,9 +281,13 @@ function getFromPort(k) {
             var html = '';
             var objs = jQuery.parseJSON(msg);
             for (var i = 0; i < objs.length; i++) {
-                html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+                if (objs[i].portStatus == 0) {
+                    html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+                } else if (objs[i].portStatus == 1) {
+                    html += '<option value="' + objs[i].pt_id + '" disabled="disabled">' + objs[i].portName + '</option>';
+                }
             }
-            $('[id = "selectToPort_' + k + '"]').html(html);
+            $('[id = "selectFromPort_' + k + '"]').html(html);
         },
         error: function () {
 
@@ -310,7 +316,11 @@ function getToPort(k) {
             var html = '';
             var objs = jQuery.parseJSON(msg);
             for (var i = 0; i < objs.length; i++) {
-                html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+                if (objs[i].portStatus == 0) {
+                    html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+                } else if (objs[i].portStatus == 1) {
+                    html += '<option value="' + objs[i].pt_id + '" disabled="disabled">' + objs[i].portName + '</option>';
+                }
             }
             $('[id = "selectToPort_' + k + '"]').html(html);
         },
@@ -324,16 +334,24 @@ function getToPort(k) {
 function initFromPort(data, k) {
     var html = '';
     var objs = jQuery.parseJSON(data);
-    for (var i = 0; i < objs,length; i++) {
-        html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+    for (var i = 0; i < objs.length; i++) {
+        if (objs[i].portStatus == 0) {
+            html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+        } else if (objs[i].portStatus == 1) {
+            html += '<option value="' + objs[i].pt_id + '" disabled="disabled">' + objs[i].portName + '</option>';
+        }
     }
     $('[id = "fromPort_' + k + '"]').html(html);
 }
 function initToPort(data, k) {
     var html = '';
     var objs = jQuery.parseJSON(data);
-    for (var i = 0; i < objs,length; i++) {
-        html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+    for (var i = 0; i < objs.length; i++) {
+        if (objs[i].portStatus == 0) {
+            html += '<option value="' + objs[i].pt_id + '">' + objs[i].portName + '</option>';
+        } else if (objs[i].portStatus == 1) {
+            html += '<option value="' + objs[i].pt_id + '" disabled="disabled">' + objs[i].portName + '</option>';
+        }
     }
     $('[id = "toPort_' + k + '"]').html(html);
 }
@@ -402,6 +420,7 @@ scene.mouseup(function (e) {
                     dataType: 'json',
                     async: false,
                     success: function (msg) {
+                        console.log("已获得复杂节点对象json");
                         initFromNode(msg, 2);
                     },
                     error: function () {
@@ -959,7 +978,6 @@ $("#addComplexNode").click(function () {
 
 //链路模态框中请求的发送
 $("#addLink").click(function () {
-    //发送执行ajax的请求
     $.ajax({
         url: '/NetworkSimulation/addLink',
         data: {
@@ -969,6 +987,8 @@ $("#addLink").click(function () {
             toNodeIP : $("#toNodeIP").val(),
             fromNodeName : beginNode.text,
             toNodeName : endLastNode.text,
+            logicalFromNodeName : beginNode.text,
+            logicalToNodeName : endLastNode.text,
             txPort_id : $("#fromPort").val(),
             rxPort_id : $("#toPort").val(),
             linkNoise : $("#channelNoise").val(),
@@ -1000,6 +1020,170 @@ $("#addLink").click(function () {
 
         }
     });
+});
+
+//复杂到复杂链路模态框提交
+$("#addComplexLink_0").click(function () {
+    $.ajax({
+        url: '/NetworkSimulation/addLink',
+        data: {
+            linkName : $("#linkName_0").val(),
+            linkType : $("#linkType_0").val(),
+            fromNodeIP : $("#fromNodeIP_0").val(),
+            toNodeIP : $("#toNodeIP_0").val(),
+            fromNodeName : $("#selectFromNode_0").val(),
+            toNodeName : $("#selectToNode_0").val(),
+            logicalFromNodeName : beginNode.text,
+            logicalToNodeName : endLastNode.text,
+            txPort_id : $("#selectFromPort_0").val(),
+            rxPort_id : $("#selectToPort_0").val(),
+            linkNoise : $("#channelNoise_0").val(),
+            linkInterference : $("#channelDisturbance_0").val(),
+            channelModel : $("#channelType_0").val(),
+            linkLength : $("#linkLenth_0").val(),
+            scenario_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            $.alert(msg);
+            if (msg == "创建成功") {
+                //在画布上绘制出链路
+                if ($("#linkType_0").val() == 0) {//有线链路
+                    // newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
+                    newLink(beginNode, endLastNode, $("#linkName_0").val(), "0,0,255");
+                } else if ($("#linkType_0").val() == 1) {//无线链路
+                    newLink(beginNode, endLastNode, "链路2", "0,0,0");
+                }
+                beginNode = null;
+                scene.remove(link1);
+                //关闭模态框
+                $('#complexNodeLinkModal_0').modal('hide');
+            }
+        },
+        error: function () {
+
+        }
+    });
+});
+
+//简单到复杂链路模态框提交
+$("#addComplexLink_1").click(function () {
+    $.ajax({
+        url: '/NetworkSimulation/addLink',
+        data: {
+            linkName : $("#linkName_1").val(),
+            linkType : $("#linkType_1").val(),
+            fromNodeIP : $("#fromNodeIP_1").val(),
+            toNodeIP : $("#toNodeIP_1").val(),
+            fromNodeName : beginNode.text,
+            toNodeName : $("#selectToNode_1").val(),
+            logicalFromNodeName : beginNode.text,
+            logicalToNodeName : endLastNode.text,
+            txPort_id : $("#fromPort_1").val(),
+            rxPort_id : $("#selectToPort_1").val(),
+            linkNoise : $("#channelNoise_1").val(),
+            linkInterference : $("#channelDisturbance_1").val(),
+            channelModel : $("#channelType_1").val(),
+            linkLength : $("#linkLenth_1").val(),
+            scenario_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            $.alert(msg);
+            if (msg == "创建成功") {
+                //在画布上绘制出链路
+                if ($("#linkType_1").val() == 0) {//有线链路
+                    // newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
+                    newLink(beginNode, endLastNode, $("#linkName_1").val(), "0,0,255");
+                } else if ($("#linkType_1").val() == 1) {//无线链路
+                    newLink(beginNode, endLastNode, "链路2", "0,0,0");
+                }
+                beginNode = null;
+                scene.remove(link1);
+                //关闭模态框
+                $('#complexNodeLinkModal_1').modal('hide');
+            }
+        },
+        error: function () {
+
+        }
+    });
+});
+
+//复杂到简单链路模态框提交
+$("#addComplexLink_2").click(function () {
+    $.ajax({
+        url: '/NetworkSimulation/addLink',
+        data: {
+            linkName : $("#linkName_2").val(),
+            linkType : $("#linkType_2").val(),
+            fromNodeIP : $("#fromNodeIP_2").val(),
+            toNodeIP : $("#toNodeIP_2").val(),
+            fromNodeName : $("#selectFromNode_2").val(),
+            toNodeName : endLastNode.text,
+            logicalFromNodeName : beginNode.text,
+            logicalToNodeName : endLastNode.text,
+            txPort_id : $("#selectFromPort_2").val(),
+            rxPort_id : $("#toPort_2").val(),
+            linkNoise : $("#channelNoise_2").val(),
+            linkInterference : $("#channelDisturbance_2").val(),
+            channelModel : $("#channelType_2").val(),
+            linkLength : $("#linkLenth_2").val(),
+            scenario_id : $.getUrlParam("scenarioId")
+        },
+        type: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (msg) {
+            $.alert(msg);
+            if (msg == "创建成功") {
+                //在画布上绘制出链路
+                if ($("#linkType_2").val() == 0) {//有线链路
+                    // newLink(beginNode, endLastNode, beginNode.text + ":" + fromNodeIP.value + " -> " + endLastNode.text + ":" + toNodeIP.value, "0,0,255");
+                    newLink(beginNode, endLastNode, $("#linkName_2").val(), "0,0,255");
+                } else if ($("#linkType_2").val() == 1) {//无线链路
+                    newLink(beginNode, endLastNode, "链路2", "0,0,0");
+                }
+                beginNode = null;
+                scene.remove(link1);
+                //关闭模态框
+                $('#complexNodeLinkModal_2').modal('hide');
+            }
+        },
+        error: function () {
+
+        }
+    });
+});
+
+//打开控制台页面
+$("#openCli").click(function () {
+    var elements = scene.selectedElements;
+    if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "255,0,0"){
+        $.alert("请选中简单节点后在进行下一步操作");
+    } else {
+        $.ajax({
+            url: '/NetworkSimulation/openConsole',
+            data: {
+                nodeName: elements[0].text,
+                s_id : $.getUrlParam("scenarioId")
+            },
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (msg) {
+                console.log(msg);
+                window.open(encodeURI(msg));
+            },
+            error: function () {
+
+            }
+        });
+    }
 });
 
 //打开内部编辑器
