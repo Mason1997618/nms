@@ -26,6 +26,9 @@ function showTime() {
     setTimeout("showTime()", 1000);
 }
 
+//预读就记录下简单节点的id和类型
+var simpleNodeId = [];
+var simpleNodeType = [];
 //预读
 $(document).ready(function () {
     showTime();
@@ -44,8 +47,11 @@ $(document).ready(function () {
         success: function (data) {
             var objs = jQuery.parseJSON(data);
             for (var i = 0; i < objs.length; i++){
+                //初始化简单节点的id和type
+                simpleNodeId[objs[i].nodeName] = objs[i].uuid;
+                simpleNodeType[objs[i].nodeName] = objs[i].nodeType;
                 if (objs[i].cn_id == 0) {
-                    //画出节点
+                    //画出简单节点
                     createNode(objs[i].nodeName, objs[i].x, objs[i].y, objs[i].iconUrl);
                 }
             }
@@ -139,26 +145,51 @@ $("#remove").click(function () {
     }else {
         for (var i = 0; i < elements.length; i++) {
             if (elements[i] instanceof JTopo.Node) {
-                $.alert("删除一个节点" + elements[i].text);
-                //从画布删除节点
-                $.ajax({
-                    url: '/NetworkSimulation/deleteNode',
-                    data: {
-                        nodeName: elements[i].text,
-                        s_id : $.getUrlParam("scenarioId")
-                    },
-                    type: 'post',
-                    dataType: 'json',
-                    async: false,
-                    success: function (msg) {
-                        if (msg == "删除成功") {
-                            scene.remove(elements[i]);
-                        }
-                    },
-                    error: function () {
+                if (elements[i].fontColor == "255,0,0") {
+                    //如果是复杂节点
+                    $.alert("删除一个复杂节点" + elements[i].text);
+                    //从画布删除节点
+                    $.ajax({
+                        url: '/NetworkSimulation/deleteComplexNode',
+                        data: {
+                            complexNodeName: elements[i].text,
+                            s_id : $.getUrlParam("scenarioId")
+                        },
+                        type: 'post',
+                        dataType: 'json',
+                        async: false,
+                        success: function (msg) {
+                            if (msg == "删除成功") {
+                                scene.remove(elements[i]);
+                            }
+                        },
+                        error: function () {
 
-                    }
-                });
+                        }
+                    });
+                } else if (elements[i].fontColor == "0,0,0") {
+                    //如果是简单节点
+                    $.alert("删除一个简单节点" + elements[i].text);
+                    //从画布删除节点
+                    $.ajax({
+                        url: '/NetworkSimulation/deleteNode',
+                        data: {
+                            nodeName: elements[i].text,
+                            s_id : $.getUrlParam("scenarioId")
+                        },
+                        type: 'post',
+                        dataType: 'json',
+                        async: false,
+                        success: function (msg) {
+                            if (msg == "删除成功") {
+                                scene.remove(elements[i]);
+                            }
+                        },
+                        error: function () {
+
+                        }
+                    });
+                }
             }
             if (elements[i] instanceof JTopo.Link) {
             	console.log(elements[i].strokeColor);
@@ -1160,12 +1191,33 @@ $("#addComplexLink_2").click(function () {
     });
 });
 
+//上传stk文件
+$("#inputFileSubmit").click(function () {
+    $.ajaxFileUpload({
+        url: '/NetworkSimulation/sendStkFile', //用于文件上传的服务器端请求地址
+        secureuri: false, //是否需要安全协议，一般设置为false
+        fileElementId: 'inputFile', //文件上传域的ID
+        dataType: 'json', //返回值类型 一般设置为json
+        success: function (data, status) {
+            $.alert(data);
+            window.open(encodeURI("dynamicSetting.html?scenarioId=" + $.getUrlParam("scenarioId")));
+        },
+        error: function (data, status, e) {
+            $.alert(e);
+        }
+    });
+});
+
 //打开控制台页面
 $("#openCli").click(function () {
     var elements = scene.selectedElements;
     if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor == "255,0,0"){
         $.alert("请选中简单节点后在进行下一步操作");
-    } else {
+    } else if (simpleNodeType[elements[0].text] == 0) {
+        //如果是docker节点
+        window.open(encodeURI("dockerConsole.html?nodeId=" + simpleNodeId[elements[0].text]));
+    } else if (simpleNodeType[elements[0].text] == 1) {
+        //如果是vm
         $.ajax({
             url: '/NetworkSimulation/openConsole',
             data: {
@@ -1176,13 +1228,17 @@ $("#openCli").click(function () {
             dataType: 'json',
             async: false,
             success: function (msg) {
-                console.log(msg);
-                window.open(encodeURI(msg));
+                // $.alert("即将打开vm控制台：" + msg);
+                window.open(msg);
             },
             error: function () {
 
             }
         });
+    } else if (simpleNodeType[elements[0].text] == null) {
+        //如果是新建的节点，未存id和type就刷新
+        $.alert("自动刷新后请您再打开。");
+        window.location.reload();
     }
 });
 
@@ -1192,7 +1248,7 @@ $("#openInnerEdit").click(function () {
     if (elements[0] == undefined || elements[0] instanceof JTopo.Link || elements[0].fontColor != "255,0,0"){
         $.alert("请选中三层复杂节点后在进行下一步操作");
     } else {
-        window.open(encodeURI("innerEdit.html?nodeName="+ elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
+        window.open(encodeURI("innerEdit.html?nodeName=" + elements[0].text + "&scenarioId=" + $.getUrlParam("scenarioId")));
     }
 });
 

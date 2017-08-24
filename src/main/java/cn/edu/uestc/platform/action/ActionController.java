@@ -1,5 +1,6 @@
 package cn.edu.uestc.platform.action;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpSession;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.jcraft.jsch.JSchException;
 
 import cn.edu.uestc.platform.controller.LinkController;
 import cn.edu.uestc.platform.controller.ThreadController;
@@ -34,6 +37,8 @@ import cn.edu.uestc.platform.service.PortService;
 import cn.edu.uestc.platform.service.ProjectService;
 import cn.edu.uestc.platform.service.ScenarioService;
 import cn.edu.uestc.platform.service.UserService;
+import cn.edu.uestc.platform.testzk.JSchDemo;
+import cn.edu.uestc.platform.testzk.JSchUtil;
 import cn.edu.uestc.platform.utils.JSoneUtils;
 import cn.edu.uestc.platform.utils.VNCUtils;
 
@@ -155,7 +160,6 @@ public class ActionController {
 	public String createNode(Node node) {
 		logger.info("[新建节点]   nodeName:" + node.getNodeName() + " 操作时间: " + new Date());
 		NodeService service = new NodeService();
-		System.out.println(node.getCn_id());
 		boolean flag = service.createNode(node);
 		if (flag == true) {
 			System.out.println("返回成功");
@@ -339,7 +343,6 @@ public class ActionController {
 	@ResponseBody
 	public String recoveryScenario(int s_id) {
 		logger.info("[恢复场景]   ScenarioID:" + s_id + " 操作时间: " + new Date());
-
 		ScenarioService scenarioService = new ScenarioService();
 		scenarioService.recoveryScenario(s_id);
 		return "恢复成功";
@@ -388,12 +391,11 @@ public class ActionController {
 	@RequestMapping("/addInnerNode")
 	@ResponseBody
 	public String addInnerNode(Node node, String complexNodeName) {
-		System.out.println(node.getS_id() + "   " + complexNodeName);
+		logger.info("[创建内部节点]   nodeName:" + node.getNodeName() + " 操作时间: " + new Date());
 		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
 		node.setCn_id(
 				complexNodeDao.getComplexNodeBys_idAndComplexNodeName(node.getS_id(), complexNodeName).getCn_id());
 		NodeService service = new NodeService();
-		System.out.println(node.getCn_id());
 		boolean flag = service.createNode(node);
 		if (flag == true) {
 			return "创建成功";
@@ -415,6 +417,8 @@ public class ActionController {
 	@RequestMapping("/addInnerLink")
 	@ResponseBody
 	public String addInnerLink(Link link, String complexNodeName) {
+		logger.info("[创建内部链路]   linkName:" + link.getLinkName() + " 操作时间: " + new Date());
+
 		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
 		link.setCn_id(complexNodeDao.getComplexNodeBys_idAndComplexNodeName(link.getScenario_id(), complexNodeName)
 				.getCn_id());
@@ -452,14 +456,17 @@ public class ActionController {
 	 * 打开控制台
 	 */
 	@RequestMapping("/openConsole")
+	@ResponseBody
 	public String OpenConsole(String nodeName, int s_id) {
-		// 查出节点的UUID
-		System.out.println("执行了VNC");
-		System.out.println(nodeName + s_id);
-		NodeService nodeService = new NodeService();
-		Node node = nodeService.getNodeBynodeName(nodeName, s_id);
-		System.out.println(node);
-		return VNCUtils.getVNCURL(node.getUuid());
+		logger.info("[打开vm控制台]   nodeName:" + nodeName + " 操作时间: " + new Date());
+		
+		 // 查出节点的UUID
+		 NodeService nodeService = new NodeService();
+		 Node node = nodeService.getNodeBynodeName(nodeName, s_id);
+//		 System.out.println(node.getUuid());
+//		 System.out.println(VNCUtils.getVNCURL(node.getUuid()));
+		 return VNCUtils.getVNCURL(node.getUuid());
+//		return "http://121.48.175.200:6080/vnc_auto.html?token=e94abc7c-82fd-43fe-8f90-5d93bbd09c6f&title=CMDTest(21b9cd22-a57f-432b-b3b7-3a812ff3e0fb)";
 	}
 
 	/*
@@ -468,17 +475,40 @@ public class ActionController {
 	@RequestMapping("/deleteComplexNode")
 	@ResponseBody
 	public String deleteComplexNode(ComplexNode complexNode) {
+		logger.info("[删除复杂节点]   ComplexNodeName:" + complexNode.getComplexNodeName() + " 操作时间: " + new Date());
 		ComplexNodeService complexNodeService = new ComplexNodeService();
+		complexNode = complexNodeService.getCompleNode(complexNode.getS_id(), complexNode.getComplexNodeName());
 		boolean flag = complexNodeService.deleteComplexNodeService(complexNode);
 		return "删除成功";
 	}
-	
-	@Test
-	public void demo1(){
-		ComplexNode complexNode = new ComplexNode();
-		complexNode.setCn_id(8);
-		complexNode.setComplexNodeName("complexnode1");
-		deleteComplexNode(complexNode);
+
+
+	/*
+	 * docker exec
+	 */
+
+	@RequestMapping("/sendCommand")
+	@ResponseBody
+	public String ExecuteCMD(String command, String uuid) throws Exception {
+		JSchUtil jschUtil = new JSchUtil("compute2", "123456", "10.0.0.31", 22);
+		String msg = "";
+		System.out.println(uuid+"-----"+command);
+		try {
+			jschUtil.connect();
+			msg = jschUtil.execCmd("sudo docker exec -i nova-" + uuid + " " + command);
+		} catch (JSchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return msg;
 	}
-	
+
+	@Test
+	public void demo3() throws JSchException, InterruptedException, IOException{
+		JSchUtil jschUtil = new JSchUtil("compute2", "123456", "10.0.0.31", 22);
+		jschUtil.connect();
+//		jschUtil.execShell("cd zkzk");
+		jschUtil.execShell("ls");
+		jschUtil.execShell("exit");
+	}
 }

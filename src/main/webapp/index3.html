@@ -127,9 +127,9 @@
             <div id="more" class="collapse in">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <input type="file" id="inputfile" class="btn btn-default btn-block">
+                        <input type="file" id="inputFile" accept="text/csv" class="btn btn-default btn-block">
                     </div>
-                    <button type="button" class="btn btn-primary btn-block">提交</button>
+                    <button type="button" class="btn btn-primary btn-block" id="inputFileSubmit">提交</button>
                 </form>
             </div>
         </div>
@@ -181,7 +181,7 @@
                                 <select class="form-control" id="nodeType">
                                     <option value="0">简单二层节点（Docker）</option>
                                     <!--<option value="1">简单三层节点（Docker）</option>-->
-                                    <option value="2">简单二层节点(VM)</option>
+                                    <option value="1">简单二层节点(VM)</option>
                                 </select>
                             </div>
                         </div>
@@ -736,6 +736,7 @@
 </div>
 
 <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/jquery/ajaxfileupload.js"></script>
 <script type="text/javascript" src="lib/jquery/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="lib/jquery-ui-1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="lib/bootstrap/js/bootstrap.js"></script>

@@ -19,7 +19,6 @@ $("#editPort").click(function () {
             portName : $("#portName").val(),
             p_id : $("#portId").val(),
             portType : $("#portType").val(),
-            // portIP : $("#portIp").val(),
             antennaType : $("#antennaType").val(),
             antennaGain : $("#antennaGain").val(),
             transmittingPower : $("#transmittingPower").val(),
@@ -27,7 +26,8 @@ $("#editPort").click(function () {
             encodedMode : $("#encodedMode").val(),
             spectralBandwidth : $("#spectralBandwidth").val(),
             maximumRate : $("#maximumRate").val(),
-            packetLoss : $("#packetLoss").val()
+            packetLoss : $("#packetLoss").val(),
+            timeDelay : $("#timeDelay").val()
         },
         type: 'post',
         dataType: 'json',
@@ -69,7 +69,6 @@ function initPortAttr(data) {
     $("#portName").val(objs[0].portName);
     $("#portId").val(objs[0].p_id);
     $("#portType").val(objs[0].portType);
-    // $("#portIP").val(objs[0].portIP);
     $("#antennaType").val(objs[0].antennaType);
     $("#antennaGain").val(objs[0].antennaGain);
     $("#transmittingPower").val(objs[0].transmittingPower);
@@ -78,4 +77,5 @@ function initPortAttr(data) {
     $("#spectralBandwidth").val(objs[0].spectralBandwidth);
     $("#maximumRate").val(objs[0].maximumRate);
     $("#packetLoss").val(objs[0].packetLoss);
+    $("#timeDelay").val(objs[0].timeDelay);
 }

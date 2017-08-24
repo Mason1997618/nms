@@ -40,19 +40,21 @@ public class NodeService {
 				// 判断节点类型,根据类型对节点所属场景表的节点计数字段进行自增。
 				if (node.getNodeType() == 1) { // 若为复杂节点则启动“vm”(0,1均代表简单节点docker，2代表复杂节点vm)
 					// 如果在此处出现错误咋办？(例如用户输入的ip地址已经存在)
-//					 uuid = nodecontroller.createNode(node.getNodeName(),
-//					 node.getManageIp(), "vm");
+					System.out.println("创建节点vm");
+					 uuid = nodecontroller.createNode(node.getNodeName(),
+					 node.getManageIp(), "vm");
 					// 更新此节点对应场景的节点数量
 					nodeDao.plusNumberSimpleNode(node.getS_id());
 					// 此处需要把数据库的回滚加进去，判断节点类型
 					System.out.println("启动vm虚拟机成功！");
 				} else if (node.getNodeType() == 0) {
-//					 uuid = nodecontroller.createNode(node.getNodeName(),
-//					 node.getManageIp(), "docker");
+					System.out.println("创建节点docker");
+					 uuid = nodecontroller.createNode(node.getNodeName(),
+					 node.getManageIp(), "docker");
 					System.out.println("启动docker成功！");
 					nodeDao.plusNumberSimpleNode(node.getS_id());
 				}
-				// node.setUuid(uuid);
+				 node.setUuid(uuid);
 				nodeDao.insertNode(node);
 				return true;
 			}

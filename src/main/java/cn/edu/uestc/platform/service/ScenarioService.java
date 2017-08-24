@@ -9,6 +9,8 @@ import org.junit.Test;
 import cn.edu.uestc.platform.action.ActionController;
 import cn.edu.uestc.platform.controller.LinkController;
 import cn.edu.uestc.platform.controller.NodeController;
+import cn.edu.uestc.platform.dao.ComplexNodeDao;
+import cn.edu.uestc.platform.dao.ComplexNodeDaoImpl;
 import cn.edu.uestc.platform.dao.LinkDao;
 import cn.edu.uestc.platform.dao.LinkDaoImpl;
 import cn.edu.uestc.platform.dao.NodeDao;
@@ -17,6 +19,7 @@ import cn.edu.uestc.platform.dao.PortDao;
 import cn.edu.uestc.platform.dao.PortDaoImpl;
 import cn.edu.uestc.platform.dao.ScenarioDao;
 import cn.edu.uestc.platform.dao.ScenarioDaoImpl;
+import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
@@ -50,7 +53,6 @@ public class ScenarioService {
 		ScenarioDao scenarioDao = new ScenarioDaoImpl();
 		return scenarioDao.findAllScenarioByProjectId(p_id);
 	}
-
 
 	/*
 	 * 仅删除Openstack上的节点和链路
@@ -87,15 +89,19 @@ public class ScenarioService {
 	public void deleteScenarioAll(int s_id) {
 		// TODO Auto-generated method stub
 		NodeDao nodeDao = new NodeDaoImpl();
+		ComplexNodeDao complexNodeDao = new ComplexNodeDaoImpl();
 		NodeService nodeService = new NodeService();
 		List<Node> nodes = nodeDao.findAllNodeByScenarioId(s_id);
 		System.out.println("开始删除场景了");
 		for (Node node : nodes) {
 			nodeService.deleteNode(node.getS_id(), node.getNodeName());
 		}
+		List<ComplexNode> complexNodes = complexNodeDao.selectComplexNodeList(s_id);
+		for (ComplexNode complexNode : complexNodes) {
+			complexNodeDao.deleteComplexNode(complexNode);
+		}
 		ScenarioDao Scenariosdao = new ScenarioDaoImpl();
 		Scenariosdao.deletescenario(s_id);
-
 		System.out.println("删除场景结束！");
 	}
 
@@ -110,7 +116,7 @@ public class ScenarioService {
 		logger.info("开始创建Openstack上的所有节点，操作时间:" + new Date());
 		for (Node node : nodes) {
 			String uuid = null;
-			if (node.getNodeType() == 2) {
+			if (node.getNodeType() == 1) {
 				// 在Openstack上创建节点成功后返回uuid，写回数据库
 				uuid = nodeController.createNode(node.getNodeName(), node.getManageIp(), "vm");
 				// 更新节点的uuid
@@ -128,9 +134,9 @@ public class ScenarioService {
 		List<Link> links = linkDao.getLinkList(s_id);
 		LinkController linkController = new LinkController();
 		for (Link link : links) {
-			if(link.getLinkStatus()==0){
-			linkController.createLinkMTM(link.getFromNodeName(), link.getFromNodeIP(), link.getToNodeName(),
-					link.getToNodeIP());
+			if (link.getLinkStatus() == 0) {
+				linkController.createLinkMTM(link.getFromNodeName(), link.getFromNodeIP(), link.getToNodeName(),
+						link.getToNodeIP());
 			}
 		}
 		logger.info("创建Openstack上的链路结束 ，操作时间:" + new Date());
