@@ -1,14 +1,19 @@
 package cn.edu.uestc.platform.action;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.edu.uestc.platform.pojo.User;
 import cn.edu.uestc.platform.service.LinkService;
 import cn.edu.uestc.platform.service.NodeService;
 import cn.edu.uestc.platform.service.PortService;
 import cn.edu.uestc.platform.service.ScenarioService;
+import cn.edu.uestc.platform.service.UserService;
 
 @Controller
 public class DeleteController {
@@ -66,4 +71,5 @@ public class DeleteController {
 		ScenarioService scenarioservice = new ScenarioService();
 		scenarioservice.deleteScenariosOnlyOpenstack(29);
 	}
+	
 }

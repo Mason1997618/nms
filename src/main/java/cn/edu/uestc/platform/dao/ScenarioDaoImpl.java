@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
+
 import cn.edu.uestc.platform.pojo.Scenario;
 import cn.edu.uestc.platform.utils.DBUtiles;
 
@@ -210,4 +213,47 @@ public class ScenarioDaoImpl implements ScenarioDao {
 		}
 	}
 
+	@Override
+	public void insertDynamicTopologyFile(String path, int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "update scenario set dynamicTopologyFile = ? where s_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, path);
+			ps.setInt(2, s_id);
+			ps.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(ps, conn);
+		}
+
+	}
+
+	@Override
+	public String findDynamicTopologyFileBySid(int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "select dynamicTopologyFile from scenario where s_id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String FilePath = "";
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				FilePath = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return FilePath;
+	}
 }

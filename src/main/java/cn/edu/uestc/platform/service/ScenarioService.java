@@ -145,4 +145,16 @@ public class ScenarioService {
 		scenariodao.updateScenarioStatusToUp(s_id);
 		logger.info("恢复场景结束，操作时间:" + new Date());
 	}
+
+	public void addDynamicTopologyFile(String path,int s_id) {
+		// TODO Auto-generated method stub
+		ScenarioDao scenarioDao = new ScenarioDaoImpl();
+		scenarioDao.insertDynamicTopologyFile(path,s_id);
+		
+	}
+
+	public String getDynamicTopologyFile(int s_id) {
+		// TODO Auto-generated method stub
+		return new ScenarioDaoImpl().findDynamicTopologyFileBySid(s_id);
+	}
 }

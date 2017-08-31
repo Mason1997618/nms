@@ -1,10 +1,23 @@
 package cn.edu.uestc.platform.action;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openstack4j.model.compute.VNCConsole;
@@ -13,6 +26,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.jcraft.jsch.JSchException;
 
@@ -23,8 +39,12 @@ import cn.edu.uestc.platform.dao.ComplexNodeDaoImpl;
 import cn.edu.uestc.platform.dao.LinkDao;
 import cn.edu.uestc.platform.dao.LinkDaoImpl;
 import cn.edu.uestc.platform.dao.NodeDaoImpl;
+import cn.edu.uestc.platform.dealwithstk.STKAnalyse;
+import cn.edu.uestc.platform.dealwithstk.STKFileProcessor;
+import cn.edu.uestc.platform.pojo.BigClassForFilter;
 import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
+import cn.edu.uestc.platform.pojo.LinkForFilter;
 import cn.edu.uestc.platform.pojo.Node;
 import cn.edu.uestc.platform.pojo.Port;
 import cn.edu.uestc.platform.pojo.Project;
@@ -459,14 +479,15 @@ public class ActionController {
 	@ResponseBody
 	public String OpenConsole(String nodeName, int s_id) {
 		logger.info("[打开vm控制台]   nodeName:" + nodeName + " 操作时间: " + new Date());
-		
-		 // 查出节点的UUID
-		 NodeService nodeService = new NodeService();
-		 Node node = nodeService.getNodeBynodeName(nodeName, s_id);
-//		 System.out.println(node.getUuid());
-//		 System.out.println(VNCUtils.getVNCURL(node.getUuid()));
-		 return VNCUtils.getVNCURL(node.getUuid());
-//		return "http://121.48.175.200:6080/vnc_auto.html?token=e94abc7c-82fd-43fe-8f90-5d93bbd09c6f&title=CMDTest(21b9cd22-a57f-432b-b3b7-3a812ff3e0fb)";
+
+		// 查出节点的UUID
+		NodeService nodeService = new NodeService();
+		Node node = nodeService.getNodeBynodeName(nodeName, s_id);
+		// System.out.println(node.getUuid());
+		// System.out.println(VNCUtils.getVNCURL(node.getUuid()));
+		return VNCUtils.getVNCURL(node.getUuid());
+		// return
+		// "http://121.48.175.200:6080/vnc_auto.html?token=e94abc7c-82fd-43fe-8f90-5d93bbd09c6f&title=CMDTest(21b9cd22-a57f-432b-b3b7-3a812ff3e0fb)";
 	}
 
 	/*
@@ -482,7 +503,6 @@ public class ActionController {
 		return "删除成功";
 	}
 
-
 	/*
 	 * docker exec
 	 */
@@ -492,7 +512,7 @@ public class ActionController {
 	public String ExecuteCMD(String command, String uuid) throws Exception {
 		JSchUtil jschUtil = new JSchUtil("compute2", "123456", "10.0.0.31", 22);
 		String msg = "";
-		System.out.println(uuid+"-----"+command);
+		System.out.println(uuid + "-----" + command);
 		try {
 			jschUtil.connect();
 			msg = jschUtil.execCmd("sudo docker exec -i nova-" + uuid + " " + command);
@@ -503,12 +523,83 @@ public class ActionController {
 		return msg;
 	}
 
-	@Test
-	public void demo3() throws JSchException, InterruptedException, IOException{
-		JSchUtil jschUtil = new JSchUtil("compute2", "123456", "10.0.0.31", 22);
-		jschUtil.connect();
-//		jschUtil.execShell("cd zkzk");
-		jschUtil.execShell("ls");
-		jschUtil.execShell("exit");
+	/*
+	 * 采用spring提供的上传文件的方法
+	 */
+	@RequestMapping("/springUpload")
+	@ResponseBody
+	public String springUpload(HttpServletRequest request, int s_id) throws IllegalStateException, IOException {
+		long startTime = System.currentTimeMillis();
+		String path = "";
+		// 将当前上下文初始化给 CommonsMutipartResolver （多部分解析器）
+		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+				request.getSession().getServletContext());
+		// 检查form中是否有enctype="multipart/form-data"
+		if (multipartResolver.isMultipart(request)) {
+			// 将request变成多部分request
+			MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+			// 获取multiRequest 中所有的文件名
+			Iterator iter = multiRequest.getFileNames();
+			while (iter.hasNext()) {
+				// 一次遍历所有文件
+				MultipartFile file = multiRequest.getFile(iter.next().toString());
+				if (file != null) {
+					path = "E:/" + file.getOriginalFilename();
+					// 上传
+					file.transferTo(new File(path));
+				}
+			}
+		}
+		long endTime = System.currentTimeMillis();
+		ScenarioService scenarioService = new ScenarioService();
+		scenarioService.addDynamicTopologyFile(path, s_id);
+		System.out.println("方法三的运行时间：" + String.valueOf(endTime - startTime) + "ms");
+		return "上传成功!";
+	}
+
+	/*
+	 * 返回树状图所需的不重复链路
+	 */
+	@RequestMapping("/getStkLink")
+	@ResponseBody
+	public String getSTKLink(int s_id) throws IOException {
+		STKAnalyse stkAnalyse = new STKAnalyse();
+		System.out.println("返回了不重复链路");
+		return JSoneUtils.SetToJson(stkAnalyse.getLinkForFilter(s_id)).toString();
+	}
+
+	/*
+	 * 返回树状图中的大节点
+	 */
+	@RequestMapping("/getStkNode")
+	@ResponseBody
+	public String getStkNode(int s_id) throws IOException {
+		STKAnalyse stkAnalyse = new STKAnalyse();
+		System.out.println("返回了大类");
+		return JSoneUtils.SetToJson(stkAnalyse.getBigNodeLink(s_id)).toString();
+
+	}
+	
+	/*
+	 * 接受规则
+	 */
+	@RequestMapping("/submitRegulation")
+	public void submitRegulation(String linkJson,int s_id,String regulationOption) throws IOException{
+		//将JSon字符串转换为集合
+		List<LinkForFilter> linkForFilters = JSoneUtils.JSonToCollection(linkJson);
+		List<LinkForFilter> filterRegulation = new LinkedList<>();
+		//拿到过滤掉的链路
+		for(LinkForFilter l :linkForFilters){
+			if(l.getLinkStatus()==1){
+				filterRegulation.add(l);
+			}
+		}
+		ScenarioService scenarioService = new ScenarioService();
+		String  path= scenarioService.getDynamicTopologyFile(s_id);
+		//创建一个新文件来准备存储过滤之后的文件
+		STKFileProcessor stkFileProcessor = new STKFileProcessor();
+		String newPath = stkFileProcessor.STKFileCreater(path);
+		//开始生成过滤后的文件
+		stkFileProcessor.STKFileRewrite(path,newPath,filterRegulation);
 	}
 }

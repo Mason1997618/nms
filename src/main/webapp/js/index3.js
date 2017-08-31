@@ -26,12 +26,15 @@ function showTime() {
     setTimeout("showTime()", 1000);
 }
 
+var scenarioId = $.getUrlParam("scenarioId");
 //预读就记录下简单节点的id和类型
 var simpleNodeId = [];
 var simpleNodeType = [];
 //预读
 $(document).ready(function () {
     showTime();
+    //设置到stk提交框
+    $("#scenarioId").val($.getUrlParam("scenarioId"));
     //显示工程名和场景名
     $("#projectName").html($.getUrlParam("projectName"));
     $("#scenarioName").html($.getUrlParam("scenarioName"));
@@ -1191,21 +1194,27 @@ $("#addComplexLink_2").click(function () {
     });
 });
 
-//上传stk文件
+//点击上传stk文件
 $("#inputFileSubmit").click(function () {
-    $.ajaxFileUpload({
-        url: '/NetworkSimulation/sendStkFile', //用于文件上传的服务器端请求地址
-        secureuri: false, //是否需要安全协议，一般设置为false
-        fileElementId: 'inputFile', //文件上传域的ID
-        dataType: 'json', //返回值类型 一般设置为json
-        success: function (data, status) {
-            $.alert(data);
-            window.open(encodeURI("dynamicSetting.html?scenarioId=" + $.getUrlParam("scenarioId")));
-        },
-        error: function (data, status, e) {
-            $.alert(e);
-        }
-    });
+    // $.ajaxFileUpload({
+    //     url: '/NetworkSimulation/sendStkFile', //用于文件上传的服务器端请求地址
+    //     secureuri: false, //是否需要安全协议，一般设置为false
+    //     fileElementId: 'inputFile', //文件上传域的ID
+    //     dataType: 'json', //返回值类型 一般设置为json
+    //     success: function (data, status) {
+    //         $.alert(data);
+    //         window.open(encodeURI("dynamicSetting.html?scenarioId=" + $.getUrlParam("scenarioId")));
+    //     },
+    //     error: function (data, status, e) {
+    //         $.alert(e);
+    //     }
+    // });
+    // setTimeout(function () {
+    //     location.herf = encodeURI("index3.html?scenarioId=" + scenarioId + "&scenarioName=" + $("#scenarioName").html + "&projectName=" + $("#projectName").html);
+    // }, 300);
+    setTimeout(function () {
+        window.open(encodeURI("dynamicSetting.html?scenarioId=" + scenarioId));
+    }, 500);
 });
 
 //打开控制台页面

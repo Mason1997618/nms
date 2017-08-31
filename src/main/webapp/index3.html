@@ -125,11 +125,12 @@
         <div class="smallbox">
             <a href="javascript:;" data-toggle="collapse" data-target="#more" class="title"><h4>导入轨道文件</h4></a>
             <div id="more" class="collapse in">
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" action="/NetworkSimulation/springUpload" method="post" enctype="multipart/form-data" name="Form2" id="stkForm" target="_blank">
                     <div class="form-group">
-                        <input type="file" id="inputFile" accept="text/csv" class="btn btn-default btn-block">
+                        <input type="file" id="inputFile" accept="text/csv" class="btn btn-default btn-block" name="file">
+                        <input type="text" name="s_id" id="scenarioId" hidden="hidden">
                     </div>
-                    <button type="button" class="btn btn-primary btn-block" id="inputFileSubmit">提交</button>
+                    <input type="submit" class="btn btn-primary btn-block" id="inputFileSubmit" value="提交">
                 </form>
             </div>
         </div>

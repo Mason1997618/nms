@@ -153,11 +153,10 @@ $("#remove").click(function () {
                 $.alert("删除一个节点" + elements[i].text);
                 //从画布删除内部节点
                 $.ajax({
-                    url: '/NetworkSimulation/deleteInnerNode',
+                    url: '/NetworkSimulation/deleteNode',
                     data: {
                         nodeName: elements[i].text,
-                        s_id : $.getUrlParam("scenarioId"),
-                        complexNodeName : $.getUrlParam("nodeName")
+                        s_id : $.getUrlParam("scenarioId")
                     },
                     type: 'post',
                     dataType: 'json',
@@ -181,11 +180,10 @@ $("#remove").click(function () {
                     $.alert("删除一个链路" + elements[i].text);
                     //从画布删除内部链路
                     $.ajax({
-                        url: '/NetworkSimulation/deleteInnerLink',
+                        url: '/NetworkSimulation/deleteLink',
                         data: {
                             linkName: elements[i].text,
-                            s_id : $.getUrlParam("scenarioId"),
-                            complexNodeName : $.getUrlParam("nodeName")
+                            s_id : $.getUrlParam("scenarioId")
                         },
                         type: 'post',
                         dataType: 'json',
@@ -535,7 +533,7 @@ $("#addNode").click(function () {
     if (getId == "weixing1") {
         iconUrl = "img/switchOptical.png";
     } else if (getId == "weixing2") {
-        iconUrl = "mg/router.png";
+        iconUrl = "img/router.png";
     } else if (getId == "weixing3") {
         iconUrl = "img/5200.png";
     }

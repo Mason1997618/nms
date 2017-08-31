@@ -21,5 +21,9 @@ public interface ScenarioDao {
 	
 	public void updateScenarioStatusToUp(int s_id);
 
+	public void insertDynamicTopologyFile(String path,int s_id);
+	
+	public String findDynamicTopologyFileBySid(int s_id);
+
 
 }
