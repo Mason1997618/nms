@@ -36,7 +36,7 @@ public class STKFileProcessor {
 	/*
 	 * 给生成的新文件写入过滤后的文件context
 	 */
-	public String STKFileRewrite(String path, String newPath, List<LinkForFilter> filterRegulation) throws IOException {
+	public void STKFileRewrite(String path, String newPath, List<LinkForFilter> filterRegulation) throws IOException {
 		// File file = new File(path);
 
 		Reader in = new FileReader(path);
@@ -63,7 +63,7 @@ public class STKFileProcessor {
 			// 若没有过滤此条记录 重写这条记录到新文件
 			if (flag == 0) {
 				String time = record.get("Time (EpMin)");
-				String StrandName = record.get("Strand Name");
+				String StrandName = "\""+record.get("Strand Name")+"\"";
 				String Range = record.get("Range (km)");
 				String rcd = time + "," + StrandName + "," + Range;
 				fileOutputStream.write(rcd.getBytes());
@@ -71,25 +71,17 @@ public class STKFileProcessor {
 			}
 		}
 		fileOutputStream.close();
-		return null;
 	}
 
-	
-	
 	@Test
 	public void demo1() throws IOException {
 		Reader in = new FileReader("E:/interval5min.csv");
 		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 		int count = 0;
 		for (CSVRecord record : records) {
-			String fromNodeName = record.get("Strand Name").substring(record.get("Strand Name").indexOf("/") + 1,
-					record.get("Strand Name").indexOf(" "));
-			String toNodeName = record.get("Strand Name").substring(record.get("Strand Name").lastIndexOf("/") + 1,
-					record.get("Strand Name").length());
-			if (fromNodeName.equals("GEO2") || toNodeName.equals("GEO2")) {
-				continue;
+			if(record.get("Time (EpMin)").equals("0")){
+				System.out.println(record.get("Time (EpMin)")+"----"+record.get("Strand Name"));
 			}
-			count++;
 		}
 		System.out.println("过滤后的文件行数为: " + count);
 	}
