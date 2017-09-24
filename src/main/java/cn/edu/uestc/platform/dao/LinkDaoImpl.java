@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
@@ -358,5 +360,31 @@ public class LinkDaoImpl implements LinkDao {
 			e.printStackTrace();
 		}
 		return links;
+	}
+
+	@Override
+	public List<String> getAllLinkIP() {
+		// TODO Auto-generated method stub
+		String sql = "select fromNodeIP,toNodeIP from link";
+		Connection conn = null;
+		Statement stat = null;
+		ResultSet rs = null;
+		List<String> subNets = new LinkedList<>();
+		try {
+			conn = DBUtiles.getConnection();
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			while (rs.next()) {
+				subNets.add(rs.getString(1));
+				subNets.add(rs.getString(2));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, stat, conn);
+		}
+
+		return subNets;
 	}
 }

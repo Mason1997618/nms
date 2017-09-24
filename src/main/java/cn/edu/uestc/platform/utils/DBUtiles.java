@@ -31,7 +31,7 @@ public class DBUtiles {
 		return DriverManager.getConnection(url, username, password);
 	}
 
-	public static void releaseResource(PreparedStatement ps, Connection conn) {
+	public static void releaseResource(Statement ps, Connection conn) {
 		if (null != ps) {
 			try {
 				ps.close();
@@ -50,7 +50,7 @@ public class DBUtiles {
 
 	}
 
-	public static void releaseResource(ResultSet rs, PreparedStatement ps, Connection conn) {
+	public static void releaseResource(ResultSet rs, Statement ps, Connection conn) {
 		if (rs != null)
 			try {
 				rs.close();

@@ -3,35 +3,24 @@ package cn.edu.uestc.platform.testzk;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.junit.Test;
-import java.io.File;
 
 public class APITest {
 	public static final String GET_URL = "http://112.4.27.9/mall-back/if_user/store_list?storeId=32";
@@ -131,6 +120,7 @@ public class APITest {
 		}
 	}
 
+	// 就是这个可以用的ODL
 	public static void main(String[] args) throws UnsupportedEncodingException {
 
 		String str = "{\"flow\": [{\"id\": \"5\",\"match\": {\"in-port\": \"5\"},\"instructions\": {\"instruction\": [{\"order\": \"0\",\"go-to-table\": {\"table_id\": \"80\"}}]},\"barrier\": \"false\",\"priority\": \"60000\",\"idle-timeout\": \"0\",\"hard-timeout\": \"0\",\"table_id\": \"60\"}]}";

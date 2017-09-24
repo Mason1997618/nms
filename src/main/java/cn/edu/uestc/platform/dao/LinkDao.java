@@ -24,5 +24,7 @@ public interface LinkDao {
 	public void deleteLinkOnComplexNode(ComplexNode complexNode);
 	
 	public List<Link> getLinkOnComplexNode(ComplexNode complexNode);
+	
+	public List<String> getAllLinkIP();
 
 }

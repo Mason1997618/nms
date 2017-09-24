@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.google.common.collect.Sets;
 import com.jcraft.jsch.JSchException;
 
 import cn.edu.uestc.platform.controller.LinkController;
@@ -39,8 +40,10 @@ import cn.edu.uestc.platform.dao.ComplexNodeDaoImpl;
 import cn.edu.uestc.platform.dao.LinkDao;
 import cn.edu.uestc.platform.dao.LinkDaoImpl;
 import cn.edu.uestc.platform.dao.NodeDaoImpl;
+import cn.edu.uestc.platform.dealwithstk.NodeCreater;
 import cn.edu.uestc.platform.dealwithstk.STKAnalyse;
 import cn.edu.uestc.platform.dealwithstk.STKFileProcessor;
+import cn.edu.uestc.platform.dealwithstk.STKScenario;
 import cn.edu.uestc.platform.pojo.BigClassForFilter;
 import cn.edu.uestc.platform.pojo.ComplexNode;
 import cn.edu.uestc.platform.pojo.Link;
@@ -579,27 +582,59 @@ public class ActionController {
 		return JSoneUtils.SetToJson(stkAnalyse.getBigNodeLink(s_id)).toString();
 
 	}
-	
+
 	/*
 	 * 接受规则
 	 */
 	@RequestMapping("/submitRegulation")
-	public void submitRegulation(String linkJson,int s_id,String regulationOption) throws IOException{
-		//将JSon字符串转换为集合
-		List<LinkForFilter> linkForFilters = JSoneUtils.JSonToCollection(linkJson);
+	@ResponseBody
+	public String submitRegulation(String linkJson, int s_id, String regulationOption)
+			throws IOException, InterruptedException {
+		// 将JSon字符串转换为集合
+//		List<LinkForFilter> linkForFilters = JSoneUtils.JSonToCollection(linkJson);
+		List<LinkForFilter> linkForFilters = JSoneUtils.JSonToCollection(linkJson,new LinkForFilter());
+
 		List<LinkForFilter> filterRegulation = new LinkedList<>();
-		//拿到过滤掉的链路
-		for(LinkForFilter l :linkForFilters){
-			if(l.getLinkStatus()==1){
+		// 拿到过滤掉的链路
+		for (LinkForFilter l : linkForFilters) {
+			if (l.getLinkStatus() == 1) {
 				filterRegulation.add(l);
 			}
 		}
 		ScenarioService scenarioService = new ScenarioService();
-		String  path= scenarioService.getDynamicTopologyFile(s_id);
-		//创建一个新文件来准备存储过滤之后的文件
+		String path = scenarioService.getDynamicTopologyFile(s_id);
+		// 创建一个新文件来准备存储过滤之后的文件
 		STKFileProcessor stkFileProcessor = new STKFileProcessor();
 		String newPath = stkFileProcessor.STKFileCreater(path);
-		//开始生成过滤后的文件
-		stkFileProcessor.STKFileRewrite(path,newPath,filterRegulation);
+		// 开始生成过滤后的文件
+		stkFileProcessor.STKFileRewrite(path, newPath, filterRegulation);
+		Thread.sleep(1000);
+		STKAnalyse stkAnalyse = new STKAnalyse();
+		return stkAnalyse.getBigClassName(s_id);
 	}
+
+	@RequestMapping("/submitBigRules")
+	@ResponseBody
+	public String submitBigRules(Node node) {
+
+		System.out.println(node);
+		return "返回成功";
+	}
+
+	
+	
+	@RequestMapping("/setBigNodeAttr")
+	public String setBigNodeAttr(String bigNodeConfigArray,int s_id) throws Exception {
+		STKScenario stkScenario = new STKScenario();
+//		System.out.println(bigNodeConfigArray);
+//		stkScenario.createSTKAllNode();
+		//一个一个遍历节点 把节点的属性设置完毕之后添加到list中
+//		System.out.println(bigNodeCofigArray.getNodes());
+//		List<Node> nodes = JSoneUtils.JSonToCollection(bigNodeConfigArray,new Node());
+		System.out.println(bigNodeConfigArray);
+		List<NodeCreater> nodeCreater = JSoneUtils.JSonToCollection(bigNodeConfigArray, new NodeCreater());
+		stkScenario.createSTKAllNode(nodeCreater, s_id);
+		return "返回成功";
+	}
+
 }

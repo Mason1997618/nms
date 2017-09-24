@@ -19,9 +19,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
 public class Shell {
-	private static final String USER = "compute2";
+	private static final String USER = "controller";
 	private static final String PASSWORD = "123456";
-	private static final String HOST = "10.0.0.31";
+	private static final String HOST = "10.0.0.11";
 	private static final int DEFAULT_SSH_PORT = 22;
 
 	public static void main(String[] arg) {
@@ -178,7 +178,7 @@ public class Shell {
 			// It must not be recommended, but if you want to skip host-key
 			// check,
 			// invoke following,
-			// session.setConfig("StrictHostKeyChecking", "no");
+			 session.setConfig("StrictHostKeyChecking", "no");
 
 			// session.connect();
 			session.connect(30000); // making a connection with timeout.
@@ -236,6 +236,7 @@ public class Shell {
 
 				// channel.connect();
 				channel.connect(3 * 1000);
+				channel.disconnect();
 			}
 		} catch (Exception e) {
 			System.out.println(e);

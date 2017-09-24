@@ -25,4 +25,6 @@ public interface NodeDao {
 	public void deleteNode(int n_id);
 	public void updataNodeUuid(String uuid,int n_id);
 	public List<Node> getNodeListByCnid(int cn_id);
+	public List<String> getAllNodeIp(int s_id);
+	public void updateNodeXY(List<Node> nodes);
 }

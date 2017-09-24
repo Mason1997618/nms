@@ -40,9 +40,9 @@ public class STKFilters {
 			if (link.getStartTime().equals(minute)) {
 				// 1.LEO-LEO 左右
 				if (link.getFromNode().contains("LEO") && link.getEndNode().contains("LEO")) {
-					if (link.getEndNode().charAt(3) - link.getFromNode().charAt(3) == 1) {//拿到当前endnode节点的上一行所有节点zk
+					if (link.getEndNode().charAt(3) - link.getFromNode().charAt(3) == 1) {
 						// 动态链路，一个节点只能右边与他平行的和上下的节点进行通信
-						if (link.getEndNode().charAt(4) - link.getFromNode().charAt(4) <= 1  //拿到当前endnode节点上一行离endnode最近的三个节点zk
+						if (link.getEndNode().charAt(4) - link.getFromNode().charAt(4) <= 1  
 								&& link.getEndNode().charAt(3) - link.getFromNode().charAt(3) >= -1) {
 							minuteLEOToLEOLinks.add(link);
 						}
@@ -160,7 +160,6 @@ public class STKFilters {
 				return o1.getEndNode().compareTo(o2.getEndNode());
 			}
 		}
-
 	}
 
 	/**

@@ -17,6 +17,17 @@ window.onload = window.onresize = function () {
 };
 
 var stage = new JTopo.Stage(canvas); // 创建一个舞台对象
+
+stage.eagleEye.visible = true; // 显示鹰眼
+
+// 缩放
+$('#zoomOutButton').click(function(){
+    stage.zoomIn();
+});
+$('#zoomInButton').click(function(){
+    stage.zoomOut();
+});
+
 var scene = new JTopo.Scene(stage); // 创建一个场景对象
 
 // 定义获取和更新时间的函数
@@ -943,9 +954,10 @@ $("#manageIP").blur(function () {
     }
 });
 
-var weixingName = document.getElementById("nodeName");
 //创建节点模态框中的提交
 $("#addNode").click(function () {
+    //在画布上绘制出节点图标
+    // createNode($("#nodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui01.png");
     $.ajax({
         url: '/NetworkSimulation/addNode',
         data: {
@@ -959,7 +971,7 @@ $("#addNode").click(function () {
             x : uiOut.offset.left - document.getElementById("slider_1").offsetWidth,
             y : uiOut.offset.top - 102,
             s_id : $.getUrlParam("scenarioId"),
-            iconUrl : "img/gaogui00.png"
+            iconUrl : "img/gaogui01.png"
         },
         type: 'post',
         dataType: 'json',
@@ -968,7 +980,7 @@ $("#addNode").click(function () {
             $.alert(msg);
             if (msg == "创建成功") {
                 //在画布上绘制出节点图标
-                createNode($("#nodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui00.png");
+                createNode($("#nodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/gaogui01.png");
                 //关闭模态框
                 $('#myModal').modal('hide');
             }
@@ -989,7 +1001,7 @@ $("#addComplexNode").click(function () {
             x : uiOut.offset.left - document.getElementById("slider_1").offsetWidth,
             y : uiOut.offset.top - 102,
             s_id : $.getUrlParam("scenarioId"),
-            iconUrl : "img/zhonggui00.png"
+            iconUrl : "img/zhonggui01.png"
         },
         type: 'post',
         dataType: 'json',
@@ -997,17 +1009,16 @@ $("#addComplexNode").click(function () {
         success: function (msg) {
             $.alert(msg);
             if (msg == "创建成功") {
-
+                //在画布上绘制出节点图标
+                createComplexNode($("#complexNodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/zhonggui01.png");
+                //关闭模态框
+                $('#complexNodeModal').modal('hide');
             }
         },
         error: function () {
 
         }
     });
-    //在画布上绘制出节点图标
-    createComplexNode($("#complexNodeName").val(), uiOut.offset.left - document.getElementById("slider_1").offsetWidth, uiOut.offset.top - 102, "img/zhonggui00.png");
-    //关闭模态框
-    $('#complexNodeModal').modal('hide');
 });
 
 //链路模态框中请求的发送
@@ -1214,7 +1225,7 @@ $("#inputFileSubmit").click(function () {
     // }, 300);
     setTimeout(function () {
         window.open(encodeURI("dynamicSetting.html?scenarioId=" + scenarioId));
-    }, 500);
+    }, 1000);
 });
 
 //打开控制台页面

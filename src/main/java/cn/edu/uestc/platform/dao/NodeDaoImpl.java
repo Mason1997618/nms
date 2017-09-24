@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
@@ -472,7 +473,7 @@ public class NodeDaoImpl implements NodeDao {
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, cn_id);
 			rs = ps.executeQuery();
-			while(rs.next()){
+			while (rs.next()) {
 				Node node = new Node();
 				node.setN_id(rs.getInt(1));
 				node.setNodeName(rs.getString(2));
@@ -493,14 +494,65 @@ public class NodeDaoImpl implements NodeDao {
 				node.setIconUrl(rs.getString(17));
 				node.setCn_id(rs.getInt(18));
 				nodes.add(node);
-				
+
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		} finally {
 			DBUtiles.releaseResource(rs, ps, conn);
 		}
 		return nodes;
+	}
+
+	@Override
+	public List<String> getAllNodeIp(int s_id) {
+		// TODO Auto-generated method stub
+		String sql = "select manageIp from node where scenario_id = ?";
+
+		// 用于存放左右IP
+		List<String> manageIps = new LinkedList<>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, s_id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				manageIps.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtiles.releaseResource(rs, ps, conn);
+		}
+		return manageIps;
+	}
+
+	@Override
+	public void updateNodeXY(List<Node> nodes) {
+		// TODO Auto-generated method stub
+
+		String sql = "update node set X=?,Y=? where n_id=?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+
+		try {
+			conn = DBUtiles.getConnection();
+			ps = conn.prepareStatement(sql);
+			for (Node node : nodes) {
+				ps.setFloat(1, node.getX());
+				ps.setFloat(2, node.getY());
+				ps.setInt(3, node.getN_id());
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -34,6 +34,6 @@ public class PortUtils {
 
 	public static void main(String[] args) {
 		OSClientV3 os = OSClientFactory.authenticate("zph", "123456", Constants.ZPH_PROJECT_ID);
-		addPort(os, "22", "10.10.20.4");
+		addPort(os, "风速达萨", "10.20.30.5");
 	}
 }
