@@ -13,7 +13,6 @@ import cn.edu.uestc.platform.dynamicChange.Filters;
 import cn.edu.uestc.platform.factory.OSClientFactory;
 import cn.edu.uestc.platform.factory.ServerFactory;
 import cn.edu.uestc.platform.utils.Constants;
-import cn.edu.uestc.platform.utils.NetworkUtils;
 
 public class SimpleTest {
 	

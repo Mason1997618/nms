@@ -20,6 +20,20 @@ public class Link {
 	private int cn_id;
 	private String logicalFromNodeName;
 	private String logicalToNodeName;
+	private int isTemplate;
+
+	//2021.5.3
+	private int linkClass;
+	private int linkDelay;
+
+
+	public int getIsTemplate() {
+		return isTemplate;
+	}
+
+	public void setIsTemplate(int isTemplate) {
+		this.isTemplate = isTemplate;
+	}
 
 	public String getLogicalFromNodeName() {
 		return logicalFromNodeName;
@@ -175,4 +189,19 @@ public class Link {
 				+ ", logicalFromNodeName=" + logicalFromNodeName + ", logicalToNodeName=" + logicalToNodeName + "]";
 	}
 
+	public int getLinkClass() {
+		return linkClass;
+	}
+
+	public void setLinkClass(int linkClass) {
+		this.linkClass = linkClass;
+	}
+
+	public int getLinkDelay() {
+		return linkDelay;
+	}
+
+	public void setLinkDelay(int linkDelay) {
+		this.linkDelay = linkDelay;
+	}
 }

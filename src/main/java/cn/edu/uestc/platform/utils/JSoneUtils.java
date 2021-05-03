@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import cn.edu.uestc.platform.dealwithstk.NodeCreater;
-import cn.edu.uestc.platform.pojo.LinkForFilter;
 import cn.edu.uestc.platform.pojo.Node;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

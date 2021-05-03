@@ -3,6 +3,7 @@
  */
 body {
     font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+    font-size: 17px;
 }
 
 /**
@@ -18,23 +19,18 @@ body {
 #main {
     border-bottom: 1px solid #cccccc;
 }
-
-#main, #slider_1 {
-    height: 900px;
+#iconUrl_0{
+    width: 50px;
+    height: 50px;
 }
-#content {
-    height: 900px;
-    padding: 0;
-}
-
 /**
  * 侧边栏样式
  */
-.right {
+#slider_1, #slider {
     border-right: 1px solid #cccccc;
-    height: 900px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    /*height: 900px;*/
+    /*overflow-y: scroll;*/
+    /*overflow-x: hidden;*/
 }
 
 .smallbox {
@@ -56,8 +52,8 @@ body {
  * 右边栏样式
  */
 #message{
-    height:50px;
-    line-height: 50px;
+    height:60px;
+    line-height: 60px;
     border-bottom: 1px solid #cccccc;
     text-align: center;
 }
@@ -65,4 +61,23 @@ body {
     color: #c12e2a;
     margin-right: 10px;
     font-weight: 700;
+}
+
+#slider_1 img{
+     width:60px;
+     height: 60px;
+ }
+
+/*ljm*/
+#slider img{
+    width:60px;
+    height: 60px;
+}
+#complexIconUrl_0 {
+    width: 60px;
+    height: 60px;
+}
+
+#canvas{
+
 }
